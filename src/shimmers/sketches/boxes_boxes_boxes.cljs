@@ -39,18 +39,17 @@
         woff (* (offset-factor) wsize)
         hoff (* (offset-factor) hsize)
         direction (dr/rand-nth [:north :south :east :west])]
-    (annotate
-     (case direction
-       :north (rect/rect (tm/+ p (gv/vec2 (+ woff) (- (+ h gap))))
-                         (tm/+ p (gv/vec2 (+ wsize woff) (- gap))))
-       :east (rect/rect (tm/+ p (gv/vec2 (+ w gap) (+ hoff)))
-                        (tm/+ p (gv/vec2 (+ (* w 2) gap) (+ hoff hsize))))
-       :south (rect/rect (tm/+ p (gv/vec2 (+ woff) (+ h gap)))
-                         (tm/+ p (gv/vec2 (+ wsize woff) (+ (* h 2) gap))))
-       :west (rect/rect (tm/+ p (gv/vec2 (- (+ w gap)) (+ hoff)))
-                        (tm/+ p (gv/vec2 (- gap) (+ hoff hsize)))))
-     parent
-     direction)))
+    (-> (case direction
+          :north (rect/rect (gv/vec2 (+ woff) (- (+ h gap)))
+                            (gv/vec2 (+ wsize woff) (- gap)))
+          :east (rect/rect (gv/vec2 (+ w gap) (+ hoff))
+                           (gv/vec2 (+ (* w 2) gap) (+ hoff hsize)))
+          :south (rect/rect (gv/vec2 (+ woff) (+ h gap))
+                            (gv/vec2 (+ wsize woff) (+ (* h 2) gap)))
+          :west (rect/rect (gv/vec2 (- (+ w gap)) (+ hoff))
+                           (gv/vec2 (- gap) (+ hoff hsize))))
+        (g/translate p)
+        (annotate parent direction))))
 
 (defn satisfying? [bounds boxes]
   (fn [box]
