@@ -89,7 +89,10 @@
                                0.02 1.0})]
     (for [offset spacings]
       (let [i (* offset (/ (geometry/min-axis box) 2.1))]
-        (poly-detect/inset-polygon (geometry/rotate-around-centroid (g/as-polygon box) (dr/gaussian 0.0 rotation)) i)))))
+        (-> box
+            g/as-polygon
+            (geometry/rotate-around-centroid (dr/gaussian 0.0 rotation))
+            (poly-detect/inset-polygon i))))))
 
 (defn shapes [bounds]
   (let [start (g/scale-size bounds (dr/random 0.08 0.15))]
