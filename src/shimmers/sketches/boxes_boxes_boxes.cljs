@@ -118,8 +118,12 @@
       (csvg/group {:fill "white"}
         (shapes (csvg/screen width height))))))
 
+(defn explanation [_]
+  [:div
+   [:p "Genuary 2026 - Day 12 - Boxes Only"]])
+
 (sketch/definition boxes-boxes-boxes
   {:created-at "2026-01-13"
    :tags #{:genuary2026}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount (usvg/page sketch-args explanation scene)))
