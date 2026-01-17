@@ -112,11 +112,11 @@
                    :stroke "black"
                    :fill "none"
                    :stroke-width 0.75}
-    (csvg/group {} (shapes (csvg/screen width height)))
+    (csvg/group {}
+      (shapes (csvg/screen width height)))
     (when (dr/chance 0.33)
-      (csvg/group {:fill "white"} (shapes (csvg/screen width height))))
-    (when (dr/chance 0.25)
-      (csvg/group {:fill "white"} (shapes (csvg/screen width height))))))
+      (csvg/group {:fill "white"}
+        (shapes (csvg/screen width height))))))
 
 (sketch/definition boxes-boxes-boxes
   {:created-at "2026-01-13"
