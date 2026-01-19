@@ -27,3 +27,18 @@
                (when explanation
                  [:div.readable-width
                   [explanation sketch-args]])])]))))
+
+(defn let-page
+  ([sketch-args gen-params explanation scene]
+   (let-page (assoc sketch-args
+                    :gen-params gen-params
+                    :explanation explanation)
+     scene))
+  ([sketch-args explanation scene]
+   (let-page (assoc sketch-args :explanation explanation) scene))
+  ([{:keys [gen-params] :as sketch-args} scene]
+   (let [params (gen-params)]
+     (page (-> sketch-args
+               (dissoc :param-gen)
+               (update :params merge params))
+           scene))))
