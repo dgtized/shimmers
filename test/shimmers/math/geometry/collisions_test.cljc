@@ -119,3 +119,23 @@
                                   (gp/polygon2 [10 0] [20 0] [20 20] [10 20]))
            [[10 0] [10 10]])
         "polygons overlap a shared edge"))
+
+(deftest same-edge
+  (is (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+                     [(gv/vec2 0 0) (gv/vec2 5 0)])
+      "same")
+  (is (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+                     [(gv/vec2 5 0) (gv/vec2 0 0)])
+      "same reversed")
+  (is (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+                     [(gv/vec2 2 0) (gv/vec2 6 0)])
+      "coincident-overlap")
+  (is (sut/same-edge [(gv/vec2 1 0) (gv/vec2 4 0)]
+                     [(gv/vec2 0 0) (gv/vec2 6 0)])
+      "coincident-covers")
+  (is (not (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+                          [(gv/vec2 0 0) (gv/vec2 0 5)]))
+      "edges adjacent at point")
+  (is (not (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+                          [(gv/vec2 2 -1) (gv/vec2 2 5)]))
+      "intersection"))
