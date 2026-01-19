@@ -29,7 +29,7 @@
   (for [square group]
     (geometry/rotate-around-centroid square (dr/random -0.04 0.04))))
 
-(defn shapes [fx size margin repetition]
+(defn shapes [fx size margin]
   (let [w size
         h size
         edge-margin-w (/ (mod width w) 2)
@@ -40,7 +40,7 @@
         max-depth (math/ceil (+ min-depth (* 8 depth-scale)))]
     (for [x (range (int (/ width w)))
           y (range (int (/ height h)))
-          :let [depth (/ (mod (fx x y) repetition) repetition)]]
+          :let [depth (fx x y)]]
       (csvg/group {:transform (str "translate(" (+ edge-margin-w (* x w)) "," (+ edge-margin-h (* y h)) ")")}
         (rotations (take (tm/map-interval depth [0 1] [min-depth max-depth])
                          (iterate deepen (rect/rect o o (- w o) (- h o)))))))))
@@ -54,11 +54,13 @@
     (let [fx (dr/weighted {- 1
                            + 1
                            * 1})
-          rules (dr/weighted {[fx 30 6 8] 1
-                              [fx 72 8 8] 2
-                              [fx 30 8 12] 1
-                              [fx 30 8 16] 1})]
-      (apply shapes rules))))
+          [rules repetition]
+          (dr/weighted {[[30 6] 8] 1
+                        [[72 8] 8] 2
+                        [[30 8] 12] 1
+                        [[30 8] 16] 1})
+          f (fn [x y] (/ (mod (fx x y) repetition) repetition))]
+      (apply shapes f rules))))
 
 (defn ui-controls []
   [:div
