@@ -122,7 +122,7 @@
                ;; width and displace more the closer the piece is to theta?
                :displacement {:arc0 -0.5 :arc1 0.5 :percent 1.0 :force 0.3}})))
 
-(defn explanation [palette]
+(defn explanation [{{:keys [palette]} :params}]
   (fn []
     [:div.evencols
      [:div.readable-width
@@ -146,8 +146,5 @@
   {:created-at "2021-05-15"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (let [{:keys [palette] :as params} (mosaic-params)]
-                (usvg/page (assoc sketch-args
-                                  :params params
-                                  :explanation (explanation palette))
-                           sketch))))
+  (ctrl/mount
+   (usvg/let-page sketch-args mosaic-params explanation sketch)))
