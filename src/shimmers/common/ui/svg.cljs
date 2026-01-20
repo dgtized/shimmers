@@ -37,7 +37,7 @@
   ([sketch-args explanation scene]
    (let-page (assoc sketch-args :explanation explanation) scene))
   ([{:keys [gen-params] :as sketch-args} scene]
-   (let [params (gen-params)]
+   (let [params (gen-params sketch-args)]
      (page (-> sketch-args
                (dissoc :param-gen)
                (update :params merge params))

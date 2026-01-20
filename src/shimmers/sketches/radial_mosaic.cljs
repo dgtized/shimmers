@@ -108,7 +108,7 @@
          (with-meta (gc/circle (gv/vec2) (first radius))
            {:fill (dr/rand-nth palette)}))))
 
-(defn mosaic-params []
+(defn mosaic-params [_]
   (->> [{:origin (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
          :radius (range 6 (int (* 0.5 height)))}
         {:origin (rv (dr/rand-nth [0.33 0.66]) 0.5)
