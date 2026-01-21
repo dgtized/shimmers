@@ -2,9 +2,9 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
@@ -50,15 +50,8 @@
     (shapes (g/scale-size (csvg/screen width height) 0.66)
             100)))
 
-(defn page []
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     [view-sketch/generate :triangle-mosaic]
-     [:div.readable-width]]))
-
 (sketch/definition triangle-mosaic
-    {:created-at "2024-01-19"
-     :tags #{}
-     :type :svg}
-  (ctrl/mount page))
+  {:created-at "2024-01-19"
+   :tags #{}
+   :type :svg}
+  (ctrl/mount (usvg/page sketch-args scene)))
