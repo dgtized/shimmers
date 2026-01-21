@@ -111,7 +111,7 @@
                                    n))))
                   shapes)))))))
 
-(defn scene [{:keys [scene-id palette]}]
+(defn scene [{:keys [scene-id params]}]
   (fn []
     (csvg/svg-timed {:id scene-id
                      :width width
@@ -126,9 +126,9 @@
                            (dr/random-tau))
                  (rv 0.5 0.5))
                 (g/scale-size (csvg/screen width height) 0.99))
-              palette))))
+              (:palette params)))))
 
-(defn explanation [{:keys [palette]}]
+(defn explanation [{{:keys [palette]} :params}]
   [:div.evencols
    [:div.readable-width
     [:p "Genuary 2025 - Day 12 - Subdivisions"]
@@ -138,11 +138,12 @@
    [:p
     [palette/as-svg {} palette]]])
 
+(defn gen-palette []
+  {:palette (:colors (dr/rand-nth palette/db))})
+
 (sketch/definition fibonacci-subdivisions
   {:created-at "2025-01-12"
    :tags #{:genuary2025}
    :type :svg}
   (ctrl/mount
-   (let [palette (:colors (dr/rand-nth palette/db))]
-     (usvg/page (assoc sketch-args :palette palette
-                       :explanation explanation) scene))))
+   (usvg/let-page sketch-args gen-palette explanation scene)))
