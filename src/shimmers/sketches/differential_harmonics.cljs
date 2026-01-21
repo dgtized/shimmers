@@ -72,7 +72,7 @@
               (< 0.8 val)
               (gc/circle q (* 0.2 r)))))))
 
-(defn scene [ui-state {:keys [params scene-id]}]
+(defn scene [{:keys [ui-state params scene-id]}]
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
@@ -92,25 +92,22 @@
                                   (dr/random-int 1 5)
                                   tm/SIXTH_PI)}))
 
-(defn explanation [ui-state params]
-  (fn []
-    [:<>
-     [:div.flexcols
-      [:p.readable-width
-       "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]
-      [:div {:style {:width "10em"}}
-       [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-32 32 1]]]]
-     [:div.readable-width
-      (debug/pre-edn params)]]))
+(defn explanation [{:keys [ui-state params]}]
+  [:<>
+   [:div.flexcols
+    [:p.readable-width
+     "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]
+    [:div {:style {:width "10em"}}
+     [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-32 32 1]]]]
+   [:div.readable-width
+    (debug/pre-edn params)]])
 
 (sketch/definition differential-harmonics
   {:created-at "2024-05-16"
    :tags #{}
    :type :svg}
   (ctrl/mount
-   (let [ui-state (ctrl/state {:remove-freq 0})
-         params (parameters)]
-     (usvg/page (assoc sketch-args
-                       :params params
-                       :explanation (explanation ui-state params))
-                (partial scene ui-state)))))
+   (usvg/let-page (assoc sketch-args :ui-state (ctrl/state {:remove-freq 0}))
+                  parameters
+                  explanation
+                  scene)))
