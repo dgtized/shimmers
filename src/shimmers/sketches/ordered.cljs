@@ -284,21 +284,21 @@
                               0.015 1.0
                               0.02 1.0})})
 
-(defn scene [{:keys [scene-id rules]}]
+(defn scene [{:keys [scene-id params]}]
   (reset! defo {:shapes []})
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"
                    :fill "none"}
-    (shapes rules)))
+    (shapes params)))
 
 (sketch/definition ordered
   {:created-at "2023-02-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (usvg/page
-               (assoc sketch-args
-                      :rules (ruleset)
-                      :explanation (fn [] [debug/display defo]))
-               scene)))
+  (ctrl/mount
+   (usvg/let-page sketch-args
+                  ruleset
+                  (fn [] [debug/display defo])
+                  scene)))
