@@ -119,6 +119,5 @@
   {:created-at "2024-07-31"
    :tags #{}
    :type :svg}
-  (ctrl/mount (usvg/page (assoc sketch-args
-                                :params (gen-parameters)
-                                :explanation ui-controls) scene)))
+  (ctrl/mount
+   (usvg/let-page sketch-args gen-parameters ui-controls scene)))
