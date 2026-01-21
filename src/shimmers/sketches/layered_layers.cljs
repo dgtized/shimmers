@@ -114,7 +114,7 @@
                      level))
                  (:levels (nth (iterate add-layer {:bounds bounds :levels []}) 8)))))
 
-(defn scene [{:keys [scene-id palette]}]
+(defn scene [{:keys [scene-id params]}]
   (fn []
     (csvg/svg-timed {:id scene-id
                      :width width
@@ -123,9 +123,12 @@
                      :fill "white"
                      :stroke-width 0.5}
       (shapes (g/scale-size (csvg/screen width height) 0.975)
-              palette))))
+              (:palette params)))))
 
-(defn explanation [{:keys [palette]}]
+(defn gen-palette []
+  {:palette (:colors (dr/rand-nth palette/db))})
+
+(defn explanation [{{:keys [palette]} :params}]
   [:div.evencols
    [:div.readable-width
     [:p "Genuary 2025 - Day 02 - Layers on layers upon layers"]]
@@ -137,8 +140,4 @@
    :tags #{:genuary2025}
    :type :svg}
   (ctrl/mount
-   (let [palette (:colors (dr/rand-nth palette/db))]
-     (usvg/page (assoc sketch-args
-                       :palette palette
-                       :explanation explanation)
-                scene))))
+   (usvg/let-page sketch-args gen-palette explanation scene)))
