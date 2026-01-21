@@ -184,22 +184,23 @@
                         (dr/random-int 2 20) 1.0})
         s (dr/random 1.0)
         amp (tm/clamp (dr/gaussian 0.35 0.05) 0.075 0.6)]
-    (into []
-          (for [y (cs/midsection (tm/norm-range n))]
-            {:ry y
-             :amp
-             (* (/ 1.0 (inc n))
-                (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
-             :cilia-amp
-             (* (/ 1.0 (inc n))
-                (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
-             :pts (gen-density)
-             :phase
-             (dr/gaussian 0.0 0.0125)}))))
+    {:line-params
+     (into []
+           (for [y (cs/midsection (tm/norm-range n))]
+             {:ry y
+              :amp
+              (* (/ 1.0 (inc n))
+                 (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
+              :cilia-amp
+              (* (/ 1.0 (inc n))
+                 (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
+              :pts (gen-density)
+              :phase
+              (dr/gaussian 0.0 0.0125)}))}))
 
 (defonce defo (debug/state))
 
-(defn shapes [{:keys [line-params]}]
+(defn shapes [{:keys [params]}]
   (let [;; defines the path of the line
         line-fx (gen-spline-fx 1.0)
         ;; amplitude length of cilia out from line-fx
@@ -234,7 +235,7 @@
                       :phase phase})]
          [(csvg/path (csvg/segmented-path spline-pts))
           (csvg/group {:stroke-width 0.75} cilia)]))
-     line-params)))
+     (:line-params params))))
 
 (defn scene [{:keys [scene-id] :as args}]
   (csvg/svg-timed
@@ -246,22 +247,18 @@
      :stroke-width 1.0}
     (shapes args)))
 
-(defn explanation [{:keys [line-params]}]
+(defn explanation [{{:keys [line-params]} :params}]
   (debug/pre-edn
    (merge {:line-params line-params} @defo)
    {:width 120
     :print-fixed-width 4}))
 
-(defn page [sketch-args]
-  (let [line-params (line-parameters)]
-    (usvg/page (assoc sketch-args
-                      :line-params line-params
-                      :explanation-div [:div.evencols]
-                      :explanation explanation)
-               scene)))
-
 (sketch/definition cilia-phase
   {:created-at "2024-10-24"
    :tags #{}
    :type :svg}
-  (ctrl/mount (page sketch-args)))
+  (ctrl/mount
+   (usvg/let-page (assoc sketch-args :explanation-div [:div.evencols])
+                  line-parameters
+                  explanation
+                  scene)))
