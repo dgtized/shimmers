@@ -4,6 +4,7 @@
    [clojure.string :as str]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -155,3 +156,8 @@
 (comment
   (let [palette (:gold-blue smooth-palettes)]
     (map (fn [t] [t (palette t)]) (range 0.0 2.0 0.05))))
+
+(defn generate
+  ([] (generate db))
+  ([palettes]
+   {:palette (:colors (dr/rand-nth palettes))}))

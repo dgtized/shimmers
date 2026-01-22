@@ -116,8 +116,8 @@
         {:origin (rv (dr/rand-nth [0.2 0.3 0.7 0.8]) (dr/rand-nth [0.33 0.4 0.6 0.66]))
          :radius (range 6 (int (* (dr/rand-nth [0.6 0.7 0.8 0.9]) width)))}]
        dr/rand-nth
-       (merge {:palette (:colors (dr/rand-nth palettes))
-               ;; TODO: set arc0 to arc1 to be close to a far corner from
+       (merge (palette/generate palettes)
+              {;; TODO: set arc0 to arc1 to be close to a far corner from
                ;; center? Also, Consider setting a single theta with a radial
                ;; width and displace more the closer the piece is to theta?
                :displacement {:arc0 -0.5 :arc1 0.5 :percent 1.0 :force 0.3}})))

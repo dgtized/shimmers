@@ -138,12 +138,9 @@
    [:p
     [palette/as-svg {} palette]]])
 
-(defn gen-palette []
-  {:palette (:colors (dr/rand-nth palette/db))})
-
 (sketch/definition fibonacci-subdivisions
   {:created-at "2025-01-12"
    :tags #{:genuary2025}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page sketch-args gen-palette explanation scene)))
+   (usvg/let-page sketch-args palette/generate explanation scene)))

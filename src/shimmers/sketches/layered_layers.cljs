@@ -125,9 +125,6 @@
       (shapes (g/scale-size (csvg/screen width height) 0.975)
               (:palette params)))))
 
-(defn gen-palette []
-  {:palette (:colors (dr/rand-nth palette/db))})
-
 (defn explanation [{{:keys [palette]} :params}]
   [:div.evencols
    [:div.readable-width
@@ -140,4 +137,4 @@
    :tags #{:genuary2025}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page sketch-args gen-palette explanation scene)))
+   (usvg/let-page sketch-args palette/generate explanation scene)))
