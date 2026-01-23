@@ -216,11 +216,10 @@
         :black-shell-red-maroon-red
         :aqua-foam-black-greeen-teal]
        palette/by-names
-       (concat radial-mosaic/palettes)
-       (map :colors)))
+       (concat radial-mosaic/palettes)))
 
 (defn page []
-  (let [palette (dr/rand-nth palettes)
+  (let [{:keys [palette]} (palette/generate palettes)
         plan (vec (repeatedly 11 (gen-shape palette)))]
     (fn []
       (let [settings @ui-state
