@@ -56,7 +56,7 @@
                           [0.03 0.1]]))))
 
 (defn page []
-  (let [palette (:colors (dr/rand-nth palettes))]
+  (let [{:keys [palette]} (palette/generate palettes)]
     (fn []
       [:<>
        [:div.canvas-frame [scene palette]]
