@@ -161,3 +161,9 @@
   ([] (generate db))
   ([palettes]
    {:palette (:colors (dr/rand-nth palettes))}))
+
+;; FIXME: add choose-n or choose without replacement?
+(defn choose
+  "Choose a color from a palette."
+  ([palette]
+   (dr/rand-nth palette)))

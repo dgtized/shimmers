@@ -75,7 +75,7 @@
                      1
                      (dr/rand-nth m)))
         colors (into palette ["white" "white"])
-        row-palette (repeatedly multiple #(dr/rand-nth colors))]
+        row-palette (repeatedly multiple #(palette/choose colors))]
     (if (and (even? multiple) (> multiple 2) (dr/chance 0.33))
       (let [s (take (/ multiple 2) row-palette)]
         (concat s (reverse s)))
@@ -106,7 +106,7 @@
                               displacement)))))
        (csvg/group {:transform (csvg/translate origin)}
          (with-meta (gc/circle (gv/vec2) (first radius))
-           {:fill (dr/rand-nth palette)}))))
+           {:fill (palette/choose palette)}))))
 
 (defn mosaic-params [_]
   (->> [{:origin (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
