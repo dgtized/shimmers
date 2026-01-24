@@ -57,7 +57,7 @@
                     rest)]
     (for [[t0 t1] (partition 2 1 radial)
           [r0 r1] (partition 2 1 (dr/random-sample 0.4 breaks))]
-      (->> {:fill (dr/rand-nth palette)
+      (->> {:fill (palette/choose palette)
             :stroke-width (if (dr/chance 0.15) 2.5 1.0)
             :transform (transforms (dr/gaussian 1.5 0.5))}
            (segment t0 t1 r0 r1)))))
