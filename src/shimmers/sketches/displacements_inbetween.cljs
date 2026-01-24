@@ -89,7 +89,7 @@
   (let [n (dr/weighted spacing-divisions)
         boxes (box-strip pair (tm/norm-range n))
         palette-size (dr/rand-nth [2 3 4 5 7 9 11])
-        palette-seq (repeatedly palette-size #(dr/rand-nth palette))
+        palette-seq (repeatedly palette-size #(palette/choose palette))
         index-op (if (dr/chance (/ palette-size 12))
                    (mirror-over (count boxes) 0.5)
                    vector)]
@@ -152,6 +152,7 @@
 
 (defn page []
   (let [screen (g/scale-size (csvg/screen width height) 0.95)
+        ;; TODO: switch to palette/generate
         palette (dr/rand-nth palettes)]
     [:<>
      [:div.canvas-frame [scene screen palette]]
