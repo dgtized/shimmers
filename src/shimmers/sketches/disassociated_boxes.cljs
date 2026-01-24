@@ -28,7 +28,7 @@
        (map color/hex-palette->hsla)))
 
 (defn colorize [palette shape]
-  (assoc shape :color (dr/rand-nth palette)))
+  (assoc shape :color (palette/choose palette)))
 
 (comment (colorize (first palettes) (displace 0.01 (rect/rect 5 5 10 10))))
 
