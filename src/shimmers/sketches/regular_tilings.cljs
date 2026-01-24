@@ -1,6 +1,7 @@
 (ns shimmers.sketches.regular-tilings
   (:require
    [clojure.set :as set]
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -102,7 +103,7 @@
 
 (def palette ["#666" "#999" "#CCC" "#FFF"])
 (defn shapes [{:keys [structure annotation faces]}]
-  (conj (concat (mapv (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette)))
+  (conj (concat (mapv (fn [s] (vary-meta s assoc :fill (palette/choose palette)))
                       structure)
                 (if (:debug @ui-state) annotation []))
         (csvg/group {:stroke-width 2.0}
