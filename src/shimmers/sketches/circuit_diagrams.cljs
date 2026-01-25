@@ -133,6 +133,9 @@
         edge-angle (g/heading (g/normal (tm/- q p)))]
     (g/rotate shape (- angle edge-angle))))
 
+(defn same-face? [edge face]
+  (= (s-midpoint edge) (s-midpoint face)))
+
 ;; FIXME: face removal is occasionally allowing overlapping shapes
 ;; might be for triangles in particular, maybe because one face is shared?
 (defn tiling [{:keys [size bounds]} seed n]
@@ -155,7 +158,7 @@
             match-edge-length? (matching-length? shape' face)
             tiles? (tiles-structure? structure shape')
             edges (remove (fn [edge]
-                            (some (fn [face] (when (= (s-midpoint edge) (s-midpoint face))
+                            (some (fn [face] (when (same-face? edge face)
                                               face))
                                   faces))
                           (map (fn [e] (vary-meta e assoc :shape shape'))
