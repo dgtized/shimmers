@@ -1,6 +1,7 @@
 (ns shimmers.sketches.circuit-diagrams
   (:require
    [clojure.set :as set]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -157,6 +158,7 @@
             inside? (collide/bounded? bounds shape')
             match-edge-length? (matching-length? shape' face)
             tiles? (tiles-structure? structure shape')
+            centroid? (filter (fn [s] (collide/bounded? s (g/centroid shape'))) structure)
             edges (remove (fn [edge]
                             (some (fn [face] (when (same-face? edge face)
                                               face))
@@ -177,7 +179,12 @@
              (for [[p q] (g/edges shape')]
                (let [mid (tm/mix p q 0.5)
                      normal (tm/normalize (g/normal (tm/- p q)) 5)]
-                 (gl/line2 mid (tm/+ mid normal)))))]
+                 (gl/line2 mid (tm/+ mid normal))))
+             (if (seq centroid?)
+               (into [(gc/circle pos 12.0)]
+                     (for [s centroid?]
+                       (poly-detect/inset-polygon s 8)))
+               []))]
         (if (and inside? tiles? match-edge-length?)
           (recur (conj structure
                        (vary-meta shape' assoc
