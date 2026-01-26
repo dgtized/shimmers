@@ -174,7 +174,6 @@
             inside? (collide/bounded? bounds shape)
             match-edge-length? (matching-length? shape face)
             tiles? (tiles-structure? structure shape)
-            centroid? (filter (fn [s] (collide/bounded? s pos)) structure)
             edges (remove (fn [edge]
                             (some (fn [face] (when (same-face? edge face)
                                               face))
@@ -190,11 +189,10 @@
                (let [mid (face-midpoint edge)
                      normal (tm/normalize (face-normal edge) 5)]
                  (gl/line2 mid (tm/+ mid normal))))
-             (if (seq centroid?)
+             (when-let [centroid-shapes (seq (filter (fn [s] (collide/bounded? s pos)) structure))]
                (into [(gc/circle pos 12.0)]
-                     (for [s centroid?]
-                       (poly-detect/inset-polygon s 8)))
-               []))]
+                     (for [s centroid-shapes]
+                       (poly-detect/inset-polygon s 8)))))]
         (if (and inside? tiles? match-edge-length?)
           (recur (conj structure
                        (vary-meta shape assoc
