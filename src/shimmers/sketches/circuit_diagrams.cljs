@@ -129,9 +129,12 @@
                  (tm/mag-squared (tm/- fq fp))
                  1.0))))
 
+(defn face-normal [[p q]]
+  (g/normal (tm/- p q)))
+
 (defn rotate-to-face [shape angle]
-  (let [[p q] (dr/rand-nth (g/edges shape))
-        edge-angle (g/heading (g/normal (tm/- q p)))]
+  (let [edge (dr/rand-nth (g/edges shape))
+        edge-angle (g/heading (face-normal (reverse edge)))]
     (g/rotate shape (- angle edge-angle))))
 
 (defn same-face? [edge face]
@@ -149,7 +152,7 @@
       (let [face (dr/rand-nth (into [] faces))
             [fp fq] face
             mid (tm/mix fp fq 0.5)
-            structure-face (g/normal (tm/- fp fq))
+            structure-face (face-normal face)
             angle (g/heading structure-face)
             shape (rotate-to-face (g/center (random-shape size)) angle)
             apothem (opposing-face-apothem shape angle)
@@ -176,9 +179,10 @@
              (if (g/contains-point? (:shape (meta face)) pos)
                [(gc/circle pos 2.5)]
                [])
-             (for [[p q] (g/edges shape')]
-               (let [mid (tm/mix p q 0.5)
-                     normal (tm/normalize (g/normal (tm/- p q)) 5)]
+             (for [edge (g/edges shape')]
+               (let [[p q] edge
+                     mid (tm/mix p q 0.5)
+                     normal (tm/normalize (face-normal edge) 5)]
                  (gl/line2 mid (tm/+ mid normal))))
              (if (seq centroid?)
                (into [(gc/circle pos 12.0)]
