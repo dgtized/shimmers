@@ -142,6 +142,21 @@
 (defn same-face? [edge face]
   (= (s-midpoint edge) (s-midpoint face)))
 
+(defn place-shape-on-face [shape face]
+  (let [mid (face-midpoint face)
+        structure-face (face-normal face)
+        angle (g/heading structure-face)
+        shape (rotate-to-face (g/center shape) angle)
+        apothem (opposing-face-apothem shape angle)
+        pos (tm/+ mid apothem)]
+    {:pos pos
+     :shape (g/translate shape pos)
+     :notes
+     [(gc/circle mid 3.0)
+      (gc/circle pos 5.0)
+      (gl/line2 mid pos)
+      (gl/line2 mid (tm/+ mid (tm/normalize structure-face 8)))]}))
+
 ;; FIXME: face removal is occasionally allowing overlapping shapes
 ;; might be for triangles in particular, maybe because one face is shared?
 (defn tiling [{:keys [size bounds]} seed n]
@@ -152,35 +167,24 @@
     (if (or (empty? faces) (>= (count structure) n) (zero? attempts))
       structure
       (let [face (dr/rand-nth (into [] faces))
-            mid (face-midpoint face)
-            structure-face (face-normal face)
-            angle (g/heading structure-face)
-            shape (rotate-to-face (g/center (random-shape size)) angle)
-            apothem (opposing-face-apothem shape angle)
-            pos (tm/+ mid apothem)
-            shape' (g/translate shape pos)
-            inside? (collide/bounded? bounds shape')
-            match-edge-length? (matching-length? shape' face)
-            tiles? (tiles-structure? structure shape')
+            {:keys [pos shape notes]} (place-shape-on-face (random-shape size) face)
+            inside? (collide/bounded? bounds shape)
+            match-edge-length? (matching-length? shape face)
+            tiles? (tiles-structure? structure shape)
             centroid? (filter (fn [s] (collide/bounded? s pos)) structure)
             edges (remove (fn [edge]
                             (some (fn [face] (when (same-face? edge face)
                                               face))
                                   faces))
-                          (map (fn [e] (vary-meta e assoc :shape shape'))
-                               (g/edges shape')))
+                          (map (fn [e] (vary-meta e assoc :shape shape))
+                               (g/edges shape)))
             notes
             (concat
-             [(gc/circle mid 3.0)
-              (gc/circle pos 5.0)
-              (gl/line2 mid pos)
-              #_(gl/line2 fp fq)
-              (gl/line2 mid (tm/+ mid (tm/normalize structure-face 8)))
-              ]
+             notes
              (if (g/contains-point? (:shape (meta face)) pos)
                [(gc/circle pos 2.5)]
                [])
-             (for [edge (g/edges shape')]
+             (for [edge (g/edges shape)]
                (let [mid (face-midpoint edge)
                      normal (tm/normalize (face-normal edge) 5)]
                  (gl/line2 mid (tm/+ mid normal))))
@@ -191,7 +195,7 @@
                []))]
         (if (and inside? tiles? match-edge-length?)
           (recur (conj structure
-                       (vary-meta shape' assoc
+                       (vary-meta shape assoc
                                   :annotation notes
                                   :parent {:face face}))
                  (set/union (disj faces face) (set edges))
