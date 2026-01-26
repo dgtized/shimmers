@@ -162,7 +162,7 @@
             inside? (collide/bounded? bounds shape')
             match-edge-length? (matching-length? shape' face)
             tiles? (tiles-structure? structure shape')
-            centroid? (filter (fn [s] (collide/bounded? s (g/centroid shape'))) structure)
+            centroid? (filter (fn [s] (collide/bounded? s pos)) structure)
             edges (remove (fn [edge]
                             (some (fn [face] (when (same-face? edge face)
                                               face))
