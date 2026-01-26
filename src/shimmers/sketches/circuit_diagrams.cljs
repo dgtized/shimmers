@@ -105,13 +105,15 @@
         (and (empty? cross)
              (empty? coincident)))))
 
+(defn face-normal [[p q]]
+  (g/normal (tm/- p q)))
+
 (defn opposing-face-apothem [shape heading]
   (when-let [opposing-face
              (some (fn [face]
-                     (let [[p q] face
-                           angle (g/heading (g/normal (tm/- q p)))
+                     (let [angle (g/heading (face-normal face))
                            ;; this happens for edges on squares it's rotated off?
-                           angle2 (g/heading (g/normal (tm/- p q)))]
+                           angle2 (g/heading (face-normal (reverse face)))]
                        (when (or (tm/delta= angle heading 0.1)
                                  (tm/delta= angle2 heading 0.1))
                          face)))
@@ -128,9 +130,6 @@
       (tm/delta= (tm/mag-squared (tm/- (second matching-face) (first matching-face)))
                  (tm/mag-squared (tm/- fq fp))
                  1.0))))
-
-(defn face-normal [[p q]]
-  (g/normal (tm/- p q)))
 
 (defn rotate-to-face [shape angle]
   (let [edge (dr/rand-nth (g/edges shape))
