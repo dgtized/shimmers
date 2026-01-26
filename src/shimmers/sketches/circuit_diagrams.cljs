@@ -46,8 +46,11 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn s-midpoint [[p q]]
-  (let [[x y] (tm/mix p q 0.5)]
+(defn face-midpoint [[p q]]
+  (tm/mix p q 0.5))
+
+(defn s-midpoint [edge]
+  (let [[x y] (face-midpoint edge)]
     (f/format [(f/float 2) "," (f/float 2)] x y)))
 
 ;; FIXME: ensure at least one pass through connection for resistor/wire/capacitor
@@ -118,14 +121,14 @@
                                  (tm/delta= angle2 heading 0.1))
                          face)))
                    (g/edges shape))]
-    (let [[a b] opposing-face]
-      (tm/- (tm/mix a b 0.5)))))
+    (tm/- (face-midpoint opposing-face))))
 
 (defn matching-length? [shape [fp fq]]
-  (let [mid (tm/mix fp fq 0.5)]
+  (let [mid (face-midpoint [fp fq])]
     (when-let [matching-face
-               (some (fn [[p q]] (when (tm/delta= mid (tm/mix p q 0.5) 1.0)
-                                  [p q]))
+               (some (fn [face]
+                       (when (tm/delta= mid (face-midpoint face) 1.0)
+                         face))
                      (g/edges shape))]
       (tm/delta= (tm/mag-squared (tm/- (second matching-face) (first matching-face)))
                  (tm/mag-squared (tm/- fq fp))
@@ -149,8 +152,7 @@
     (if (or (empty? faces) (>= (count structure) n) (zero? attempts))
       structure
       (let [face (dr/rand-nth (into [] faces))
-            [fp fq] face
-            mid (tm/mix fp fq 0.5)
+            mid (face-midpoint face)
             structure-face (face-normal face)
             angle (g/heading structure-face)
             shape (rotate-to-face (g/center (random-shape size)) angle)
@@ -179,8 +181,7 @@
                [(gc/circle pos 2.5)]
                [])
              (for [edge (g/edges shape')]
-               (let [[p q] edge
-                     mid (tm/mix p q 0.5)
+               (let [mid (face-midpoint edge)
                      normal (tm/normalize (face-normal edge) 5)]
                  (gl/line2 mid (tm/+ mid normal))))
              (if (seq centroid?)
