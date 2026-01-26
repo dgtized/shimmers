@@ -157,12 +157,15 @@
       (gl/line2 mid pos)
       (gl/line2 mid (tm/+ mid (tm/normalize structure-face 8)))]}))
 
+(defn annotated-edges [shape]
+  (map (fn [e] (vary-meta e assoc :shape shape))
+       (g/edges shape)))
+
 ;; FIXME: face removal is occasionally allowing overlapping shapes
 ;; might be for triangles in particular, maybe because one face is shared?
 (defn tiling [{:keys [size bounds]} seed n]
   (loop [structure [seed]
-         faces (set (map (fn [e] (vary-meta e assoc :shape seed))
-                         (g/edges seed)))
+         faces (set (annotated-edges seed))
          attempts 512]
     (if (or (empty? faces) (>= (count structure) n) (zero? attempts))
       structure
@@ -176,8 +179,7 @@
                             (some (fn [face] (when (same-face? edge face)
                                               face))
                                   faces))
-                          (map (fn [e] (vary-meta e assoc :shape shape))
-                               (g/edges shape)))
+                          (annotated-edges shape))
             notes
             (concat
              notes
