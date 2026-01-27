@@ -149,13 +149,15 @@
         shape (rotate-to-face (g/center shape) angle)
         apothem (opposing-face-apothem shape angle)
         pos (tm/+ mid apothem)]
-    {:pos pos
-     :shape (g/translate shape pos)
+    {:shape (g/translate shape pos)
      :notes
-     [(gc/circle mid 3.0)
-      (gc/circle pos 5.0)
-      (gl/line2 mid pos)
-      (gl/line2 mid (tm/+ mid (tm/normalize structure-face 8)))]}))
+     (concat [(gc/circle mid 3.0)
+              (gc/circle pos 5.0)
+              (gl/line2 mid pos)
+              (gl/line2 mid (tm/+ mid (tm/normalize structure-face 8)))]
+             (when (collide/bounded? (:shape (meta face)) pos)
+               [(gc/circle pos 12.0)
+                (poly-detect/inset-polygon (:shape (meta face)) 8)]))}))
 
 (defn annotated-edges [shape]
   (map (fn [e] (vary-meta e assoc :shape shape))
@@ -170,7 +172,7 @@
     (if (or (empty? faces) (>= (count structure) n) (zero? attempts))
       structure
       (let [face (dr/rand-nth (into [] faces))
-            {:keys [pos shape notes]} (place-shape-on-face (random-shape size) face)
+            {:keys [shape notes]} (place-shape-on-face (random-shape size) face)
             inside? (collide/bounded? bounds shape)
             match-edge-length? (matching-length? shape face)
             tiles? (tiles-structure? structure shape)
@@ -182,17 +184,10 @@
             notes
             (concat
              notes
-             (if (g/contains-point? (:shape (meta face)) pos)
-               [(gc/circle pos 2.5)]
-               [])
              (for [edge (g/edges shape)]
                (let [mid (face-midpoint edge)
                      normal (tm/normalize (face-normal edge) 5)]
-                 (gl/line2 mid (tm/+ mid normal))))
-             (when-let [centroid-shapes (seq (filter (fn [s] (collide/bounded? s pos)) structure))]
-               (into [(gc/circle pos 12.0)]
-                     (for [s centroid-shapes]
-                       (poly-detect/inset-polygon s 8)))))]
+                 (gl/line2 mid (tm/+ mid normal)))))]
         (if (and inside? tiles? match-edge-length?)
           (recur (conj structure
                        (vary-meta shape assoc
