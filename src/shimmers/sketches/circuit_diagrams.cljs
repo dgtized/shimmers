@@ -114,11 +114,8 @@
 (defn opposing-face-apothem [shape heading]
   (when-let [opposing-face
              (some (fn [face]
-                     (let [angle (g/heading (face-normal face))
-                           ;; this happens for edges on squares it's rotated off?
-                           angle2 (g/heading (face-normal (reverse face)))]
-                       (when (or (tm/delta= angle heading 0.1)
-                                 (tm/delta= angle2 heading 0.1))
+                     (let [angle (g/heading (face-normal (reverse face)))]
+                       (when (tm/delta= angle heading 0.1)
                          face)))
                    (g/edges shape))]
     (tm/- (face-midpoint opposing-face))))
