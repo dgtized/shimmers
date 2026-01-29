@@ -34,7 +34,7 @@
 (defonce defo (debug/state))
 
 (defn random-shape [size]
-  (let [n (dr/weighted {3 8 4 4 5 4 6 2})
+  (let [n (dr/weighted {3 8 4 4 5 4 6 1})
         r (poly/circumradius-side-length n size)]
     (cond (= n 5)
           (poly/pentagon (poly/circumradius-side-length 6 size)
