@@ -310,16 +310,18 @@
                         :meta (meta (:shape component))))))
 
 (defn draw-shape [{:keys [id shape faces] :as component}]
-  (let [m {:on-click (shape-click component)}]
-    (into [(vary-meta (vary-meta shape dissoc :parent) merge
-                      (cond (= (:id @defo) id)
-                            (assoc m :stroke "blue"
-                                   :stroke-width 1.5)
-                            (contains? (set (flatten (vals (:neighbors @defo)))) id)
-                            (assoc m :stroke "green"
-                                   :stroke-width 1.5)
-                            :else
-                            m))]
+  (let [m {:on-click (shape-click component)}
+        attribs (cond (= (:id @defo) id)
+                      (assoc m :stroke "blue"
+                             :stroke-width 1.5)
+                      (contains? (set (flatten (vals (:neighbors @defo)))) id)
+                      (assoc m :stroke "green"
+                             :stroke-width 1.5)
+                      :else
+                      m)]
+    (into [(-> shape
+               (vary-meta dissoc :parent)
+               (vary-meta merge attribs))]
           (mapcat draw-face faces))))
 
 (defn make-component [idx shape]
