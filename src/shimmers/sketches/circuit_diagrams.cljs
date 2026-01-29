@@ -36,10 +36,16 @@
 (defn random-shape [size]
   (let [n (dr/weighted {3 8 4 4 5 4 6 2})
         r (poly/circumradius-side-length n size)]
-    (if (= n 5)
-      (poly/pentagon (poly/circumradius-side-length 6 size)
-                     (dr/random-int 6))
-      (poly/regular-n-gon n r))))
+    (cond (= n 5)
+          (poly/pentagon (poly/circumradius-side-length 6 size)
+                         (dr/random-int 6))
+          ;; FIXME: make the two diamond shapes, both the sliver and the one
+          ;; where a 5 sided is minus a triangle
+          (and (= n 4) (dr/chance 0.5))
+          (poly/regular-n-gon n r)
+          :else
+          ;; TODO: sliver triangles?
+          (poly/regular-n-gon n r))))
 
 (def width 800)
 (def height 600)
