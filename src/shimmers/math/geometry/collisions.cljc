@@ -410,7 +410,11 @@
         (when-not (tm/delta= p q)
           [p q])))))
 
-(defn same-edge [e1 e2]
+(defn same-edge
+  "Check if an edge is either identical, or is coincident and overlaps.
+
+  Returns the segment that is overlapping."
+  [e1 e2]
   (or (exact-edge e1 e2)
       (coincident-edge e1 e2)))
 
