@@ -142,9 +142,6 @@
         edge-angle (g/heading (face-normal (reverse edge)))]
     (g/rotate shape (- angle edge-angle))))
 
-(defn same-face? [edge face]
-  (= (s-midpoint edge) (s-midpoint face)))
-
 (defn place-shape-on-face [shape face]
   (let [mid (face-midpoint face)
         structure-face (face-normal face)
@@ -180,7 +177,7 @@
             match-edge-length? (matching-length? shape face)
             tiles? (tiles-structure? structure shape)
             edges (remove (fn [edge]
-                            (some (fn [face] (when (same-face? edge face)
+                            (some (fn [face] (when (collide/edge= edge face)
                                               face))
                                   faces))
                           (annotated-edges shape))

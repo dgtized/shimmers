@@ -390,12 +390,15 @@
   (fn [a b] [(type a) (type b)]))
 
 ;;; Helpers for tiling problems
-(defn exact-edge [[p1 q1] [p2 q2]]
-  (when (or (and (tm/delta= p1 p2)
-                 (tm/delta= q1 q2))
-            (and (tm/delta= p1 q2)
-                 (tm/delta= p2 q1)))
-    [p1 q1]))
+(defn edge= [[p1 q1] [p2 q2]]
+  (or (and (tm/delta= p1 p2)
+           (tm/delta= q1 q2))
+      (and (tm/delta= p1 q2)
+           (tm/delta= p2 q1))))
+
+(defn exact-edge [a b]
+  (when (edge= a b)
+    a))
 
 (defn coincident-edge
   "Return the points which are coincident between the lines `p1`, `q1` and `p2`, `q2`."
