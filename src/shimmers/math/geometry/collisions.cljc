@@ -102,11 +102,11 @@
 ;; square, but no points of square in triangle
 (defmethod overlaps?
   [Polygon2 Polygon2] [a b]
-  (when (or (some (fn [point] (g/contains-point? b point)) (g/vertices a))
-            (some (fn [point] (g/contains-point? a point)) (g/vertices b))
-            (some (fn [[p q]] (isec/intersect-line2-edges? p q (g/edges b)))
-                  (g/edges a)))
-    true))
+  (some?
+   (or (some (fn [point] (g/contains-point? b point)) (g/vertices a))
+       (some (fn [point] (g/contains-point? a point)) (g/vertices b))
+       (some (fn [[p q]] (isec/intersect-line2-edges? p q (g/edges b)))
+             (g/edges a)))))
 
 (defmethod overlaps?
   [Polygon2 Rect2] [poly rect]
