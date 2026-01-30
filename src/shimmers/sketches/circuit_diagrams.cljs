@@ -301,13 +301,19 @@
                     (for [face out]
                       (connector face (v/+polar center radius (face-angle face center)))))))))
 
-(defn shape-click [component]
+(defn analysis [components component]
+  {:overlaps (filter (fn [{:keys [shape]}]
+                       (collide/overlaps? (:shape component) shape))
+                     components)})
+
+(defn shape-click [components component]
   (fn []
     (reset! defo (assoc component
-                        :meta (meta (:shape component))))))
+                        :meta (meta (:shape component))
+                        :analysis (analysis components component)))))
 
-(defn draw-shape [{:keys [id shape faces] :as component}]
-  (let [m {:on-click (shape-click component)}
+(defn draw-shape [components {:keys [id shape faces] :as component}]
+  (let [m {:on-click (shape-click components component)}
         attribs (cond (= (:id @defo) id)
                       (assoc m :stroke "blue"
                              :stroke-width 1.5)
@@ -380,7 +386,7 @@
            (csvg/group {}
              (when (:shapes @ui-state)
                (csvg/group {:stroke-width 0.33}
-                 (draw-shape component)))
+                 (draw-shape components component)))
              (when (:circuits @ui-state)
                (csvg/group {:stroke-width 1.0}
                  (draw-component component)))
