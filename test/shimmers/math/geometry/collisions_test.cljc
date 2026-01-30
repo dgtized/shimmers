@@ -121,21 +121,25 @@
         "polygons overlap a shared edge"))
 
 (deftest same-edge
-  (is (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
-                     [(gv/vec2 0 0) (gv/vec2 5 0)])
-      "same")
-  (is (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
-                     [(gv/vec2 5 0) (gv/vec2 0 0)])
-      "same reversed")
-  (is (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
-                     [(gv/vec2 2 0) (gv/vec2 6 0)])
-      "coincident-overlap")
-  (is (sut/same-edge [(gv/vec2 1 0) (gv/vec2 4 0)]
-                     [(gv/vec2 0 0) (gv/vec2 6 0)])
-      "coincident-covers")
-  (is (not (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
-                          [(gv/vec2 0 0) (gv/vec2 0 5)]))
-      "edges adjacent at point")
-  (is (not (sut/same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
-                          [(gv/vec2 2 -1) (gv/vec2 2 5)]))
-      "intersection"))
+  (let [a (gv/vec2 0 0)
+        b (gv/vec2 5 0)
+        c (gv/vec2 2 0)
+        d (gv/vec2 6 0)]
+    (is (= [a b] (sut/same-edge [a b] [a b]))
+        "same")
+    (is (= [a b] (sut/same-edge [a b] [b a]))
+        "same reversed")
+    (is (= [c b] (sut/same-edge [a b] [c d]))
+        "coincident-overlap at start")
+    (is (= [c b] (sut/same-edge [c d] [a b]))
+        "coincident-overlap at end")
+    (is (= [c b] (sut/same-edge [c b] [a d]))
+        "coincident-covers")
+    (is (not (sut/same-edge [a c] [b d]))
+        "coincident but non-adjacent")
+    (is (not (sut/same-edge [a b] [a (gv/vec2 0 5)]))
+        "edges adjacent at point")
+    (is (not (sut/same-edge [a b] [b d]))
+        "coincident edges adjacent at point")
+    (is (not (sut/same-edge [a b] [(gv/vec2 2 -1) (gv/vec2 2 5)]))
+        "intersection")))

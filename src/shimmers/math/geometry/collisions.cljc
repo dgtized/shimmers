@@ -406,7 +406,9 @@
   (when-let [isec (isec/intersect-line2-line2? p1 q1 p2 q2)]
     (when (contains? #{:coincident :coincident-no-intersect} (get isec :type))
       (let [{:keys [p q]} isec]
-        [p q]))))
+        ;; If p and q are the same we don't have a line to return
+        (when-not (tm/delta= p q)
+          [p q])))))
 
 (defn same-edge [e1 e2]
   (or (exact-edge e1 e2)
