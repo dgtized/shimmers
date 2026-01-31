@@ -302,9 +302,11 @@
                       (connector face (v/+polar center radius (face-angle face center)))))))))
 
 (defn analysis [components component]
-  {:overlaps (filter (fn [{:keys [shape]}]
-                       (collide/overlaps? (:shape component) shape))
-                     components)})
+  {:overlaps
+   (->> components
+        (filter (fn [{:keys [shape]}]
+                  (collide/overlaps? (:shape component) shape)))
+        (map (fn [c] (dissoc c :annotation))))})
 
 (defn shape-click [components component]
   (fn []
