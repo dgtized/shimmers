@@ -202,6 +202,7 @@
    shimmers.sketches.periapsis
    shimmers.sketches.permutations-of-transfiguration
    shimmers.sketches.pendulum-sway
+   shimmers.sketches.phase-loop
    shimmers.sketches.phase-shifting
    shimmers.sketches.physarum
    shimmers.sketches.pixel-rings
