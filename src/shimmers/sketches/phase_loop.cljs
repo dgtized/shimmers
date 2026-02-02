@@ -39,7 +39,7 @@
   (let [c (cq/rel-vec 0.5 0.5)]
     (tm/+ c (g/rotate (tm/- p c) (* 0.01 t)))))
 
-;; TODO: rotation?
+;; TODO: more rotation or axis-rotation?
 (defn draw [{:keys [horizontal vertical r1 r2 p1 p2]}]
   (q/background 1.0)
   (let [t (* 0.001 (q/millis))
