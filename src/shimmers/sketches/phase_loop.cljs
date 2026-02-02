@@ -9,6 +9,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
 (defn setup []
@@ -34,18 +35,24 @@
   (eq/unit-cos (* eq/TAU (+ x (* 0.2 t)
                        (math/sin (+ x (* 0.55 t)))))))
 
+(defn rotate [p t]
+  (let [c (cq/rel-vec 0.5 0.5)]
+    (tm/+ c (g/rotate (tm/- p c) (* 0.01 t)))))
+
 ;; TODO: rotation?
 (defn draw [{:keys [horizontal vertical r1 r2 p1 p2]}]
   (q/background 1.0)
-  (let [t (* 0.001 (q/millis))]
+  (let [t (* 0.001 (q/millis))
+        rx (* 2 eq/TAU (tm/smoothstep* 0.5 1.0 (math/cos (+ (* 0.17 t) p1))))
+        ry (* 2 eq/TAU (tm/smoothstep* 0.5 1.0 (math/sin (+ (* 0.21 t) p2))))]
     (when horizontal
       (doseq [x (tm/norm-range 80)]
-        (q/line (cq/rel-vec x (f1 (+ (* r1 x) p1) t))
-                (cq/rel-vec x (f2 (+ (* r2 x) p2) t)))))
+        (q/line (rotate (cq/rel-vec x (f1 (+ (* r1 x) p1) t)) rx)
+                (rotate (cq/rel-vec x (f2 (+ (* r2 x) p2) t)) ry))))
     (when vertical
       (doseq [y (tm/norm-range 80)]
-        (q/line (cq/rel-vec (f2 (+ (* r1 y) p1) t) y)
-                (cq/rel-vec (f1 (+ (* r2 y) p2) t) y))))))
+        (q/line (rotate (cq/rel-vec (f2 (+ (* r1 y) p1) t) y) (- rx))
+                (rotate (cq/rel-vec (f1 (+ (* r2 y) p2) t) y) (- ry)))))))
 
 (defn page []
   [:div
