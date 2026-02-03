@@ -38,7 +38,7 @@
         candidate (g/center (g/rotate shape (dr/random-tau))
                             (tm/+ (rv 0.5 0.5) (dr/randvec2 (* 0.2 width))))]
     (if (and (collide/bounded? (g/scale-size (csvg/screen width height) 0.975) candidate)
-             (not-any? (fn [s] (when (collide/overlaps? candidate s)
+             (not-any? (fn [s] (when (collide/overlaps? (g/scale-size candidate 1.05) s)
                                 s))
                        shapes))
       (conj shapes candidate)
