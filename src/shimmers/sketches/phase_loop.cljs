@@ -53,7 +53,7 @@
 (defn spacing [t]
   (map (fn [s]
          (let [k (math/sin (+ (* 0.11 t) (math/cos (+ (* 0.17 t) s))))]
-           (ms/staircase (* 2.0 (bismooth 0.5 1.0 k)) s)))
+           (ms/staircase (* 2.0 (bismooth 0.6 1.0 k)) s)))
        (tm/norm-range 80)))
 
 ;; TODO: more rotation or axis-rotation?
