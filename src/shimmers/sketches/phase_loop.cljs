@@ -56,7 +56,11 @@
            (ms/staircase (* 2.0 (bismooth 0.6 1.0 k)) s)))
        (tm/norm-range 80)))
 
-;; TODO: more rotation or axis-rotation?
+;; FIXME: need to reproject x onto the diagonal lines during rotation
+;; so that x stretches to account for crossing on hypotenuse instead of a
+;; straight line from one edge of rectangle to opposite.
+;; without this, during rotation the first and last lines start inside of the
+;; rectangle instead of at edges.
 (defn draw [{:keys [horizontal vertical r1 r2 p1 p2]}]
   (q/background 1.0)
   (let [t (* 0.001 (q/millis))
