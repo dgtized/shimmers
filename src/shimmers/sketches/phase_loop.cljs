@@ -65,19 +65,24 @@
 (defn draw [{:keys [horizontal vertical r1 r2 p1 p2]}]
   (q/background 1.0)
   (let [t (* 0.001 (q/millis))
-        r (* eq/TAU (tm/smoothstep* 0.2 1.0 (eq/unit-sin (+ (* 0.00011 t) (* 0.5 p1)))))
+        rot1 (* eq/TAU (tm/smoothstep* 0.2 1.0
+                                  (eq/unit-sin (+ (* 0.00011 t)
+                                                  (eq/unit-sin (+ (* 0.001 t) (* 0.5 p1)))))))
+        rot2 (* eq/TAU (tm/smoothstep* 0.2 1.0
+                                  (eq/unit-sin (+ (* 0.00007 t)
+                                                  (eq/unit-sin (+ (* 0.001 t) (* 0.5 p2)))))))
         spaces (spacing t)]
     (q/fill 0.0)
-    (q/text (scs/cl-format "~0,6f" r) 5 10)
+    (q/text (scs/cl-format "~0,6f ~0,6f" rot1 rot2) 5 10)
     (q/no-fill)
     (when horizontal
       (doseq [x spaces]
-        (q/line (rotate (cq/rel-vec x (f1 (+ (* r1 x) p1) t)) r)
-                (rotate (cq/rel-vec x (f2 (+ (* r2 x) p2) t)) r))))
+        (q/line (rotate (cq/rel-vec x (f1 (+ (* r1 x) p1) t)) rot1)
+                (rotate (cq/rel-vec x (f2 (+ (* r2 x) p2) t)) rot1))))
     (when vertical
       (doseq [y spaces]
-        (q/line (rotate (cq/rel-vec (f2 (+ (* r1 y) p1) t) y) (- eq/TAU r))
-                (rotate (cq/rel-vec (f1 (+ (* r2 y) p2) t) y) (- eq/TAU r)))))))
+        (q/line (rotate (cq/rel-vec (f2 (+ (* r1 y) p1) t) y) rot2)
+                (rotate (cq/rel-vec (f1 (+ (* r2 y) p2) t) y) rot2))))))
 
 (defn page []
   [:div
