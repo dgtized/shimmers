@@ -51,11 +51,11 @@
            [x (bismooth 0.5 1.0 x)]))
 
 (defn spacing [t]
-  (map (fn [s]
-         (let [k (math/sin (+ (* 0.11 t) (math/cos (+ (* 0.17 t) s))))
-               offset (bismooth 0.6 1.0 (math/sin (+ 1.1 (* 0.13 t) (* 0.2 (math/sin (+ 0.5 t))))))]
-           (mod (+ offset (ms/staircase (* 2.0 (bismooth 0.6 1.0 k)) s)) 1.0)))
-       (tm/norm-range 80)))
+  (mapv (fn [s]
+          (let [k (math/sin (+ (* 0.11 t) (math/cos (+ (* 0.17 t) s))))
+                offset (bismooth 0.6 1.0 (math/sin (+ 1.1 (* 0.13 t) (* 0.2 (math/sin (+ 0.5 t))))))]
+            (mod (+ offset (ms/staircase (* 2.0 (bismooth 0.6 1.0 k)) s)) 1.0)))
+        (tm/norm-range 80)))
 
 ;; FIXME: need to reproject x onto the diagonal lines during rotation
 ;; so that x stretches to account for crossing on hypotenuse instead of a
