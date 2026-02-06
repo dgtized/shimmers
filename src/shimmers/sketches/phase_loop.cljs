@@ -5,13 +5,13 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.common.string :as scs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.stair :as ms]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn setup []
@@ -40,7 +40,7 @@
                        (* 0.4 (math/cos (+ x (* 0.41 t))))))))
 
 (defn rotate [p r]
-  (let [c (cq/rel-vec 0.5 0.5)]
+  (let [c (gv/vec2 0.5 0.5)]
     (tm/+ c (g/rotate (tm/- p c) r))))
 
 (defn bismooth [e0 e1 x]
@@ -56,8 +56,10 @@
   (mapv (fn [s]
           (let [k (math/sin (+ (* 0.11 t) (math/cos (+ (* 0.17 t) s))))
                 offset (bismooth 0.6 1.0 (math/sin (+ 1.1 (* 0.13 t) (* 0.2 (math/sin (+ 0.5 t))))))]
-            (mod (+ offset (ms/staircase (* 2.0 (bismooth 0.6 1.0 k)) s)) 1.0)))
-        (tm/norm-range 80)))
+            (- (* 3.0 (mod (+ offset (ms/staircase (* 2.0 (bismooth 0.6 1.0 k)) s)) 1.0)) 1.0)))
+        (tm/norm-range 250)))
+
+(comment (spacing 1))
 
 ;; FIXME: need to reproject x onto the diagonal lines during rotation
 ;; so that x stretches to account for crossing on hypotenuse instead of a
@@ -74,17 +76,17 @@
                                   (eq/unit-sin (+ (* 0.00007 t)
                                                   (eq/unit-sin (+ (* 0.001 t) (* 0.5 p2)))))))
         spaces (spacing t)]
-    (q/fill 0.0)
-    (q/text (scs/cl-format "~0,6f ~0,6f" rot1 rot2) 5 10)
+    ;; (q/fill 0.0)
+    ;; (q/text (scs/cl-format "~0,6f ~0,6f" rot1 rot2) 5 10)
     (q/no-fill)
     (when horizontal
       (doseq [x spaces]
-        (q/line (rotate (cq/rel-vec x (f1 (+ (* r1 x) p1) t)) rot1)
-                (rotate (cq/rel-vec x (f2 (+ (* r2 x) p2) t)) rot1))))
+        (q/line (cq/rel-vec (rotate (gv/vec2 x (f1 (+ (* r1 x) p1) t)) rot1))
+                (cq/rel-vec (rotate (gv/vec2 x (f2 (+ (* r2 x) p2) t)) rot1)))))
     (when vertical
       (doseq [y spaces]
-        (q/line (rotate (cq/rel-vec (f2 (+ (* r1 y) p1) t) y) rot2)
-                (rotate (cq/rel-vec (f1 (+ (* r2 y) p2) t) y) rot2))))))
+        (q/line (cq/rel-vec (rotate (gv/vec2 (f2 (+ (* r1 y) p1) t) y) rot2))
+                (cq/rel-vec (rotate (gv/vec2 (f1 (+ (* r2 y) p2) t) y) rot2)))))))
 
 (defn page []
   [:div
