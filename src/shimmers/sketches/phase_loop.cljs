@@ -30,12 +30,12 @@
   state)
 
 (defn f1 [x t]
-  (eq/unit-sin (* eq/TAU (+ x (* 0.1 t)
-                       (* 0.2 (math/cos (+ x (* 0.4 t))))))))
+  (eq/unit-sin (* eq/TAU (+ x (* 0.11 t)
+                       (* 0.3 (math/cos (+ x (* 0.31 t))))))))
 
 (defn f2 [x t]
-  (eq/unit-cos (* eq/TAU (+ x (* 0.2 t)
-                       (math/sin (+ x (* 0.55 t)))))))
+  (eq/unit-cos (* eq/TAU (+ x (* 0.17 t)
+                       (* 0.7 (math/sin (+ x (* 0.37 t))))))))
 
 (defn rotate [p r]
   (let [c (cq/rel-vec 0.5 0.5)]
