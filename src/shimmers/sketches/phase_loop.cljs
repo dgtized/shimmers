@@ -31,11 +31,13 @@
 
 (defn f1 [x t]
   (eq/unit-sin (* eq/TAU (+ x (* 0.11 t)
-                       (* 0.3 (math/cos (+ x (* 0.31 t))))))))
+                       (* 0.3 (math/cos (+ x (* 0.23 t))))
+                       (* 0.6 (math/sin (+ x (* 0.31 t))))))))
 
 (defn f2 [x t]
   (eq/unit-cos (* eq/TAU (+ x (* 0.17 t)
-                       (* 0.7 (math/sin (+ x (* 0.37 t))))))))
+                       (* 0.7 (math/sin (+ x (* 0.37 t))))
+                       (* 0.4 (math/cos (+ x (* 0.41 t))))))))
 
 (defn rotate [p r]
   (let [c (cq/rel-vec 0.5 0.5)]
