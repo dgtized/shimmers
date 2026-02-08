@@ -69,10 +69,10 @@
 (defn draw [{:keys [horizontal vertical r1 r2 p1 p2]}]
   (q/background 1.0)
   (let [t (* 0.001 (q/millis))
-        rot1 (* eq/TAU (tm/smoothstep* 0.2 1.0
+        rot1 (* eq/TAU (tm/smoothstep* 0.4 1.0
                                   (eq/unit-sin (+ (* 0.00011 t)
                                                   (eq/unit-sin (+ (* 0.001 t) (* 0.5 p1)))))))
-        rot2 (* eq/TAU (tm/smoothstep* 0.2 1.0
+        rot2 (* eq/TAU (tm/smoothstep* 0.4 1.0
                                   (eq/unit-sin (+ (* 0.00007 t)
                                                   (eq/unit-sin (+ (* 0.001 t) (* 0.5 p2)))))))
         spaces (spacing t)]
