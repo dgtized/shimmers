@@ -61,6 +61,12 @@
 
 (comment (spacing 1))
 
+(defn graph [f x t]
+  (gv/vec2 x (f x t)))
+
+(defn flip [[x y]]
+  (gv/vec2 y x))
+
 ;; FIXME: need to reproject x onto the diagonal lines during rotation
 ;; so that x stretches to account for crossing on hypotenuse instead of a
 ;; straight line from one edge of rectangle to opposite.
@@ -81,12 +87,12 @@
     (q/no-fill)
     (when horizontal
       (doseq [x spaces]
-        (q/line (cq/rel-vec (rotate (gv/vec2 x (f1 (+ (* r1 x) p1) t)) rot1))
-                (cq/rel-vec (rotate (gv/vec2 x (f2 (+ (* r2 x) p2) t)) rot1)))))
+        (q/line (cq/rel-vec (rotate (graph f1 (+ (* r1 x) p1) t) rot1))
+                (cq/rel-vec (rotate (graph f2 (+ (* r2 x) p2) t) rot1)))))
     (when vertical
       (doseq [y spaces]
-        (q/line (cq/rel-vec (rotate (gv/vec2 (f2 (+ (* r1 y) p1) t) y) rot2))
-                (cq/rel-vec (rotate (gv/vec2 (f1 (+ (* r2 y) p2) t) y) rot2)))))))
+        (q/line (cq/rel-vec (rotate (flip (graph f2 (+ (* r1 y) p1) t)) rot2))
+                (cq/rel-vec (rotate (flip (graph f1 (+ (* r2 y) p2) t)) rot2)))))))
 
 (defn page []
   [:div
