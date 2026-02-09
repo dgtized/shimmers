@@ -59,7 +59,8 @@
             (- (* 3.0 (mod (+ offset (ms/staircase (* 2.0 (bismooth 0.6 1.0 k)) s)) 1.0)) 1.0)))
         (tm/norm-range 250)))
 
-(comment (spacing 1))
+(comment (spacing 0)
+         (spacing 1))
 
 (defn graph [f x t]
   (gv/vec2 x (f x t)))
