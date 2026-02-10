@@ -62,8 +62,8 @@
 (comment (spacing 0)
          (spacing 1))
 
-(defn graph [f x t]
-  (gv/vec2 x (f x t)))
+(defn graph [f x r p t]
+  (gv/vec2 x (f (+ (* r x) p) t)))
 
 (defn flip [[x y]]
   (gv/vec2 y x))
@@ -88,12 +88,12 @@
     (q/no-fill)
     (when horizontal
       (doseq [x spaces]
-        (q/line (cq/rel-vec (rotate (graph f1 (+ (* r1 x) p1) t) rot1))
-                (cq/rel-vec (rotate (graph f2 (+ (* r2 x) p2) t) rot1)))))
+        (q/line (cq/rel-vec (rotate (graph f1 x r1 p1 t) rot1))
+                (cq/rel-vec (rotate (graph f2 x r2 p2 t) rot1)))))
     (when vertical
       (doseq [y spaces]
-        (q/line (cq/rel-vec (rotate (flip (graph f2 (+ (* r1 y) p1) t)) rot2))
-                (cq/rel-vec (rotate (flip (graph f1 (+ (* r2 y) p2) t)) rot2)))))))
+        (q/line (cq/rel-vec (rotate (flip (graph f2 y r1 p1 t)) rot2))
+                (cq/rel-vec (rotate (flip (graph f1 y r2 p2 t)) rot2)))))))
 
 (defn page []
   [:div
