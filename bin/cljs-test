@@ -2,6 +2,6 @@
 
 set -exuo pipefail
 
-/usr/bin/google-chrome-stable --no-first-run &
+# /usr/bin/google-chrome-stable --no-first-run &
 
 bin/kaocha unit-cljs
