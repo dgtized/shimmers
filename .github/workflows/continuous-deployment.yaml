@@ -57,8 +57,8 @@ jobs:
         run: bin/kaocha unit-cljc
 
       - name: Test CLJS
-        run:
-          - ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run' || '' }} /usr/bin/google-chrome-stable --no-first-run &&
+        run: |
+          ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run' || '' }} /usr/bin/google-chrome-stable --no-first-run
           ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run' || '' }} bin/kaocha unit-cljs
 
       - name: Build
