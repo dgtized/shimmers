@@ -42,6 +42,18 @@ jobs:
           cli: latest
           bb: latest
 
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: 'stable'
+          install-chromedriver: true
+
+      - name: Setup xvfb (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt -y install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -58,7 +70,7 @@ jobs:
 
       - name: Test CLJS
         run: |
-          ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run' || '' }} /usr/bin/google-chrome-stable --no-first-run
+          ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run' || '' }} /usr/bin/google-chrome-stable --no-first-run &
           ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run' || '' }} bin/kaocha unit-cljs
 
       - name: Build
