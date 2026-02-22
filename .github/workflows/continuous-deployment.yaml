@@ -63,7 +63,7 @@ jobs:
         run: bin/kaocha unit-cljc
 
       - name: Test CLJS
-        run: ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run --auto-servernum' || '' }} bin/cljs-test
+        run: xvfb-run --auto-servernum bin/cljs-test
 
       - name: Build
         run: bb build
