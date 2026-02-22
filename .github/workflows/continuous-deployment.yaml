@@ -52,7 +52,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt update
-          sudo apt -y install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+          sudo apt -y install xvfb
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -69,9 +69,7 @@ jobs:
         run: bin/kaocha unit-cljc
 
       - name: Test CLJS
-        run: |
-          ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run' || '' }} /usr/bin/google-chrome-stable --no-first-run &
-          ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run' || '' }} bin/kaocha unit-cljs
+        run: ${{ matrix.os == 'ubuntu-latest' && 'xvfb-run --auto-servernum' || '' }} bin/cljs-test
 
       - name: Build
         run: bb build
