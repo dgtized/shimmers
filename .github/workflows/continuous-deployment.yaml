@@ -48,12 +48,6 @@ jobs:
           chrome-version: 'stable'
           install-chromedriver: true
 
-      - name: Setup xvfb (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt update
-          sudo apt -y install xvfb
-
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
