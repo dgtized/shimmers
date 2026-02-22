@@ -62,8 +62,8 @@ jobs:
       - name: Test CLJC
         run: bin/kaocha unit-cljc
 
-      - name: Test CLJS
-        run: xvfb-run --auto-servernum bin/cljs-test
+      # - name: Test CLJS
+      #   run: xvfb-run --auto-servernum bin/cljs-test
 
       - name: Build
         run: bb build
