@@ -19,6 +19,7 @@
    shimmers.sketches.barcodes
    shimmers.sketches.beat-table
    shimmers.sketches.bias-gain
+   shimmers.sketches.bidirectional-growth
    shimmers.sketches.blobical
    shimmers.sketches.blustery-day
    shimmers.sketches.boolean-grid
