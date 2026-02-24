@@ -24,10 +24,11 @@
         center (cq/rel-vec 0.5 0.5)
         radius 0.2
         w1 (* eq/TAU (+ 0.1 (* 0.35 (eq/unit-sin t))))
-        a (* 0.5 (math/sin (+ w1 (* 0.33 t))))]
+        a (* 0.5 (math/sin (+ w1 (* 0.33 t))))
+        base (* eq/TAU (math/sin (+ a (* 0.08 t))))]
     (doseq [s (range (- w1) w1 0.05)]
-      (let [w2 (* 0.05 (math/sin (+ w1 (math/sin (+ (* 0.66 t) (* 2.81 s))))))
-            v1 (* 0.15 (math/sin (+ s (* 0.2 t))))
+      (let [w2 (* 0.05 (math/sin (+ w1 (math/sin (+ (* 0.66 t) (* 2.81 s) base)))))
+            v1 (* 0.15 (math/sin (+ s (* 0.2 t) base)))
             b (* 0.5 (math/sin (+ s a (* 0.25 t))))]
         (doseq [v (range (- w2) w2 0.025)]
           (let [p1 (-> center
