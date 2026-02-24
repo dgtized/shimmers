@@ -22,15 +22,17 @@
   (q/stroke-weight 4.0)
   (let [t (* (q/millis) 0.0005)
         center (cq/rel-vec 0.5 0.5)
-        radius 0.25
-        w1 (* eq/TAU (+ 0.1 (* 0.35 (eq/unit-sin t))))]
+        radius 0.2
+        w1 (* eq/TAU (+ 0.1 (* 0.35 (eq/unit-sin t))))
+        a (* 0.5 (math/sin (+ w1 (* 0.33 t))))]
     (doseq [s (range (- w1) w1 0.05)]
-      (let [w2 (* 0.05 (math/sin (+ w1 (math/sin (+ (* 0.66 t) (* 2 s))))))
-            v1 (* 0.15 (math/sin (+ s (* 0.2 t))))]
+      (let [w2 (* 0.05 (math/sin (+ w1 (math/sin (+ (* 0.66 t) (* 2.81 s))))))
+            v1 (* 0.15 (math/sin (+ s (* 0.2 t))))
+            b (* 0.5 (math/sin (+ s a (* 0.25 t))))]
         (doseq [v (range (- w2) w2 0.025)]
           (let [p1 (-> center
-                       (v/+polar (cq/rel-h (+ radius v v1)) (+ s (* 0.66 t)))
-                       (v/+polar (cq/rel-h (+ v v1)) (+ (* 2.5 s) (* 0.1 t))))
+                       (v/+polar (cq/rel-h (+ radius v)) (+ s (* 0.66 t) a))
+                       (v/+polar (cq/rel-h (+ v v1)) (+ (* 2.19 s) (* 0.1 t) b)))
                 [x y] p1]
             (q/point x y)))))))
 
