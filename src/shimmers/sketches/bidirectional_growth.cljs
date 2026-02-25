@@ -30,10 +30,11 @@
       (let [w2 (* 0.05 (math/sin (+ w1 (math/sin (+ (* 0.66 t) (* 2.81 s) base)))))
             v1 (* 0.15 (math/sin (+ s (* 0.2 t) base)))
             b (* 0.5 (math/sin (+ s a (* 0.25 t))))]
-        (doseq [v (range (- w2) w2 0.025)]
-          (let [p1 (-> center
-                       (v/+polar (cq/rel-h (+ radius v)) (+ s (* 0.66 t) a))
-                       (v/+polar (cq/rel-h (+ v v1)) (+ (* 2.19 s) (* 0.1 t) b)))
+        (doseq [v (range (- w2) w2 0.02)]
+          (let [vw (+ 0.6 (eq/unit-cos (+ (* 0.21 eq/TAU s) (* 0.35 t))))
+                p1 (-> center
+                       (v/+polar (cq/rel-h (+ radius v)) (+ (* 1.07 s) (* 0.66 t) a))
+                       (v/+polar (cq/rel-h (* vw (+ v v1))) (+ (* 2.19 s) (* 0.1 t) b)))
                 [x y] p1]
             (q/point x y)))))))
 
