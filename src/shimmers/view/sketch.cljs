@@ -62,6 +62,9 @@
 (defn restart-sketch [sketch-id]
   (sketch-link rfe/push-state sketch-id))
 
+(defn link [sketch-id]
+  [:a {:href (sketch-link rfe/href sketch-id)} (name sketch-id)])
+
 (defn current-seed []
   (let [hash (.-hash js/location)]
     (when-let [m (re-find #"seed=(\d+)$" hash)]

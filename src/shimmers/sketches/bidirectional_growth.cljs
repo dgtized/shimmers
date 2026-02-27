@@ -9,7 +9,8 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -42,11 +43,17 @@
 (defn page []
   [:div
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div.centered.readable-width
+    [:p "Experimenting with sampling along a polar equation, but dynamically
+    adjusting the " [:em "width"] " of the ribbon sampling the equation, and adjusting the
+     " [:em "length"] " of the sample from the center outward. This ensures that the animation
+    extends in both directions along the path instead of using a fixed endpoint
+    the way " (view-sketch/link :carrier-wave) " and some other examples appear to grow from one end only."]]])
 
 (sketch/definition bidirectional-growth
   {:created-at "2026-02-23"
