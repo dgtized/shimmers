@@ -49,11 +49,13 @@
      :draw draw
      :middleware [m/fun-mode framerate/mode])
    [:div.centered.readable-width
-    [:p "Experimenting with sampling along a polar equation, but dynamically
-    adjusting the " [:em "width"] " of the ribbon sampling the equation, and adjusting the
-     " [:em "length"] " of the sample from the center outward. This ensures that the animation
-    extends in both directions along the path instead of using a fixed endpoint
-    the way " (view-sketch/link :carrier-wave) " and some other examples appear to grow from one end only."]]])
+    [:p "Experimenting with sampling along a phase-modulated polar equation, but
+    dynamically adjusting the " [:em "width"] " of the ribbon sampling the
+    equation, and adjusting the " [:em "length"] " of the sample from the center
+    outward. This ensures that the animation extends in both directions along the path
+    instead of using a fixed endpoint the
+    way " (view-sketch/link :carrier-wave) " and some other examples appear to
+    grow from one end only."]]])
 
 (sketch/definition bidirectional-growth
   {:created-at "2026-02-23"
