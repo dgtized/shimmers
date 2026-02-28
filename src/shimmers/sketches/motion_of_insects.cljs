@@ -62,12 +62,16 @@
     (cq/circle pos (+ mass 4.0))))
 
 (defn page []
-  (sketch/component
-   :size [800 600]
-   :setup setup
-   :update update-state
-   :draw draw
-   :middleware [m/fun-mode framerate/mode]))
+  [:div (sketch/component
+          :size [800 600]
+          :setup setup
+          :update update-state
+          :draw draw
+          :middleware [m/fun-mode framerate/mode])
+   [:div.centered.readable-width
+    [:p "After watching some water spiders skitter across the surface of a
+    river, attempted to mimic how they kept an even spacing even as they
+    constantly adjusted their position."]]])
 
 (sketch/definition motion-of-insects
   {:created-at "2021-09-13"
