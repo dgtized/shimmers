@@ -14,7 +14,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:seeds (repeatedly 2 dr/random-tau)})
+  {:seeds (repeatedly 3 dr/random-tau)})
 
 (defn update-state [state]
   state)
@@ -31,7 +31,7 @@
     (doseq [s (range (- w1) w1 0.05)]
       (let [w2 (* 0.05 (math/sin (+ w1 (math/sin (+ (* 0.66 t) (* 2.81 s) base)))))
             v1 (* 0.15 (math/sin (+ s (* 0.2 t) base (nth seeds 0))))
-            b (* 0.5 (math/sin (+ s a (* 0.25 t))))]
+            b (* 0.5 (math/sin (+ s a (* 0.25 t) (* 0.25 (nth seeds 2)))))]
         (doseq [v (range (- w2) w2 0.02)]
           (let [vw (+ 0.6 (eq/unit-cos (+ (* 0.21 eq/TAU s) (* 0.35 t) (nth seeds 1))))
                 p1 (-> center
