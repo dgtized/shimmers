@@ -81,7 +81,9 @@
 
 (defn explanation []
   [:div
-   [:p "Genuary 2026 - Day3 - Fibonnaci forever"]])
+   [:p "Genuary 2026 - Day3 - Fibonnaci forever"]
+   [:p "Concept was to plot each bubble proportional to the fibonnaci sequence,
+   ie proportional spacing to the golden ratio."]])
 
 (sketch/definition fibonnaci-days
   {:created-at "2026-01-03"
