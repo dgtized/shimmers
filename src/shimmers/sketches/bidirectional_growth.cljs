@@ -21,7 +21,6 @@
 
 (defn draw [{:keys [seeds]}]
   (q/background 1.0)
-  (q/stroke-weight 4.0)
   (let [t (* (q/millis) 0.0005)
         center (cq/rel-vec 0.5 0.5)
         radius 0.2
@@ -38,6 +37,7 @@
                        (v/+polar (cq/rel-h (+ radius v)) (+ (* 1.07 s) (* 0.66 t) a))
                        (v/+polar (cq/rel-h (* vw (+ v v1))) (+ (* 2.19 s) (* 0.1 t) b)))
                 [x y] p1]
+            (q/stroke-weight (* 8.0 (+ 0.5 (+ (+ 0.25 a) w2 v1))))
             (q/point x y)))))))
 
 (defn page []
