@@ -59,14 +59,14 @@ jobs:
       - name: Lint
         run: bin/lint
 
+      - name: Build
+        run: bb build
+
       - name: Test CLJC
         run: bin/kaocha unit-cljc
 
       # - name: Test CLJS
       #   run: xvfb-run --auto-servernum bin/cljs-test
-
-      - name: Build
-        run: bb build
 
       - name: Upload artifact
         id: deployment
