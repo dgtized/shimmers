@@ -259,7 +259,7 @@
    :tags #{}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page (assoc sketch-args :explanation-div [:div.evencols])
+   (usvg/let-page (assoc sketch-args :explanation-div [:div])
                   line-parameters
                   explanation
                   scene)))
