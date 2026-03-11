@@ -76,6 +76,7 @@
       (csvg/path (csvg/segmented-path pts)))))
 
 ;; How to avoid intersecting cilia?
+;; Alternatively, can we do spiraling cilia?
 (defn cilias
   [{:keys [samples screen-space cilia-spline line-fx
            length-fx cilia-amp height-prop rot-fx phase]}]
