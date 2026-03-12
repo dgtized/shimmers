@@ -27,9 +27,9 @@
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (let [c (cq/rel-vec 0.5 0.5)
-        n (+ 32 (* 30 (math/sin (* 6 t))))]
+        n (+ 32 (* 30 (math/sin (* 4 t))))]
     (q/begin-shape)
-    (doseq [theta (range 0 (+ eq/TAU (* 15 eq/TAU (eq/unit-sin (- (* 0.75 t) (* 0.25 eq/TAU))))) 0.01)]
+    (doseq [theta (range 0 (+ eq/TAU (* 15 eq/TAU (eq/unit-sin (- (* 0.75 t) (* 0.25 eq/TAU))))) 0.02)]
       (let [[x y] (v/+polar c
                             (* (cq/rel-h 0.48)
                                (spiral n (+ (* (+ 0.005 (* 0.002 (math/sin (* 0.01 t)))) theta)
