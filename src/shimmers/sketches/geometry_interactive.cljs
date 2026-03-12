@@ -21,18 +21,33 @@
 (defn update-state [state]
   (update state :position cq/mouse-last-position-clicked))
 
+;; FIXME: doesn't work with bounded examples and other edge cases
+(defn outside-union [a b]
+  (let [union (tm/union a b)]
+    (mapcat
+     square/difference
+     (square/difference union b)
+     [a b])))
+
 (defn draw [{:keys [position]}]
   (q/background 1.0)
   (q/no-fill)
+  (q/stroke-weight 1.5)
   (q/stroke 0.0)
-  (let [a (cq/screen-rect 0.4)
-        b (assoc (cq/screen-rect 0.3) :p position)
+  (let [a (cq/screen-rect 0.35)
+        b (assoc (cq/screen-rect 0.25) :p position)
         diffs-a (square/difference a b)
         diffs-b (square/difference b a)
         intersect (tm/intersection a b)
-        union (tm/union a b)]
+        union (tm/union a b)
+        outside (outside-union a b)]
     (qdg/draw a)
     (qdg/draw b)
+
+    (q/fill 0.0 0.05)
+    (q/stroke 0.0 0.1)
+    (qdg/draw union)
+
     (q/stroke 0.33 0.5 0.5)
     (q/fill 0.33 0.5 0.5 0.1)
     (doseq [s diffs-a]
@@ -48,13 +63,16 @@
     (when intersect
       (qdg/draw intersect))
 
-    (q/fill 0.0 0.05)
-    (q/stroke 0.0 0.1)
-    (qdg/draw union)
+    (q/stroke 0.8 0.5 0.5)
+    (q/no-fill)
+    (doseq [out outside]
+      (qdg/draw out))
+
     (swap! defo assoc
            :differences-a diffs-a
            :differences-b diffs-b
            :union union
+           :outside-union outside
            :intersection intersect)))
 
 (defn ui-controls []
