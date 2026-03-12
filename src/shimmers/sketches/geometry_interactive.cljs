@@ -27,18 +27,24 @@
   (q/stroke 0.0)
   (let [a (cq/screen-rect 0.4)
         b (assoc (cq/screen-rect 0.3) :p position)
-        diffs (square/difference a b)
+        diffs-a (square/difference a b)
+        diffs-b (square/difference b a)
         intersect (tm/intersection a b)
         union (tm/union a b)]
     (qdg/draw a)
     (qdg/draw b)
-    (q/stroke 0.0 0.5 0.5)
-    (q/fill 0.0 0.1)
-    (doseq [s diffs]
+    (q/stroke 0.33 0.5 0.5)
+    (q/fill 0.33 0.5 0.5 0.1)
+    (doseq [s diffs-a]
       (qdg/draw s))
 
-    (q/stroke 0.33 0.5 0.5)
-    (q/fill 0.0 0.33)
+    (q/stroke 0.66 0.5 0.5)
+    (q/fill 0.66 0.5 0.5 0.1)
+    (doseq [s diffs-b]
+      (qdg/draw s))
+
+    (q/stroke 0.00 0.5 0.5)
+    (q/fill 0.00 0.5 0.5 0.1)
     (when intersect
       (qdg/draw intersect))
 
@@ -46,7 +52,8 @@
     (q/stroke 0.0 0.1)
     (qdg/draw union)
     (swap! defo assoc
-           :differences diffs
+           :differences-a diffs-a
+           :differences-b diffs-b
            :union union
            :intersection intersect)))
 
