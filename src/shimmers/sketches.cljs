@@ -265,6 +265,7 @@
    shimmers.sketches.spin-doctor
    shimmers.sketches.spiral-approach
    shimmers.sketches.spiral-distance
+   shimmers.sketches.spiral-loops
    shimmers.sketches.spiral-pack
    shimmers.sketches.splitting-polygons
    shimmers.sketches.square-packing

@@ -1,0 +1,54 @@
+(ns shimmers.sketches.spiral-loops
+  (:require
+   [clojure.math :as math]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.math.equations :as eq]))
+
+;; trying to mimic: https://www.instagram.com/reel/DTdq_8ZEu-p/
+(defn spiral [n t]
+  (abs (/ (math/pow n (/ 3.0 2.0))
+          (+ n
+             (* 1000 (math/sin (* 0.1 n (math/sin (* 83.33 t)))))
+             (* 0.1 n t)))))
+
+(defn setup []
+  (q/color-mode :hsl 1.0)
+  {:t 0.0})
+
+(defn update-state [state]
+  (update state :t + 0.001))
+
+(defn draw [{:keys [t]}]
+  (q/background 1.0)
+  (let [c (cq/rel-vec 0.5 0.5)
+        n (+ 32 (* 30 (math/sin (* 6 t))))]
+    (q/begin-shape)
+    (doseq [theta (range 0 (+ eq/TAU (* 15 eq/TAU (eq/unit-sin (- (* 0.75 t) (* 0.25 eq/TAU))))) 0.01)]
+      (let [[x y] (v/+polar c
+                            (* (cq/rel-h 0.48)
+                               (spiral n (+ (* (+ 0.005 (* 0.002 (math/sin (* 0.01 t)))) theta)
+                                            (* 0.125 t))))
+                            theta)]
+        (q/vertex x y)))
+    (q/end-shape)))
+
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])])
+
+(sketch/definition spiral-loops
+  {:created-at "2026-02-05"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
