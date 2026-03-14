@@ -27,7 +27,7 @@
    :zoom 1.0})
 
 (defn sample [n sample-rate theta t]
-  (spiral n (+ (* sample-rate theta) (* 0.125 t))))
+  (spiral n (+ (* sample-rate theta) (* 0.08 t))))
 
 (defn average [xs]
   (/ (reduce + xs) (count xs)))
