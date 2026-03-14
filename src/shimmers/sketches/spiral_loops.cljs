@@ -23,7 +23,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t (dr/random 500.0 3000.0)})
+  {:t (dr/random 0.0 4000.0)})
 
 (defn update-state [state]
   (update state :t + 0.001))
