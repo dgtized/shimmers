@@ -48,7 +48,7 @@
   (-> state
       (assoc :n (+ 50 (* 48 (math/sin (* 0.3 eq/TAU t))))
              :limit (+ eq/TAU (* 16 eq/TAU (eq/unit-sin (* eq/TAU (- (* 0.2 t) 0.25)))))
-             :sample-rate (+ 0.006 (* 0.004 (math/sin (* 0.01 t)))))
+             :sample-rate (+ 0.008 (* 0.007 (math/sin (* 0.01 t)))))
       update-zoom
       (update :t + 0.001)))
 
