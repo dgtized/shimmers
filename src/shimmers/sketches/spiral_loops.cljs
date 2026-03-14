@@ -31,16 +31,18 @@
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (let [c (cq/rel-vec 0.5 0.5)
-        n (+ 32 (* 30 (math/sin (* 0.5 eq/TAU t))))
-        limit (+ eq/TAU (* 16 eq/TAU (eq/unit-sin (* eq/TAU (- (* 0.2 t) 0.25)))))]
+        n (+ 50 (* 48 (math/sin (* 0.3 eq/TAU t))))
+        limit (+ eq/TAU (* 16 eq/TAU (eq/unit-sin (* eq/TAU (- (* 0.2 t) 0.25)))))
+        sample-rate (+ 0.006 (* 0.004 (math/sin (* 0.01 t))))]
     (reset! defo {:t t
                   :n n
-                  :limit limit})
+                  :limit limit
+                  :sample-rate sample-rate})
     (q/begin-shape)
     (doseq [theta (range 0 limit 0.02)]
       (let [[x y] (v/+polar c
-                            (* (cq/rel-h 0.48)
-                               (spiral n (+ (* (+ 0.005 (* 0.002 (math/sin (* 0.01 t)))) theta)
+                            (* 0.5 (cq/rel-h 0.48)
+                               (spiral n (+ (* sample-rate theta)
                                             (* 0.125 t))))
                             theta)]
         (q/vertex x y)))
