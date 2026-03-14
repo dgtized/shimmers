@@ -23,27 +23,46 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t (dr/random 0.0 4000.0)})
+  {:t (dr/random 0.0 4000.0)
+   :zoom 1.0})
 
-(defn update-state [state]
-  (update state :t + 0.001))
+(defn sample [n sample-rate theta t]
+  (spiral n (+ (* sample-rate theta) (* 0.125 t))))
 
-(defn draw [{:keys [t]}]
+(defn average [xs]
+  (/ (reduce + xs) (count xs)))
+
+(defn calculate-zoom [n limit sample-rate t]
+  (let [samples (repeatedly 32 (fn [] (sample n sample-rate (dr/random limit) t)))
+        largest (average (take 3 (sort > samples)))]
+    (/ 1.0 largest)))
+
+(defn update-zoom [{:keys [n limit sample-rate t] :as state}]
+  (update state :zoom
+          (fn [zoom] (+ (* 0.999 zoom)
+                       (* 0.001 (calculate-zoom n limit sample-rate t))))))
+
+(defn update-state [{:keys [t] :as state}]
+  (-> state
+      (assoc :n (+ 50 (* 48 (math/sin (* 0.3 eq/TAU t))))
+             :limit (+ eq/TAU (* 16 eq/TAU (eq/unit-sin (* eq/TAU (- (* 0.2 t) 0.25)))))
+             :sample-rate (+ 0.006 (* 0.004 (math/sin (* 0.01 t)))))
+      update-zoom
+      (update :t + 0.001)))
+
+(defn draw [{:keys [t n limit sample-rate zoom]}]
   (q/background 1.0)
-  (let [c (cq/rel-vec 0.5 0.5)
-        n (+ 50 (* 48 (math/sin (* 0.3 eq/TAU t))))
-        limit (+ eq/TAU (* 16 eq/TAU (eq/unit-sin (* eq/TAU (- (* 0.2 t) 0.25)))))
-        sample-rate (+ 0.006 (* 0.004 (math/sin (* 0.01 t))))]
+  (let [c (cq/rel-vec 0.5 0.5)]
     (reset! defo {:t t
                   :n n
                   :limit limit
-                  :sample-rate sample-rate})
+                  :sample-rate sample-rate
+                  :zoom zoom})
     (q/begin-shape)
     (doseq [theta (range 0 limit 0.02)]
       (let [[x y] (v/+polar c
-                            (* 0.5 (cq/rel-h 0.48)
-                               (spiral n (+ (* sample-rate theta)
-                                            (* 0.125 t))))
+                            (* zoom (cq/rel-h 0.48)
+                               (sample n sample-rate theta t))
                             theta)]
         (q/vertex x y)))
     (q/end-shape)))
