@@ -6,9 +6,11 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.math.equations :as eq]))
+   [shimmers.sketch :as sketch :include-macros true]))
 
 ;; trying to mimic: https://www.instagram.com/reel/DTdq_8ZEu-p/
 (defn spiral [n t]
@@ -17,9 +19,11 @@
              (* 1000 (math/sin (* 0.1 n (math/sin (* 83.33 t)))))
              (* 0.1 n t)))))
 
+(defonce defo (debug/state))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t 0.0})
+  {:t (dr/random 500.0 3000.0)})
 
 (defn update-state [state]
   (update state :t + 0.001))
@@ -27,9 +31,13 @@
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (let [c (cq/rel-vec 0.5 0.5)
-        n (+ 32 (* 30 (math/sin (* 0.5 eq/TAU t))))]
+        n (+ 32 (* 30 (math/sin (* 0.5 eq/TAU t))))
+        limit (+ eq/TAU (* 16 eq/TAU (eq/unit-sin (* eq/TAU (- (* 0.2 t) 0.25)))))]
+    (reset! defo {:t t
+                  :n n
+                  :limit limit})
     (q/begin-shape)
-    (doseq [theta (range 0 (+ eq/TAU (* 15 eq/TAU (eq/unit-sin (* eq/TAU (- (* 0.2 t) 0.25))))) 0.02)]
+    (doseq [theta (range 0 limit 0.02)]
       (let [[x y] (v/+polar c
                             (* (cq/rel-h 0.48)
                                (spiral n (+ (* (+ 0.005 (* 0.002 (math/sin (* 0.01 t)))) theta)
@@ -39,13 +47,14 @@
     (q/end-shape)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   (debug/display defo)])
 
 (sketch/definition spiral-loops
   {:created-at "2026-02-05"
