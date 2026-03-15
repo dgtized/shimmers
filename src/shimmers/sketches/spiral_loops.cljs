@@ -32,9 +32,6 @@
 (defn average [xs]
   (/ (reduce + xs) (count xs)))
 
-(defn weighted-avg [sample avg k]
-  (+ (* k sample) (* (- 1.0 k) avg)))
-
 (defn calculate-zoom [n limit sample-rate t]
   (let [samples (repeatedly 16 (fn [] (sample n sample-rate (dr/random limit) t)))
         largest (average (take 3 (sort > samples)))]
@@ -42,7 +39,7 @@
 
 (defn update-zoom [{:keys [n limit sample-rate t] :as state}]
   (update state :zoom
-          (fn [zoom] (weighted-avg (calculate-zoom n limit sample-rate t) zoom 0.001))))
+          (fn [zoom] (eq/weighted-avg (calculate-zoom n limit sample-rate t) zoom 0.001))))
 
 (defn update-state [{:keys [t] :as state}]
   (-> state
