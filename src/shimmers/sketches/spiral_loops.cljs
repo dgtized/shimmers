@@ -36,7 +36,7 @@
   (+ (* k sample) (* (- 1.0 k) avg)))
 
 (defn calculate-zoom [n limit sample-rate t]
-  (let [samples (repeatedly 32 (fn [] (sample n sample-rate (dr/random limit) t)))
+  (let [samples (repeatedly 16 (fn [] (sample n sample-rate (dr/random limit) t)))
         largest (average (take 3 (sort > samples)))]
     (/ 1.0 largest)))
 
