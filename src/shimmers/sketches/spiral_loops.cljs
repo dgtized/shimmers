@@ -13,34 +13,43 @@
    [shimmers.sketch :as sketch :include-macros true]))
 
 ;; trying to mimic: https://www.instagram.com/reel/DTdq_8ZEu-p/
-(defn spiral [n t]
-  (abs (/ (math/pow n (/ 3.0 2.0))
-          (+ n
-             (* 1000 (math/sin (* 0.1 n (math/sin (* 83.33 t)))))
-             (* 0.1 n t)))))
+(defn spiral-a [n t]
+  (* (/ (math/pow n 1.5)
+        (+ n
+           (* 1000 (math/sin (* 0.1 n (math/sin (* 83.33 t)))))
+           (* 0.1 n t)))))
+
+(defn spiral-b [n t]
+  (* (/ (math/pow n 1.5)
+        (+ n
+           (* 1000 (math/sin (* 0.1 n (math/sin (* 83.33 t)))))))
+     0.1 n t))
 
 (defonce defo (debug/state))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t (dr/random 0.0 4000.0)
-   :zoom 1.0})
+  (let [mode (dr/weighted {:a 5 :b 1})]
+    {:t (dr/random 0.0 4000.0)
+     :mode mode
+     :spiral ({:a spiral-a :b spiral-b} mode)
+     :zoom ({:a 1.0 :b 0.01} mode)}))
 
-(defn sample [n sample-rate theta t]
+(defn sample [spiral n sample-rate theta t]
   (spiral n (+ (* sample-rate theta) (* 0.08 t))))
 
 (defn average [xs]
   (/ (reduce + xs) (count xs)))
 
-(defn calculate-zoom [n limit sample-rate t]
-  (let [samples (repeatedly 16 (fn [] (sample n sample-rate (dr/random limit) t)))
+(defn calculate-zoom [spiral n limit sample-rate t]
+  (let [samples (repeatedly 16 (fn [] (sample spiral n sample-rate (dr/random limit) t)))
         largest (average (take 3 (sort > samples)))]
     (/ 1.0 largest)))
 
-(defn update-zoom [{:keys [n limit sample-rate t] :as state}]
+(defn update-zoom [{:keys [spiral n limit sample-rate t] :as state}]
   (update state :zoom
           (fn [zoom]
-            (eq/weighted-avg 0.001 (calculate-zoom n limit sample-rate t) zoom))))
+            (eq/weighted-avg 0.001 (calculate-zoom spiral n limit sample-rate t) zoom))))
 
 (defn update-state [{:keys [t] :as state}]
   (-> state
@@ -50,11 +59,12 @@
       update-zoom
       (update :t + 0.001)))
 
-(defn draw [{:keys [t n limit sample-rate zoom]}]
+(defn draw [{:keys [t spiral mode n limit sample-rate zoom]}]
   (q/background 1.0)
   (let [c (cq/rel-vec 0.5 0.5)]
     (reset! defo {:t t
                   :n n
+                  :mode mode
                   :limit limit
                   :sample-rate sample-rate
                   :zoom zoom})
@@ -62,7 +72,7 @@
     (doseq [theta (range 0 limit 0.02)]
       (let [[x y] (v/+polar c
                             (* zoom (cq/rel-h 0.48)
-                               (sample n sample-rate theta t))
+                               (sample spiral n sample-rate theta t))
                             theta)]
         (q/vertex x y)))
     (q/end-shape)))
