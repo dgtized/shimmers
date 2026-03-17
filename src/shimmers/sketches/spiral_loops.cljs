@@ -42,8 +42,8 @@
   (/ (reduce + xs) (count xs)))
 
 (defn calculate-zoom [spiral n limit sample-rate t]
-  (let [samples (repeatedly 16 (fn [] (sample spiral n sample-rate (dr/random limit) t)))
-        largest (average (take 3 (sort > samples)))]
+  (let [samples (repeatedly 24 (fn [] (sample spiral n sample-rate (dr/random limit) t)))
+        largest (average (take 4 (sort > samples)))]
     (/ 1.0 largest)))
 
 (defn update-zoom [{:keys [spiral n limit sample-rate t] :as state}]
