@@ -39,7 +39,8 @@
 
 (defn update-zoom [{:keys [n limit sample-rate t] :as state}]
   (update state :zoom
-          (fn [zoom] (eq/weighted-avg (calculate-zoom n limit sample-rate t) zoom 0.001))))
+          (fn [zoom]
+            (eq/weighted-avg 0.001 (calculate-zoom n limit sample-rate t) zoom))))
 
 (defn update-state [{:keys [t] :as state}]
   (-> state

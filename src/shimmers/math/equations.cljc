@@ -261,5 +261,5 @@
          [[w h] (p-width-priority w h)])
        (sort-by second)))
 
-(defn weighted-avg [sample avg k]
+(defn weighted-avg [k sample avg]
   (+ (* k sample) (* (- 1.0 k) avg)))
