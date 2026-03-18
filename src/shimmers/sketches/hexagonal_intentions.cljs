@@ -35,7 +35,7 @@
                            (+ (* 0.33 radius)
                               (* (eq/unit-sin
                                   (+ (* eq/TAU s) (* 0.125 t) (math/sin (- (* 0.05 t) (* eq/TAU s)))))
-                                 (* 0.66 radius)))
+                                 0.66 radius))
                            (+ (* s eq/TAU)
                               (math/sin
                                (+ t (math/sin (+ (* eq/TAU s) (* 0.077 t))))))))
