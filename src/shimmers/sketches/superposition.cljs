@@ -131,7 +131,7 @@
            :orbit
            [last-orbit
             (if (dr/chance 0.35)
-              (gv/vec2 (* (cq/rel-h 0.08) (dr/gaussian 0 1)) (* 50 (dr/gaussian 0 1)))
+              (gv/vec2 (* (rel-h 0.08) (dr/gaussian 0 1)) (* 50 (dr/gaussian 0 1)))
               (gv/vec2))])))
 
 (defn setup []
