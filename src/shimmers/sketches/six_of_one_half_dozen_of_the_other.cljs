@@ -7,7 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.hexagon :as hex :refer [hexagon]]
+   [shimmers.math.hexagon :as hex]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -27,7 +27,7 @@
 
 (defn subdivide-hexagon3-outside
   [{:keys [p r]}]
-  (let [hex (hexagon p (/ r 3))]
+  (let [hex (hex/hexagon p (/ r 3))]
     (into [hex]
           (for [theta hex/flat-hex-angles]
             (g/translate hex (v/polar r theta))))))
@@ -50,7 +50,7 @@
   (let [p (gv/vec2)
         ;; height is 1/sqrt(3) to fit exactly, so scale it down by a hair
         r (* (/ 0.99 (math/sqrt 3)) (q/height))
-        start (hexagon p r)]
+        start (hex/hexagon p r)]
     ;; Chance of *two* root hexagons, so patterns can fill in from underneath
     {:shapes (into [start]
                    (dr/weighted {[] 5
