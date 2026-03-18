@@ -14,10 +14,10 @@
 
 ;; trying to mimic: https://www.instagram.com/reel/DTdq_8ZEu-p/
 (defn spiral-a [n t]
-  (* (/ (math/pow n 1.5)
-        (+ n
-           (* 1000 (math/sin (* 0.1 n (math/sin (* 83.33 t)))))
-           (* 0.1 n t)))))
+  (abs (/ (math/pow n 1.5)
+          (+ n
+             (* 1000 (math/sin (* 0.1 n (math/sin (* 83.33 t)))))
+             (* 0.1 n t)))))
 
 (defn spiral-b [n t]
   (* (/ (math/pow n 1.5)
@@ -25,15 +25,21 @@
            (* 1000 (math/sin (* 0.1 n (math/sin (* 83.33 t)))))))
      0.1 n t))
 
+(defn spiral-c [n t]
+  (/ (math/pow n 1.5)
+     (+ n
+        (* 1000 (math/sin (* 0.1 n (math/sin (* 83.33 t)))))
+        (* 0.1 n t))))
+
 (defonce defo (debug/state))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [mode (dr/weighted {:a 5 :b 1})]
+  (let [mode (dr/weighted {:a 5 :b 1 :c 1})]
     {:t (dr/random 0.0 4000.0)
      :mode mode
-     :spiral ({:a spiral-a :b spiral-b} mode)
-     :zoom ({:a 1.0 :b 0.01} mode)}))
+     :spiral ({:a spiral-a :b spiral-b :c spiral-c} mode)
+     :zoom ({:a 1.0 :b 0.01 :c 1.0} mode)}))
 
 (defn sample [spiral n sample-rate theta t]
   (spiral n (+ (* sample-rate theta) (* 0.08 t))))
