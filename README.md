@@ -8,9 +8,9 @@ transformations, and cellular automata.
 
 https://dgtized.github.io/shimmers
 
-Note: Some sketches require camera input, so it will prompt for video
-permissions, but it's not transmitting the video anywhere, just processing it
-locally.
+Note: Some sketches apply video effects to webcam video, so it may prompt for
+video permissions to use your webcam. However, it's not transmitting the video
+anywhere, just processing it locally on your machine.
 
 ## Install
 
