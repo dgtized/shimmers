@@ -33,6 +33,9 @@
         [{:start #(favicon/start 333)
           :stop #(favicon/stop)}]]
     [["/" ::root]
+     ["/about"
+      {:name :shimmers.view.index/about
+       :view view-index/about}]
      ["/sketches"
       {:name :shimmers.view.index/by-alphabetical
        :view #(view-index/by-alphabetical (sketches/all))
