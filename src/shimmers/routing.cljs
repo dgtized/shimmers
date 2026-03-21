@@ -38,15 +38,15 @@
        :view view-index/about}]
      ["/sketches"
       {:name :shimmers.view.index/by-alphabetical
-       :view #(view-index/by-alphabetical (sketches/all))
+       :view (fn [] (view-index/by-alphabetical (sketches/all)))
        :controllers on-index}]
      ["/sketches-by-date"
       {:name :shimmers.view.index/by-date
-       :view #(view-index/by-date (sketches/all))
+       :view (fn [] (view-index/by-date (sketches/all)))
        :controllers on-index}]
      ["/sketches-by-tag"
       {:name :shimmers.view.index/by-tag
-       :view #(view-index/by-tag (sketches/all))
+       :view (fn [] (view-index/by-tag (sketches/all)))
        :controllers on-index}]
      ["/sketches/:name"
       {:name :shimmers.view.sketch/sketch-by-name
