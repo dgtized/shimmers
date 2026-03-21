@@ -49,11 +49,6 @@
   (when-let [taps (seq (:taps sketch))]
     (doseq [t taps] (remove-tap t)))
 
-  ;; kill existing sketch at quil-host if present
-  ;; TODO: is this deprecated now that ui.quil/sketch-component handles mounting?
-  (when-let [quil (q/get-sketch-by-id "quil-host")]
-    (q/with-sketch quil (q/exit)))
-
   ;; TODO: only unmount components used by sketch?
   (doseq [id ["sketch-host" "route-debug-mount"]]
     (when-let [node (dom/getElement id)]
