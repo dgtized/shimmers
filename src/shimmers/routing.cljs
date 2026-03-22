@@ -7,6 +7,7 @@
    [reitit.frontend.easy :as rfe]
    [shimmers.common.ui.debug :as debug]
    [shimmers.sketches :as sketches]
+   [shimmers.view.about :as view-about]
    [shimmers.view.favicon :as favicon]
    [shimmers.view.index :as view-index]
    [shimmers.view.sketch :as view-sketch]
@@ -34,8 +35,8 @@
           :stop #(favicon/stop)}]]
     [["/" ::root]
      ["/about"
-      {:name :shimmers.view.index/about
-       :view view-index/about}]
+      {:name :shimmers.view.about/index
+       :view view-about/index}]
      ["/sketches"
       {:name :shimmers.view.index/by-alphabetical
        :view (fn [] (view-index/by-alphabetical (sketches/all)))
