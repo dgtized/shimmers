@@ -12,6 +12,9 @@
    [thi.ng.math.core :as tm]
    [thi.ng.math.noise :as noise]))
 
+;; TODO: look over tree weight implementation in
+;; https://github.com/ashenfad/cljx-sampling
+
 (defonce shared-rng (atom (tcr/make-random)))
 
 (defn random-seed! [n]
