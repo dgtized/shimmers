@@ -14,7 +14,7 @@
 
 (defonce shared-rng (atom (tcr/make-random)))
 
-(defn random-seed [n]
+(defn random-seed! [n]
   (reset! shared-rng (tcr/make-random n)))
 
 (defn fresh-seed-value []
@@ -48,12 +48,12 @@
 (defn rand-nth [coll]
   (nth coll (random-int (count coll))))
 
-(comment (do (random-seed 1000)
+(comment (do (random-seed! 1000)
              (repeatedly 10 #(random-int 8)))
-         (do (random-seed 10)
+         (do (random-seed! 10)
              (repeatedly 10 #(rand-nth (range 8))))
 
-         (do (random-seed 6)
+         (do (random-seed! 6)
              (repeatedly 6 #(random-double))))
 
 (defn ascending [a b]

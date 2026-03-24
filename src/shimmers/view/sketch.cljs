@@ -29,9 +29,7 @@
   ;; rand-nth/rand-int/rand or thi.ng/math/random calls. So need to handle that
   ;; on a sketch by sketch basis and find or implement a library to help.
   (when-let [seed (:seed sketch)]
-    ;; migrates set random-seed to sketches that use it?
-    ;; performance optimizations?
-    (dr/random-seed seed))
+    (dr/random-seed! seed))
 
   (when-let [taps (seq (:taps sketch))]
     (doseq [t taps] (add-tap t)))
