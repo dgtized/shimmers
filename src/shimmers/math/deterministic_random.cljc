@@ -227,8 +227,10 @@
 (defn gaussian
   ([] (gaussian 0 1))
   ([mu sd]
-   (ksd/draw (ksd/normal {:mu mu :sd (+ tm/*eps* (abs sd))})
-             {:seed (random-int MAX-INT)})))
+   (if (zero? sd)
+     mu
+     (ksd/draw (ksd/normal {:mu mu :sd sd})
+               {:seed (random-int MAX-INT)}))))
 
 (defn sample-between
   "Returns a function to sample an rng, but only accept values within the clamping range.
@@ -353,7 +355,7 @@
                (nth sorted (int midpoint)))
      :average avg
      :variance variance
-     :std-dev (math/sqrt variance)}))
+     :std-dev (math/sqrt (abs variance))}))
 
 (comment
   (summary-stats (range 0 1 0.001))
@@ -377,6 +379,10 @@
   (summary-stats (map #(min % 2) (ksd/sample 1000 (ksd/pareto {:scale 0.75 :shape 8}))))
   (summary-stats (ksd/sample 1000 (ksd/log-normal {:mu 0.0 :sd 0.2})))
   (summary-stats (ksd/sample 1000 (ksd/normal {:mu 0.0 :sd 0.2}))))
+
+(comment (for [sd [0.0 0.0001 0.01 0.1 1.0]]
+           [(summary-stats (repeatedly 1000 (fn [] (gaussian 0 sd))))
+            (summary-stats (repeatedly 1000 (fn [] (gaussian 0 (- sd)))))]))
 
 (defn ceiled-sample
   "Sample `f` for values less than `ceiling`."
