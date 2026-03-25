@@ -5,6 +5,7 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.graph :as graph]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -31,7 +32,7 @@
 
 (comment (circle-between-closest (rp/random-cells (rect/rect 0 0 10 10) 10)))
 
-(defn scene [points mst]
+(defn scene [{{:keys [points]} :params}]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
@@ -39,36 +40,40 @@
                    :stroke-width 0.5}
     [(csvg/group {:fill "black"}
        (map (fn [p] (gc/circle p 1.5)) points))
-     (when mst
+     (when (:mst @ui-state)
        (csvg/group {:fill "none"}
          (circle-between-closest points)))]))
 
-(defn page []
+(defn gen-params []
   (let [bounds (g/scale-size (csvg/screen width height) 0.99)
-        {:keys [mode n-points mst]} @ui-state
+        {:keys [mode n-points]} @ui-state
         point-cloud (get rp/modes mode)
         primes (rp/halton-prime-pair 20 60)
         points (if (= mode :halton-sequence)
                  (point-cloud bounds primes (* n-points 4))
                  (point-cloud bounds (or n-points 1)))]
-    [:div
-     [:div.canvas-frame [scene points mst]]
-     [:div.explanation.contained
-      [:div.flexcols
-       [:div {:style {:width "40%"}}
-        [view-sketch/generate :random-point-field]
-        [:p "Various approaches of generating a random set of points in a boundary."]
-        [:p (str "Generated " (count points) " points")]]
-       [:div
-        [:h4 "Controls"]
-        (ctrl/change-mode ui-state (keys rp/modes))
-        (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
-        (when (= mode :halton-sequence)
-          [:div "Halton sequence from co-primes " (debug/pre-edn primes)])
-        (ctrl/checkbox ui-state "Show MST Circles" [:mst])]]]]))
+    {:primes primes
+     :mode mode
+     :points points}))
+
+(defn explanation [{{:keys [points primes]} :params}]
+  [:div.flexcols
+   [:div {:style {:width "40%"}}
+    [view-sketch/generate :random-point-field]
+    [:p "Various approaches of generating a random set of points in a boundary."]
+    [:p (str "Generated " (count points) " points")]]
+   [:div
+    [:h4 "Controls"]
+    (ctrl/change-mode ui-state (keys rp/modes))
+    (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
+    (when (= (:mode @ui-state) :halton-sequence)
+      [:div "Halton sequence from co-primes " (debug/pre-edn primes)])
+    (ctrl/checkbox ui-state "Show MST Circles" [:mst])]])
 
 (sketch/definition random-point-field
   {:created-at "2022-03-12"
    :type :svg
    :tags #{}}
-  (ctrl/mount page))
+  (ctrl/mount
+   (usvg/let-page (assoc sketch-args :generate-link false)
+                  gen-params explanation scene)))
