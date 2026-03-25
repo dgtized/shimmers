@@ -12,7 +12,7 @@
 (defn page
   ([sketch-args explanation scene]
    (page (assoc sketch-args :explanation explanation) scene))
-  ([{:keys [sketch-id explanation explanation-div generate-link]
+  ([{:keys [sketch-id explanation generate-link]
      :as sketch-args
      :or {generate-link true}}
     scene]
@@ -23,12 +23,12 @@
         [:div.canvas-frame
          [scene args]
          [download-shortcut scene-id (name sketch-id)]]
-        (into (or explanation-div [:div])
-              [(when generate-link
-                 [:p.center [view-sketch/generate sketch-id]])
-               (when explanation
-                 [:div.readable-width
-                  [explanation sketch-args]])])]))))
+        [:div
+         (when generate-link
+           [:p.center [view-sketch/generate sketch-id]])
+         (when explanation
+           [:div.readable-width
+            [explanation sketch-args]])]]))))
 
 (defn let-page
   ([sketch-args gen-params explanation scene]
