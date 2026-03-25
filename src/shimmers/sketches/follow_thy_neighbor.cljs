@@ -4,12 +4,12 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -149,15 +149,8 @@
        (splice lines)
        (details lines)))))
 
-(defn page []
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     [view-sketch/generate :follow-thy-neighbor]
-     [:div.readable-width]]))
-
 (sketch/definition follow-thy-neighbor
   {:created-at "2023-11-30"
    :tags #{}
    :type :svg}
-  (ctrl/mount page))
+  (ctrl/mount (usvg/page sketch-args scene)))
