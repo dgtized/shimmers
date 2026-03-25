@@ -38,7 +38,7 @@
       (fn []
         (when-let [div-host @!dom-node]
           (q/with-sketch (.-processing-obj div-host) (q/exit))))
-      :render
+      :reagent-render
       (fn [_sketch-args]
         [:div.canvas-frame {:style {:position "relative"}
                             :ref (fn [el] (reset! !dom-node el))}
