@@ -59,7 +59,6 @@
 (defn explanation [{{:keys [points primes]} :params}]
   [:div.flexcols
    [:div {:style {:width "40%"}}
-    [view-sketch/generate :random-point-field]
     [:p "Various approaches of generating a random set of points in a boundary."]
     [:p (str "Generated " (count points) " points")]]
    [:div
@@ -75,5 +74,4 @@
    :type :svg
    :tags #{}}
   (ctrl/mount
-   (usvg/let-page (assoc sketch-args :generate-link false)
-                  gen-params explanation scene)))
+   (usvg/let-page sketch-args gen-params explanation scene)))
