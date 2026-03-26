@@ -2,12 +2,12 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
@@ -91,24 +91,21 @@
     [(mosaic seed (place (dr/random 0.4 0.6) (dr/random 0.45 0.55) 1.0 1.0)
              base-color)]))
 
-(defn scene [seed base-color]
-  (csvg/svg-timed
-    {:width width
-     :height height
-     :stroke "black"
-     :fill "none"
-     :stroke-width 0.5}
-    (layout seed base-color)))
-
-(defn page []
+(defn scene [_]
   (let [seed (dr/noise-seed)
         base-color (dr/random)]
-    (fn []
-      [sketch/with-explanation
-       [:div.canvas-frame [scene seed base-color]]
-       [view-sketch/generate :mosaic-deformed]
-       [:div.readable-width
-        [:p "Create concentric rings, deformed by simplex noise at each sample
+    (csvg/svg-timed
+      {:width width
+       :height height
+       :stroke "black"
+       :fill "none"
+       :stroke-width 0.5}
+      (layout seed base-color))))
+
+(defn explanation []
+  [:div.flexcenter
+   [:div.readable-width
+    [:p "Create concentric rings, deformed by simplex noise at each sample
        point. From these initial rings, create polygons connecting each
        consecutive pair of rings using different patterns. With an odd/even
        pattern it creates a serrated triangle edged polygon, but some patterns
@@ -116,10 +113,10 @@
        polygons is assigned a random color near a common hue. Occasionally, the
        common hue is rotated 180 degrees around the color wheel to add some
        accents. Each polygon is then drawn in reverse order, outside-in,
-       ensuring the fill overlaps the inside of the previous ringed polygon."]]])))
+       ensuring the fill overlaps the inside of the previous ringed polygon."]]])
 
 (sketch/definition mosaic-deformed
   {:created-at "2023-10-04"
    :tags #{}
    :type :svg}
-  (ctrl/mount (page)))
+  (ctrl/mount (usvg/page sketch-args explanation scene)))
