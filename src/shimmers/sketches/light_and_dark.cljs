@@ -5,11 +5,11 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.vector :as gv]
@@ -77,7 +77,7 @@
       (shapes bounds angle cuts))))
 
 (sketch/definition light-and-dark
-    {:created-at "2023-11-13"
-     :tags #{}
-     :type :svg}
-  (ctrl/mount (view-sketch/static-page scene :light-and-dark)))
+  {:created-at "2023-11-13"
+   :tags #{}
+   :type :svg}
+  (ctrl/mount (usvg/page sketch-args scene)))
