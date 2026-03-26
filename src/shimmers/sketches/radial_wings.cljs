@@ -3,10 +3,10 @@
    [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.vector :as gv]
@@ -43,7 +43,7 @@
        (map-indexed (fn [i s] (vary-meta (g/translate s (rv 0.5 0.5)) assoc
                                         :fill (nth palette (mod i (count palette))))))))
 
-(defn scene [palette]
+(defn scene [{{:keys [palette]} :params}]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
@@ -55,18 +55,14 @@
                           [0.02 0.08]
                           [0.03 0.1]]))))
 
-(defn page []
-  (let [{:keys [palette]} (palette/generate palettes)]
-    (fn []
-      [:<>
-       [:div.canvas-frame [scene palette]]
-       [:div.contained
-        [:div.evencols
-         [view-sketch/generate :radial-wings]
-         [palette/as-svg {} palette]]]])))
+(defn explanation [{{:keys [palette]} :params}]
+  [:div.flexcenter
+   [palette/as-svg {} palette]])
 
 (sketch/definition radial-wings
   {:created-at "2021-11-15"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page))
+  (ctrl/mount
+   (usvg/let-page sketch-args (fn [] (palette/generate palettes))
+                  explanation scene)))
