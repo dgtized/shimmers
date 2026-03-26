@@ -4,10 +4,10 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -104,15 +104,13 @@
        (choose-layout n)
        n))))
 
-(defn page []
-  [sketch/with-explanation
-   [:div.canvas-frame [scene]]
-   [:div.center [view-sketch/generate :gallery-layout]]
-   [:div.readable-width
-    [:p "Automatic placement of multiple \"frames\" with varying aspect ratios on a gallery wall."]]])
+(defn explanation []
+  [:div.flexcenter
+   [:p.readable-width
+    "Automatic placement of multiple \"frames\" with varying aspect ratios on a gallery wall."]])
 
 (sketch/definition gallery-layout
   {:created-at "2023-10-11"
    :tags #{}
    :type :svg}
-  (ctrl/mount page))
+  (ctrl/mount (usvg/page sketch-args explanation scene)))
