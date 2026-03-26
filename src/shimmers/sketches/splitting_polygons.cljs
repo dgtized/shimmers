@@ -3,9 +3,9 @@
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -85,20 +85,15 @@
                    :stroke-width 2.5}
     (shapes (csvg/screen width height))))
 
-(defn page []
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     [:div.center
-      [view-sketch/generate :splitting-polygons]]
-     [:p]
-     [:div.centered.readable-width
-      "Experimenting with technique outlined by Piter Pasma in "
-      [:a {:href "https://piterpasma.nl/articles/polysub"}
-       "How to split polygons unevenly"]]]))
+(defn explanation []
+  [:div.flexcenter
+   [:p.readable-width
+    "Experimenting with technique outlined by Piter Pasma in "
+    [:a {:href "https://piterpasma.nl/articles/polysub"}
+     "How to split polygons unevenly"]]])
 
 (sketch/definition splitting-polygons
   {:created-at "2024-01-15"
    :tags #{}
    :type :svg}
-  (ctrl/mount page))
+  (ctrl/mount (usvg/page sketch-args explanation scene)))
