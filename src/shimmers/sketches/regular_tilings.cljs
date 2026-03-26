@@ -5,11 +5,11 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -109,7 +109,7 @@
         (csvg/group {:stroke-width 2.0}
                     (mapv (fn [[p q]] (gl/line2 p q)) faces))))
 
-(defn scene [generated]
+(defn scene [{{:keys [generated]} :params}]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
@@ -117,24 +117,21 @@
                    :stroke-width 0.5}
     (shapes generated)))
 
-(defn page []
+(defn explanation []
+  [:div
+   [ctrl/checkbox ui-state "Debug" [:debug]]
+   (when (:debug @ui-state)
+     [debug/display defo])])
+
+(defn parameters []
   (let [size (* 0.08 height)
         starting (vary-meta (g/center (random-shape size)
                                       (rv 0.5 0.5))
-                            assoc :stroke "#772222")
-        generated (gen-shapes size starting 20)]
-    (fn []
-      [sketch/with-explanation
-       [:div.canvas-frame [scene generated]]
-       [:div.flexcols
-        [view-sketch/generate :regular-tilings]
-        [:div.readable-width
-         [ctrl/checkbox ui-state "Debug" [:debug]]
-         (when (:debug @ui-state)
-           [debug/display defo])]]])))
+                            assoc :stroke "#772222")]
+    {:generated (gen-shapes size starting 20)}))
 
 (sketch/definition regular-tilings
   {:created-at "2024-05-23"
    :tags #{}
    :type :svg}
-  (ctrl/mount page))
+  (ctrl/mount (usvg/let-page sketch-args parameters explanation scene)))
