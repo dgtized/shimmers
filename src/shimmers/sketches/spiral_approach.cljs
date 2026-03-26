@@ -3,11 +3,11 @@
    [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -39,16 +39,12 @@
                    :stroke-width 0.66}
     (shapes)))
 
-(defn page []
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     [view-sketch/generate :spiral-approach]
-     [:div.readable-width
-      "Experimenting with varying the exponential factor of a spiral."]]))
+(defn explanation []
+  [:div.flexcenter
+   "Experimenting with varying the exponential factor of a spiral."])
 
 (sketch/definition spiral-approach
-    {:created-at "2024-02-10"
-     :tags #{}
-     :type :svg}
-  (ctrl/mount page))
+  {:created-at "2024-02-10"
+   :tags #{}
+   :type :svg}
+  (ctrl/mount (usvg/page sketch-args explanation scene)))
