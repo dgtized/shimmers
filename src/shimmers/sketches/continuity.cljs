@@ -69,4 +69,4 @@
    :tags #{}
    :type :svg}
   (ctrl/mount
-   (usvg/page sketch-args explanation scene)))
+   (usvg/page (usvg/with-explanation sketch-args explanation) scene)))

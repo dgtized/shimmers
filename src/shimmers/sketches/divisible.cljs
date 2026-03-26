@@ -133,4 +133,5 @@
   {:created-at "2023-11-21"
    :tags #{}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args explanation scene)))
+  (ctrl/mount
+   (usvg/page (usvg/with-explanation sketch-args explanation) scene)))

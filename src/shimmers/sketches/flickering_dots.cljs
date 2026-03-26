@@ -59,4 +59,5 @@
   {:created-at "2025-01-19"
    :tags #{:genuary2025}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args explanation scene)))
+  (ctrl/mount
+   (usvg/page (usvg/with-explanation sketch-args explanation) scene)))
