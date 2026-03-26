@@ -9,8 +9,11 @@
   [kb/kb-action "alt-s"
    (fn [] (svg-export/download id filename))])
 
-(defn default-controls [{:keys [sketch-id]}]
-  [:p.center [view-sketch/generate sketch-id]])
+(defn default-controls [{:keys [sketch-id explanation] :as args}]
+  [:div
+   [:p.center [view-sketch/generate sketch-id]]
+   (when explanation
+     [explanation args])])
 
 (defn with-controls [sketch-args controls]
   (assoc sketch-args :controls controls))
@@ -21,7 +24,7 @@
 (defn page
   ([sketch-args explanation scene]
    (page (assoc sketch-args :explanation explanation) scene))
-  ([{:keys [sketch-id controls explanation]
+  ([{:keys [sketch-id controls]
      :or {controls default-controls}
      :as sketch-args}
     scene]
@@ -32,10 +35,7 @@
         [:div.canvas-frame
          [scene args]
          [download-shortcut scene-id (name sketch-id)]]
-        [:div
-         [controls args]
-         (when explanation
-           [explanation args])]]))))
+        [controls args]]))))
 
 (defn let-page
   ([sketch-args gen-params explanation scene]
