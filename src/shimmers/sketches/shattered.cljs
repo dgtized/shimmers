@@ -2,9 +2,9 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]))
 
@@ -32,4 +32,4 @@
   {:created-at "2022-01-01"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :shattered)))
+  (ctrl/mount (usvg/page sketch-args scene)))
