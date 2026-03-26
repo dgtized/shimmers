@@ -4,6 +4,7 @@
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.circle :as gc]
@@ -41,7 +42,7 @@
         curve (g/random-point bisector)]
     (g/sample-uniform (bezier/auto-spline2 [p curve q]) 15 true)))
 
-(defn scene [d]
+(defn scene [{{:keys [d]} :params}]
   (let [line1 (gl/line2 (rv 0.1 0.25) (rv 0.9 0.25))
         line2 (gl/line2 (rv 0.1 0.75) (rv 0.9 0.75))
         bisector2 (scaled-bisector line2 d)]
@@ -58,19 +59,17 @@
               (for [_ (range 20)]
                 (svg/polyline (displace-at-bisector line2 d)))))))
 
-(defn page []
-  (let [d 0.3]
-    [:div
-     [:div.canvas-frame (scene d)]
-     [:div.contained
-      [:h4 "Two approaches for adding random curvature to a line between p and q"]
-      [:p "Both are using a displacement factor " d ", multiplied by half the
+(defn explanation [{{:keys [d]} :params}]
+  [:div.contained
+   [:h4 "Two approaches for adding random curvature to a line between p and q"]
+   [:p "Both are using a displacement factor " d ", multiplied by half the
      distance from " [:b "p"] " to " [:b "q"] ". "
-       "The upper example is drawing a curved line through a random point in the
-      circle. The lower example picks a random point on the bisector."]]]))
+    "The upper example is drawing a curved line through a random point in the
+      circle. The lower example picks a random point on the bisector."]])
 
 (sketch/definition path-distribution
   {:created-at "2021-04-29"
    :type :svg
    :tags #{:demo}}
-  (ctrl/mount page))
+  (ctrl/mount
+   (usvg/let-page sketch-args (fn [] {:d 0.3}) explanation scene)))
