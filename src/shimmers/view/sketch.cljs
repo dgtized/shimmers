@@ -1,7 +1,6 @@
 (ns shimmers.view.sketch
   (:require
    [goog.dom :as dom]
-   [quil.core :as q]
    [reagent.dom :as rdom]
    [reitit.frontend.easy :as rfe]
    [shimmers.common.sequence :as cs]

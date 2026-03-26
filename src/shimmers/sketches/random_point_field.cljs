@@ -8,7 +8,6 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.graph :as graph]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
