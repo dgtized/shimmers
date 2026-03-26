@@ -95,7 +95,7 @@
 (defn explanation [{:keys [ui-state params]}]
   [:<>
    [:div.flexcols
-    [:p.readable-width
+    [:div.readable-width
      "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]
     [:div {:style {:width "10em"}}
      [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-32 32 1]]]]

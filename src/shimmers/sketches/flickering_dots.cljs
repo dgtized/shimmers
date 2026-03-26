@@ -46,13 +46,14 @@
 
 
 (defn explanation [_]
-  [:div {:style {:width "75ch"}}
-   [:p "Genuary 2025 - Day 19 - Op Art"]
-   [:p "Using the "
-    [:a {:href "https://en.wikipedia.org/wiki/Grid_illusion"} "Grid Illusion"]
-    " as a basis for some optical illusion art. The grid is then selectively
+  [:div.flexcenter
+   [:div.readable-width
+    [:p "Genuary 2025 - Day 19 - Op Art"]
+    [:p "Using the "
+     [:a {:href "https://en.wikipedia.org/wiki/Grid_illusion"} "Grid Illusion"]
+     " as a basis for some optical illusion art. The grid is then selectively
     subdivided for several iterations. The eye is tricked into finding black
-    dots at different intersections."]])
+    dots at different intersections."]]])
 
 (sketch/definition flickering-dots
   {:created-at "2025-01-19"

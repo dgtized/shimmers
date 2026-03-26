@@ -213,6 +213,12 @@ button.generate {
   gap: 0px 3em;
 }
 
+.flexcenter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 .grid {
   display: grid;
 }

@@ -129,8 +129,7 @@
   [:div.evencols
    [:div.readable-width
     [:p "Genuary 2025 - Day 02 - Layers on layers upon layers"]]
-   [:p
-    [palette/as-svg {} palette]]])
+   [:p [palette/as-svg {} palette]]])
 
 (sketch/definition layered-layers
   {:created-at "2025-01-02"

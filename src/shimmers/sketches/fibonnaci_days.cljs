@@ -80,7 +80,7 @@
     (shapes)))
 
 (defn explanation []
-  [:div
+  [:div.readable-width
    [:p "Genuary 2026 - Day3 - Fibonnaci forever"]
    [:p "Concept was to plot each bubble proportional to the fibonnaci sequence,
    ie proportional spacing to the golden ratio."]])

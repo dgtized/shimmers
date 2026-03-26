@@ -74,18 +74,19 @@
                 0.225)))))
 
 (defn ui-controls [{:keys [ui-state params]}]
-  [ctrl/container {:class "wide-input"}
-   (ctrl/dropdown ui-state "Mode" [:mode]
-                  {"DeJong" "dejong"
-                   "Phased" "phased"
-                   "Switch" "switch"
-                   "Sierpinsky" "sierpinsky"})
-   (when (contains? #{"dejong" "phased" "switch"} (:mode @ui-state))
-     [:div
-      (ctrl/numeric params "A" [:a] [(- math/PI) math/PI 0.01])
-      (ctrl/numeric params "B" [:b] [(- math/PI) math/PI 0.01])
-      (ctrl/numeric params "C" [:c] [(- math/PI) math/PI 0.01])
-      (ctrl/numeric params "D" [:d] [(- math/PI) math/PI 0.01])])])
+  [:div.flexcenter
+   [ctrl/container {:class "wide-input"}
+    (ctrl/dropdown ui-state "Mode" [:mode]
+                   {"DeJong" "dejong"
+                    "Phased" "phased"
+                    "Switch" "switch"
+                    "Sierpinsky" "sierpinsky"})
+    (when (contains? #{"dejong" "phased" "switch"} (:mode @ui-state))
+      [:div
+       (ctrl/numeric params "A" [:a] [(- math/PI) math/PI 0.01])
+       (ctrl/numeric params "B" [:b] [(- math/PI) math/PI 0.01])
+       (ctrl/numeric params "C" [:c] [(- math/PI) math/PI 0.01])
+       (ctrl/numeric params "D" [:d] [(- math/PI) math/PI 0.01])])]])
 
 (defonce ui-state
   (ctrl/state {:mode "dejong"}))

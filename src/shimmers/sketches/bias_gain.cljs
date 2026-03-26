@@ -52,9 +52,10 @@
       (shapes s t))))
 
 (defn ui-controls []
-  [:div.contained
-   [ctrl/numeric ui-state "S" [:s] [0.01 100.0 0.01]]
-   [ctrl/numeric ui-state "T" [:t] [0.0 1.0 0.01]]])
+  [:div.flexcenter
+   [:div.readable-width
+    [ctrl/numeric ui-state "S" [:s] [0.01 100.0 0.01]]
+    [ctrl/numeric ui-state "T" [:t] [0.0 1.0 0.01]]]])
 
 (sketch/definition bias-gain
   {:created-at "2025-10-27"

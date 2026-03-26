@@ -25,8 +25,7 @@
         [:div
          [:p.center [view-sketch/generate sketch-id]]
          (when explanation
-           [:div.readable-width
-            [explanation sketch-args]])]]))))
+           [explanation sketch-args])]]))))
 
 (defn let-page
   ([sketch-args gen-params explanation scene]

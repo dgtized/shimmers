@@ -47,8 +47,9 @@
       (shapes k))))
 
 (defn ui-controls []
-  [:div.contained
-   [ctrl/numeric ui-state "k" [:k] [0.01 32.0 0.01]]])
+  [:div.flexcenter
+   [:div.readable-width
+    [ctrl/numeric ui-state "k" [:k] [0.01 32.0 0.01]]]])
 
 (sketch/definition stair-demo
   {:created-at "2025-11-17"

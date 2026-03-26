@@ -126,7 +126,7 @@
   (fn []
     [:div.evencols
      [:div.readable-width
-      [palette/as-svg {} palette]
+      [:div.flexcenter [palette/as-svg {} palette]]
       #_(ctrl/checkbox settings "Dispersion" [:dispersion])
       [:p "A circle is chopped into a set of radial arcs, ascending from the
         origin. Each arc is broken up into a number of segments proportional to
