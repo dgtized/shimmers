@@ -143,4 +143,4 @@
    :tags #{:genuary2025}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page sketch-args palette/generate explanation scene)))
+   (usvg/let-page sketch-args #(palette/generate) explanation scene)))
