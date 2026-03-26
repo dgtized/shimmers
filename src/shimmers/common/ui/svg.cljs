@@ -9,9 +9,12 @@
   [kb/kb-action "alt-s"
    (fn [] (svg-export/download id filename))])
 
-(defn default-controls [{:keys [sketch-id explanation] :as args}]
+(defn generate-link [{:keys [sketch-id]}]
+  [view-sketch/generate sketch-id])
+
+(defn default-controls [{:keys [explanation] :as args}]
   [:div
-   [:p.center [view-sketch/generate sketch-id]]
+   [:p.center [generate-link args]]
    (when explanation
      [explanation args])])
 
