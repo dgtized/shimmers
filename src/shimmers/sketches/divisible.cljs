@@ -5,12 +5,12 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.bounded-shapes :as bounded]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.rectangle :as mgr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -108,35 +108,29 @@
     (shapes (csvg/screen width height))))
 
 ;; see also https://gamedev.stackexchange.com/questions/74840/axis-aligned-spatial-division-divide-space-into-random-rectangles
-(defn page []
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     [:div
-      [:div.evencols
-       [view-sketch/generate :divisible]]
-      [:div.evencols
-       [:div.readable-width
-        [:p "Experimenting with dividing a rectangle by punching
+(defn explanation []
+  [:div.evencols
+   [:div.readable-width
+    [:p "Experimenting with dividing a rectangle by punching
      out a set of rectangles inside of it, and then calculating the set of
      rectangles remaining which would tile the space."]
-        [:p "Current approach is to recursively calculate difference of each
+    [:p "Current approach is to recursively calculate difference of each
       rectangle that remains that contains one of the punched out rectangles.
       Unfortunately, this fails because remaining rectangle may overlap more
       then one existing region."]
-        [:p "After punching out every pane, any remaining cases which are not
+    [:p "After punching out every pane, any remaining cases which are not
        bounded by an existing rectangle are sliced out of a polygon joined from
        the overlap. The remaining polygons from the overlap are then sliced
        again to reduce into rectangles."]
-        [:p "There also appears to be a bug (possibly in join polygons), which
+    [:p "There also appears to be a bug (possibly in join polygons), which
        results in some diagonals, and occasionally a punching pane is still
        overlapped."]
-        [:p "A possible solution is to investigate the "
-         [:a {:href "https://en.wikipedia.org/wiki/Guillotine_cutting"}
-          "guillotine cutting"] " problem."]]]]]))
+    [:p "A possible solution is to investigate the "
+     [:a {:href "https://en.wikipedia.org/wiki/Guillotine_cutting"}
+      "guillotine cutting"] " problem."]]])
 
 (sketch/definition divisible
-    {:created-at "2023-11-21"
-     :tags #{}
-     :type :svg}
-  (ctrl/mount page))
+  {:created-at "2023-11-21"
+   :tags #{}
+   :type :svg}
+  (ctrl/mount (usvg/page sketch-args explanation scene)))
