@@ -55,4 +55,5 @@
   {:created-at "2025-11-17"
    :tags #{:demo}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args ui-controls scene)))
+  (ctrl/mount
+   (usvg/page (usvg/with-explanation sketch-args ui-controls) scene)))

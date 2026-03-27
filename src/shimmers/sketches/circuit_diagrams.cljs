@@ -411,7 +411,7 @@
    :tags #{}
    :type :svg}
   (ctrl/mount
-   (usvg/page sketch-args ui-controls scene)))
+   (usvg/page (usvg/with-explanation sketch-args ui-controls) scene)))
 
 ;; alternative approach:
 ;; Beyond Wave Function Collapse: Procedular Modeling without Tiles
