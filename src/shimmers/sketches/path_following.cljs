@@ -3,9 +3,9 @@
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -49,4 +49,4 @@
   {:created-at "2021-11-12"
    :type :svg
    :tags #{:demo :deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :path-following)))
+  (ctrl/mount (usvg/page sketch-args scene)))
