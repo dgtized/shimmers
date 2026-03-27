@@ -2,9 +2,9 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -36,4 +36,4 @@
   {:created-at "2022-05-02"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :color-mapping)))
+  (ctrl/mount (usvg/page sketch-args scene)))
