@@ -25,20 +25,18 @@
   (assoc sketch-args :explanation explanation))
 
 (defn page
-  ([sketch-args explanation scene]
-   (page (assoc sketch-args :explanation explanation) scene))
-  ([{:keys [sketch-id controls]
-     :or {controls default-controls}
-     :as sketch-args}
-    scene]
-   (fn []
-     (let [default-args {:scene-id "scene"}
-           {:keys [scene-id] :as args} (merge default-args sketch-args)]
-       [sketch/with-explanation
-        [:div.canvas-frame
-         [scene args]
-         [download-shortcut scene-id (name sketch-id)]]
-        [controls args]]))))
+  [{:keys [sketch-id controls]
+    :or {controls default-controls}
+    :as sketch-args}
+   scene]
+  (fn []
+    (let [default-args {:scene-id "scene"}
+          {:keys [scene-id] :as args} (merge default-args sketch-args)]
+      [sketch/with-explanation
+       [:div.canvas-frame
+        [scene args]
+        [download-shortcut scene-id (name sketch-id)]]
+       [controls args]])))
 
 (defn let-page
   ([sketch-args gen-params explanation scene]
