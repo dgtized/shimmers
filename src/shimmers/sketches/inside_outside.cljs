@@ -5,6 +5,7 @@
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -12,7 +13,6 @@
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
@@ -172,7 +172,7 @@
     (shapes (tm/abs (dr/randvec2 1000)))))
 
 (sketch/definition inside-outside
-    {:created-at "2023-11-17"
-     :tags #{}
-     :type :svg}
-  (ctrl/mount (view-sketch/static-page scene :inside-outside)))
+  {:created-at "2023-11-17"
+   :tags #{}
+   :type :svg}
+  (ctrl/mount (usvg/page sketch-args scene)))
