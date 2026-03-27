@@ -3,9 +3,9 @@
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
@@ -95,4 +95,4 @@
   {:created-at "2021-04-09"
    :type :svg
    :tags #{:static :demo}}
-  (ctrl/mount (view-sketch/static-page scene :uniform-distribution)))
+  (ctrl/mount (usvg/page sketch-args scene)))
