@@ -3,11 +3,11 @@
    [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -60,7 +60,6 @@
       (draw-perps perps 0 0.12)
       (draw-perps (reverse perps2) 0.12 0.3))))
 
-;; TODO: add automatic timing to csvg/svg?
 (defn scene []
   (csvg/svg-timed {:width width
                    :height height
@@ -73,4 +72,4 @@
   {:created-at "2022-01-25"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :hairy-spiral)))
+  (ctrl/mount (usvg/page sketch-args scene)))

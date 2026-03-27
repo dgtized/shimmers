@@ -10,7 +10,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [shimmers.common.ui.svg :as usvg]))
 
 (def width 800)
 (def height 800)
@@ -83,4 +84,4 @@
   {:created-at "2021-05-10"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :clustered-farmlands)))
+  (ctrl/mount (usvg/page sketch-args scene)))

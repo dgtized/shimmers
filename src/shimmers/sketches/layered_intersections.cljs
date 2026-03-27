@@ -3,11 +3,11 @@
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.intersection :as isec]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -146,4 +146,4 @@
   {:created-at "2023-06-08"
    :tags #{}
    :type :svg}
-  (ctrl/mount (view-sketch/static-page scene :layered-intersections)))
+  (ctrl/mount (usvg/page sketch-args scene)))
