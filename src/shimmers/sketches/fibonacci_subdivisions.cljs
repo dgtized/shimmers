@@ -140,5 +140,8 @@
    :tags #{:genuary2025}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page (usvg/with-controls sketch-args usvg/palette-controls)
-                  #(palette/generate) explanation scene)))
+   (-> sketch-args
+       (usvg/with-controls usvg/palette-controls)
+       (usvg/with-param-gen (fn [] (palette/generate)))
+       (usvg/with-explanation explanation)
+       (usvg/let-page scene))))
