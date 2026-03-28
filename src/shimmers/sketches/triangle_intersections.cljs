@@ -5,10 +5,10 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.triangle :as gt]
@@ -87,8 +87,8 @@
                    :stroke-width 1.0}
     (shapes (csvg/screen width height))))
 
-(defn ui-controls []
-  [:div
+(defn explanation []
+  [:div.flexcenter
    [:p.readable-width
     "Extrude displaced polygons from the clip intersections between overlapping triangles."]])
 
@@ -96,4 +96,5 @@
   {:created-at "2023-06-12"
    :tags #{}
    :type :svg}
-  (ctrl/mount (view-sketch/static-page scene :triangle-intersections ui-controls)))
+  (ctrl/mount
+   (usvg/page (usvg/with-explanation sketch-args explanation) scene)))
