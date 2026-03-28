@@ -77,15 +77,9 @@
   This allows a sketch page to generate parameters before rendering the scene.
   Parameters like view or debug output can change without regenerating the
   parameters from scratch, but still re-rendering the scene."
-  ([sketch-args param-gen explanation scene]
-   (let-page (-> sketch-args
-                 (with-param-gen param-gen)
-                 (with-explanation explanation)) scene))
-  ([sketch-args explanation scene]
-   (let-page (with-explanation sketch-args explanation) scene))
-  ([{:keys [param-gen] :as sketch-args} scene]
-   (let [params (param-gen sketch-args)]
-     (page (-> sketch-args
-               (dissoc :param-gen)
-               (update :params merge params))
-           scene))))
+  [{:keys [param-gen] :as sketch-args} scene]
+  (let [params (param-gen sketch-args)]
+    (page (-> sketch-args
+              (dissoc :param-gen)
+              (update :params merge params))
+          scene)))
