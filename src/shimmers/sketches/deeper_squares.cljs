@@ -3,10 +3,10 @@
    [clojure.math :as math]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -62,7 +62,7 @@
           f (fn [x y] (/ (mod (fx x y) repetition) repetition))]
       (apply shapes f rules))))
 
-(defn ui-controls []
+(defn explanation []
   [:div
    [:p "Variations on Vera Molnár's "
     [:a {:href "https://dam.org/museum/artists_ui/artists/molnar-vera/des-ordres/"}
@@ -72,4 +72,4 @@
   {:created-at "2022-01-04"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :deeper-squares ui-controls)))
+  (ctrl/mount (usvg/page (usvg/with-explanation sketch-args explanation) scene)))
