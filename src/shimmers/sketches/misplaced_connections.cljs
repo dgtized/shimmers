@@ -2,11 +2,11 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
-   [thi.ng.geom.line :as gl]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.vector :as gv]))
 
 (def width 800)
 (def height 600)
@@ -51,4 +51,4 @@
   {:created-at "2023-03-10"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :misplaced-connections)))
+  (ctrl/mount (usvg/page sketch-args scene)))
