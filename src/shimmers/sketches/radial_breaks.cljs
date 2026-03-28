@@ -3,11 +3,11 @@
    [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.sketches.radial-mosaic :as radial-mosaic]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]))
 
 (def width 800)
@@ -62,27 +62,20 @@
             :transform (transforms (dr/gaussian 1.5 0.5))}
            (segment t0 t1 r0 r1)))))
 
-(defn scene [palette]
+(defn scene [{{:keys [palette]} :params}]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "none"
                    :stroke-width 1.0}
     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-      (shapes (into (repeat 10 "none") palette)))))
-
-(defn page []
-  (let [palette (:colors (dr/rand-nth radial-mosaic/palettes))]
-    (fn []
-      [:<>
-       [:div.canvas-frame [scene palette]]
-       [:div.contained
-        [:div.evencols
-         [view-sketch/generate :radial-breaks]
-         [palette/as-svg {} palette]]]])))
+      (shapes (into palette (repeat 10 "none"))))))
 
 (sketch/definition radial-breaks
   {:created-at "2023-05-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (page)))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-controls usvg/palette-controls)
+                  (usvg/with-param-gen (fn [] (palette/generate radial-mosaic/palettes)))
+                  (usvg/let-page scene))))
