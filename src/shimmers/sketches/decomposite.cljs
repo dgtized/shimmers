@@ -5,12 +5,12 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -95,4 +95,4 @@
   {:created-at "2023-03-14"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :decomposite)))
+  (ctrl/mount (usvg/page sketch-args scene)))
