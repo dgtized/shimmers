@@ -72,4 +72,7 @@
    :type :svg
    :tags #{:demo}}
   (ctrl/mount
-   (usvg/let-page sketch-args (fn [] {:d 0.3}) explanation scene)))
+   (-> sketch-args
+       (usvg/with-param-gen (fn [] {:d 0.3}))
+       (usvg/with-explanation explanation)
+       (usvg/let-page scene))))
