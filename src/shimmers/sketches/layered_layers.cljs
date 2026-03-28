@@ -125,15 +125,17 @@
       (shapes (g/scale-size (csvg/screen width height) 0.975)
               (:palette params)))))
 
-(defn explanation [{{:keys [palette]} :params}]
-  [:div.evencols
-   [:div.readable-width
-    [:p "Genuary 2025 - Day 02 - Layers on layers upon layers"]]
-   [:p [palette/as-svg {} palette]]])
+(defn explanation []
+  [:div.readable-width
+   [:p "Genuary 2025 - Day 02 - Layers on layers upon layers"]])
 
 (sketch/definition layered-layers
   {:created-at "2025-01-02"
    :tags #{:genuary2025}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page sketch-args #(palette/generate) explanation scene)))
+   (-> sketch-args
+       (usvg/with-controls usvg/palette-controls)
+       (usvg/with-param-gen (fn [] (palette/generate)))
+       (usvg/with-explanation explanation)
+       (usvg/let-page scene))))
