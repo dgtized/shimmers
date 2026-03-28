@@ -122,19 +122,16 @@
                ;; width and displace more the closer the piece is to theta?
                :displacement {:arc0 -0.5 :arc1 0.5 :percent 1.0 :force 0.3}})))
 
-(defn explanation [{{:keys [palette]} :params}]
-  (fn []
-    [:div.evencols
-     [:div.readable-width
-      [:div.flexcenter [palette/as-svg {} palette]]
-      #_(ctrl/checkbox settings "Dispersion" [:dispersion])
-      [:p "A circle is chopped into a set of radial arcs, ascending from the
+(defn explanation []
+  [:div.readable-width
+   #_(ctrl/checkbox settings "Dispersion" [:dispersion])
+   [:p "A circle is chopped into a set of radial arcs, ascending from the
         origin. Each arc is broken up into a number of segments proportional to
         the arc length. Find the common multiples between the number of segments
         and 12, and pick one randomly. That factor is used to pick a list of
         colors from a source palette for that particular row, which are then
         cycled across all segments in the arc, subdviding evenly as it's an even
-        divisor."]]]))
+        divisor."]])
 
 (defn sketch [{:keys [scene-id params]}]
   (csvg/svg-timed {:id scene-id
@@ -147,4 +144,8 @@
    :type :svg
    :tags #{:static :deterministic}}
   (ctrl/mount
-   (usvg/let-page sketch-args mosaic-params explanation sketch)))
+   (-> sketch-args
+       (usvg/with-controls usvg/palette-controls)
+       (usvg/with-param-gen mosaic-params)
+       (usvg/with-explanation explanation)
+       (usvg/let-page sketch))))
