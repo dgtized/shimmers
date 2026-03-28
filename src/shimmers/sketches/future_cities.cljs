@@ -3,9 +3,9 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -104,15 +104,16 @@
     [:summary "Moves"]
     (debug/pre-edn (list-moves @state))]])
 
-(defn page []
+;; FIXME: prefer let-page?
+(defn page [sketch-args]
   (let [state (ctrl/state (city-start))]
-    (view-sketch/static-page
-     (partial scene state)
-     :future-cities
-     (partial ui-controls state))))
+    (-> sketch-args
+        (usvg/with-controls usvg/column-controls)
+        (usvg/with-explanation (partial ui-controls state))
+        (usvg/page (partial scene state)))))
 
 (sketch/definition future-cities
   {:created-at "2022-05-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount page))
+  (ctrl/mount (page sketch-args)))
