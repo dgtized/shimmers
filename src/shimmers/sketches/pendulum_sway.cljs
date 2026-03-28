@@ -120,4 +120,7 @@
    :tags #{}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page sketch-args gen-parameters ui-controls scene)))
+   (-> sketch-args
+       (usvg/with-param-gen gen-parameters)
+       (usvg/with-explanation ui-controls)
+       (usvg/let-page scene))))
