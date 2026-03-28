@@ -4,10 +4,10 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -159,4 +159,4 @@
   {:created-at "2022-02-19"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :shapes-and-patterns)))
+  (ctrl/mount (usvg/page sketch-args scene)))
