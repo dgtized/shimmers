@@ -2,9 +2,9 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
@@ -50,4 +50,4 @@
   {:created-at "2023-01-02"
    :type :svg
    :tags #{:genuary2023}}
-  (ctrl/mount (view-sketch/static-page scene :all-the-shapes-in-between)))
+  (ctrl/mount (usvg/page sketch-args scene)))
