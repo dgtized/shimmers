@@ -24,7 +24,18 @@
 (defn with-explanation [sketch-args explanation]
   (assoc sketch-args :explanation explanation))
 
+;; TODO: sketch-args *could* contains a dimensions parameter which when passed
+;; to `scene` would define the size of the sketch. However upgrading to this
+;; will require changes on a sketch by sketch basis to derive height/width
+;; parameters (or a sceen bounds) from the parameters to scene instead of per
+;; sketch globals. An implementation of `rv` that took this context would also
+;; be required.
 (defn page
+  "Create a sketch from `sketch-args` and a `scene` function.
+
+  This is for SVG generation as it injects a download shortcut to save the
+  corresponding svg. It also creates a generate link by default that re-renders
+  the page."
   [{:keys [sketch-id controls]
     :or {controls default-controls}
     :as sketch-args}
@@ -39,6 +50,11 @@
        [controls args]])))
 
 (defn let-page
+  "Bind parameters for page before creating the scene.
+
+  This allows a sketch page to generate parameters before rendering the scene.
+  Parameters like view or debug output can change without regenerating the
+  parameters from scratch, but still re-rendering the scene."
   ([sketch-args gen-params explanation scene]
    (let-page (assoc sketch-args
                     :gen-params gen-params
