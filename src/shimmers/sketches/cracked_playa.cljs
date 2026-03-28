@@ -8,9 +8,9 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.vector :as gv]
@@ -72,5 +72,9 @@
    :type :svg
    :taps [(debug/profile-to sink)]
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :cracked-playa
-                                       #_(partial profile-summary sink))))
+  (ctrl/mount
+   (-> sketch-args
+       ;; (usvg/with-controls usvg/column-controls)
+       ;; FIXME: taps don't appear to work?
+       #_(usvg/with-explanation (partial profile-summary sink))
+       (usvg/page scene))))
