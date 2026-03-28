@@ -4,9 +4,9 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.hexagon :as hex]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -104,4 +104,7 @@
   {:created-at "2022-02-28"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :terrain-grid ui-controls)))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-controls usvg/column-controls)
+                  (usvg/with-explanation ui-controls)
+                  (usvg/page scene))))

@@ -18,6 +18,12 @@
    (when explanation
      [explanation args])])
 
+(defn column-controls [{:keys [explanation] :as args}]
+  [:div.flexcols
+   [:p.center [generate-link args]]
+   (when explanation
+     [explanation args])])
+
 (defn with-controls [sketch-args controls]
   (assoc sketch-args :controls controls))
 
