@@ -64,5 +64,7 @@
    :type :svg
    :tags #{:deterministic}}
   (ctrl/mount
-   (usvg/let-page sketch-args (fn [] (palette/generate palettes))
-                  explanation scene)))
+   (-> sketch-args
+       (usvg/with-controls usvg/palette-controls)
+       (usvg/with-param-gen (fn [] (palette/generate palettes)))
+       (usvg/let-page scene))))

@@ -43,6 +43,9 @@
 (defn with-explanation [sketch-args explanation]
   (assoc sketch-args :explanation explanation))
 
+(defn with-param-gen [sketch-args generator]
+  (assoc sketch-args :param-gen generator))
+
 ;; TODO: sketch-args *could* contains a dimensions parameter which when passed
 ;; to `scene` would define the size of the sketch. However upgrading to this
 ;; will require changes on a sketch by sketch basis to derive height/width
@@ -74,15 +77,14 @@
   This allows a sketch page to generate parameters before rendering the scene.
   Parameters like view or debug output can change without regenerating the
   parameters from scratch, but still re-rendering the scene."
-  ([sketch-args gen-params explanation scene]
-   (let-page (assoc sketch-args
-                    :gen-params gen-params
-                    :explanation explanation)
-     scene))
+  ([sketch-args param-gen explanation scene]
+   (let-page (-> sketch-args
+                 (with-param-gen param-gen)
+                 (with-explanation explanation)) scene))
   ([sketch-args explanation scene]
-   (let-page (assoc sketch-args :explanation explanation) scene))
-  ([{:keys [gen-params] :as sketch-args} scene]
-   (let [params (gen-params sketch-args)]
+   (let-page (with-explanation sketch-args explanation) scene))
+  ([{:keys [param-gen] :as sketch-args} scene]
+   (let [params (param-gen sketch-args)]
      (page (-> sketch-args
                (dissoc :param-gen)
                (update :params merge params))
