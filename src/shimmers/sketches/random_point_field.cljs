@@ -74,4 +74,7 @@
    :type :svg
    :tags #{}}
   (ctrl/mount
-   (usvg/let-page sketch-args gen-params explanation scene)))
+   (-> sketch-args
+       (usvg/with-param-gen gen-params)
+       (usvg/with-explanation explanation)
+       (usvg/let-page scene))))
