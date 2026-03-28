@@ -298,7 +298,7 @@
    :type :svg
    :tags #{}}
   (ctrl/mount
-   (usvg/let-page sketch-args
-                  ruleset
-                  (fn [] [debug/display defo])
-                  scene)))
+   (-> sketch-args
+       (usvg/with-param-gen ruleset)
+       (usvg/with-explanation (fn [] [debug/display defo]))
+       (usvg/let-page scene))))
