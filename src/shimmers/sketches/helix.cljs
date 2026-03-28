@@ -76,7 +76,7 @@
    :tags #{}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page sketch-args
-                  parameters
-                  (fn [{:keys [params]}] (debug/pre-edn params))
-                  scene)))
+   (-> sketch-args
+       (usvg/with-param-gen parameters)
+       (usvg/with-explanation (fn [{:keys [params]}] (debug/pre-edn params)))
+       (usvg/let-page scene))))
