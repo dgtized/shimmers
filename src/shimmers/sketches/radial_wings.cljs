@@ -55,10 +55,6 @@
                           [0.02 0.08]
                           [0.03 0.1]]))))
 
-(defn explanation [{{:keys [palette]} :params}]
-  [:div.flexcenter
-   [palette/as-svg {} palette]])
-
 (sketch/definition radial-wings
   {:created-at "2021-11-15"
    :type :svg
