@@ -90,17 +90,3 @@
 
 (defn generate [sketch-id]
   [:button.generate {:on-click #(restart-sketch sketch-id)} "Generate"])
-
-(defn static-page
-  ([scene sketch-id] (static-page scene sketch-id nil))
-  ([scene sketch-id controls]
-   (fn []
-     [:div
-      [:div.canvas-frame [scene]]
-      [:div.contained.explanation
-       (if controls
-         [:div.flexcols
-          [:div [generate sketch-id]]
-          [controls]]
-         [:p.center
-          [generate sketch-id]])]])))
