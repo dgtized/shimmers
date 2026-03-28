@@ -5,9 +5,9 @@
    [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
@@ -137,10 +137,12 @@
 
 ;; TODO: embed this in the url somehow?
 (defn ui-controls []
-  [:div (ctrl/change-mode ui-state modes)])
+  [:div.flexcenter
+   (ctrl/change-mode ui-state modes)])
 
 (sketch/definition negative-overlap
   {:created-at "2022-01-26"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :negative-overlap ui-controls)))
+  (ctrl/mount
+   (usvg/page (usvg/with-explanation sketch-args ui-controls) scene)))
