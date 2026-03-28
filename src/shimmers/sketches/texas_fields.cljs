@@ -7,10 +7,10 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -187,15 +187,16 @@
    (ctrl/checkbox state "Show Closest" [:show :closest])
    (debug/display defo)])
 
-(defn page []
+(defn page [sketch-args]
   (let [state (r/atom {:show {:closest true}
                        :landscape (grid+roads (csvg/screen width height))})]
-    (view-sketch/static-page (partial scene state)
-                             :texas-fields
-                             (partial ui-controls state))))
+    (-> sketch-args
+        (usvg/with-controls usvg/column-controls)
+        (usvg/with-explanation (partial ui-controls state))
+        (usvg/page (partial scene state)))))
 
 (sketch/definition texas-fields
   {:created-at "2022-04-24"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page))
+  (ctrl/mount (page sketch-args)))
