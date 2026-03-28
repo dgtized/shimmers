@@ -3,10 +3,10 @@
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]))
 
@@ -51,4 +51,4 @@
   {:created-at "2022-11-01"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :grid-exclusion)))
+  (ctrl/mount (usvg/page sketch-args scene)))
