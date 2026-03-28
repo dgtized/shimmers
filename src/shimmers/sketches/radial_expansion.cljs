@@ -2,12 +2,12 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -99,4 +99,4 @@
   {:created-at "2022-06-21"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :radial-expansion)))
+  (ctrl/mount (usvg/page sketch-args scene)))
