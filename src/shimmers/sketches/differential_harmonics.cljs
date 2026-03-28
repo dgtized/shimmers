@@ -107,7 +107,8 @@
    :tags #{}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page (assoc sketch-args :ui-state (ctrl/state {:remove-freq 0}))
-                  parameters
-                  explanation
-                  scene)))
+   (-> sketch-args
+       (assoc :ui-state (ctrl/state {:remove-freq 0}))
+       (usvg/with-param-gen parameters)
+       (usvg/with-explanation explanation)
+       (usvg/let-page scene))))
