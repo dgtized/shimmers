@@ -128,19 +128,17 @@
                 (g/scale-size (csvg/screen width height) 0.99))
               (:palette params)))))
 
-(defn explanation [{{:keys [palette]} :params}]
-  [:div.evencols
-   [:div.readable-width
-    [:p "Genuary 2025 - Day 12 - Subdivisions"]
-    [:p "Subdivision ratios and probabilities are all derived from Fibonacci
+(defn explanation []
+  [:div.readable-width
+   [:p "Genuary 2025 - Day 12 - Subdivisions"]
+   [:p "Subdivision ratios and probabilities are all derived from Fibonacci
     sequence weighting. Even the palette distribution is weighted by Fibonacci
-    values."]]
-   [:p
-    [palette/as-svg {} palette]]])
+    values."]])
 
 (sketch/definition fibonacci-subdivisions
   {:created-at "2025-01-12"
    :tags #{:genuary2025}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page sketch-args #(palette/generate) explanation scene)))
+   (usvg/let-page (usvg/with-controls sketch-args usvg/palette-controls)
+                  #(palette/generate) explanation scene)))

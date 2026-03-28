@@ -1,6 +1,7 @@
 (ns shimmers.common.ui.svg
   (:require
    [reagent-keybindings.keyboard :as kb]
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg-export :as svg-export]
    [shimmers.sketch :as sketch]
    [shimmers.view.sketch :as view-sketch]))
@@ -23,6 +24,18 @@
    [:p.center [generate-link args]]
    (when explanation
      [explanation args])])
+
+(defn palette-controls
+  [{:keys [explanation]
+    {:keys [palette]} :params
+    :as args}]
+  [:div
+   [:div.flexpalette
+    [generate-link args]
+    [palette/as-svg {} palette]]
+   (when explanation
+     [:div.flexcenter
+      [explanation args]])])
 
 (defn with-controls [sketch-args controls]
   (assoc sketch-args :controls controls))

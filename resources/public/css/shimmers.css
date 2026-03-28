@@ -219,6 +219,12 @@ button.generate {
   justify-content: center;
 }
 
+.flexpalette {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
 .grid {
   display: grid;
 }
