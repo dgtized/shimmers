@@ -249,17 +249,17 @@
     (shapes args)))
 
 (defn explanation [{{:keys [line-params]} :params}]
-  (debug/pre-edn
+  [debug/pre-edn
    (merge {:line-params line-params} @defo)
    {:width 120
-    :print-fixed-width 4}))
+    :print-fixed-width 4}])
 
 (sketch/definition cilia-phase
   {:created-at "2024-10-24"
    :tags #{}
    :type :svg}
   (ctrl/mount
-   (usvg/let-page sketch-args
-                  line-parameters
-                  explanation
-                  scene)))
+   (-> sketch-args
+       (usvg/with-param-gen line-parameters)
+       (usvg/with-explanation explanation)
+       (usvg/let-page scene))))
