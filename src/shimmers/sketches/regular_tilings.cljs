@@ -130,8 +130,12 @@
                             assoc :stroke "#772222")]
     {:generated (gen-shapes size starting 20)}))
 
+;; FIXME: shading is not deterministic
 (sketch/definition regular-tilings
   {:created-at "2024-05-23"
    :tags #{}
    :type :svg}
-  (ctrl/mount (usvg/let-page sketch-args parameters explanation scene)))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-param-gen parameters)
+                  (usvg/with-explanation explanation)
+                  (usvg/let-page scene))))
