@@ -3,13 +3,13 @@
    [clojure.math :as math]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -94,4 +94,4 @@
   {:created-at "2022-03-13"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :spiral-pack)))
+  (ctrl/mount (usvg/page sketch-args scene)))
