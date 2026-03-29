@@ -241,12 +241,29 @@
          scaled to match the length of the parent face, or resized proportional
          that size."]]])
 
+(defn controls
+  [{:keys [auto-scale limit-overlap]}]
+  (ctrl/container
+   [:p]
+   (ctrl/slider ui-state (fn [x] (str "Recursion Depth " x))
+                [:recursion-depth] [1 20 1])
+   (ctrl/checkbox ui-state "Limit Overlap" [:limit-overlap])
+   (when limit-overlap
+     (ctrl/numeric ui-state "Max Overlap with Prior Layer" [:max-overlap] [0 100 1]))
+   (ctrl/checkbox ui-state "Auto Scaling" [:auto-scale])
+   (when-not auto-scale
+     (ctrl/numeric ui-state "Base Size" [:base-size] [20 100 1]))
+   (ctrl/numeric ui-state "Spacing" [:spacing-size] [1 20 1])
+   (ctrl/checkbox ui-state "Variable Size" [:variable-size])
+   (ctrl/checkbox ui-state "Color Tiles" [:color-tiles])
+   (ctrl/checkbox ui-state "Single Layer Color" [:single-layer-color])))
+
 (defn page []
   (let [{:keys [palette]} (palette/generate palettes)
         plan (vec (repeatedly 11 (gen-shape palette)))]
     (fn []
       (let [settings @ui-state
-            {:keys [auto-scale limit-overlap color-tiles]} settings
+            {:keys [color-tiles]} settings
             depth (sanitize-depth settings)]
         [:div
          [:div.canvas-frame [scene (take depth plan) settings]]
@@ -257,20 +274,7 @@
             [:p.center "Recursively layer regular polygons on each outward face."]
             (when color-tiles
               [palette/as-svg {:class "center"} palette])]
-           (ctrl/container
-            [:p]
-            (ctrl/slider ui-state (fn [x] (str "Recursion Depth " x))
-                         [:recursion-depth] [1 20 1])
-            (ctrl/checkbox ui-state "Limit Overlap" [:limit-overlap])
-            (when limit-overlap
-              (ctrl/numeric ui-state "Max Overlap with Prior Layer" [:max-overlap] [0 100 1]))
-            (ctrl/checkbox ui-state "Auto Scaling" [:auto-scale])
-            (when-not auto-scale
-              (ctrl/numeric ui-state "Base Size" [:base-size] [20 100 1]))
-            (ctrl/numeric ui-state "Spacing" [:spacing-size] [1 20 1])
-            (ctrl/checkbox ui-state "Variable Size" [:variable-size])
-            (ctrl/checkbox ui-state "Color Tiles" [:color-tiles])
-            (ctrl/checkbox ui-state "Single Layer Color" [:single-layer-color]))]
+           [controls settings]]
 
           [explanation]]]))))
 
