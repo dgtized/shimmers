@@ -4,6 +4,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -11,7 +12,6 @@
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -135,7 +135,7 @@
 
 ;; interesting pattern with big circle left, small circle right, flow field heading right
 ;; http://localhost:9500/#/sketches/velocity-fields?seed=4000107855
-(defn scene [{:keys [seed scale offset density buzzy pareto-width]}]
+(defn scene [{{:keys [seed scale offset density buzzy pareto-width]} :params}]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
@@ -161,22 +161,21 @@
      idential noise scale and seed, which varies the density and adds some
      interesting edges."]])
 
-(defn page []
-  (let [rules (generate-rules)]
-    (fn []
-      [:<>
-       [:div.canvas-frame [scene rules]]
-       [:div.contained
-        [:div.evencols
-         [:div
-          [:p]
-          [view-sketch/generate :velocity-fields]
-          [:p]
-          [debug/pre-edn (dissoc rules :seed :scale)]]
-         [explanation]]]])))
+(defn controls [{rules :params :as sketch-args}]
+  [:div.evencols
+   [:div
+    [:p]
+    [usvg/generate-link sketch-args]
+    [:p]
+    [debug/pre-edn (dissoc rules :seed :scale)]]
+   [explanation]])
 
 (sketch/definition velocity-fields
   {:created-at "2023-01-27"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (page)))
+  (ctrl/mount
+   (-> sketch-args
+       (usvg/with-param-gen generate-rules)
+       (usvg/with-controls controls)
+       (usvg/let-page scene))))
