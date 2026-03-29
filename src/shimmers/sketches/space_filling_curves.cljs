@@ -6,6 +6,7 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -160,16 +161,20 @@
         (ctrl/checkbox ui-state "Large Arc" [:curved :large-arc])
         (ctrl/checkbox ui-state "Sweep Flag" [:curved :sweep-flag])]))))
 
-(defn page []
+(defn scene-from-state []
   (let [{:keys [rule-system depth curved]} @ui-state]
-    [sketch/with-explanation
-     [:div.canvas-frame [scene rule-system depth curved]]
-     [:div.flexcols
-      [controls]
-      [debug/pre-edn (dissoc (by-name rule-system) :start)]]]))
+    [scene rule-system depth curved]))
+
+(defn ui-controls []
+  [:div.flexcols
+   [controls]
+   [debug/pre-edn (dissoc (by-name (:rule-system @ui-state)) :start)]])
 
 (sketch/definition space-filling-curves
   {:created-at "2022-01-02"
    :type :svg
    :tags #{:static}}
-  (ctrl/mount page))
+  (ctrl/mount
+   (-> sketch-args
+       (usvg/with-controls ui-controls)
+       (usvg/page scene-from-state))))
