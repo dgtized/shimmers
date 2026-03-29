@@ -2,10 +2,10 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   ;; [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
@@ -39,15 +39,8 @@
                    :stroke-width 1.0}
     (shapes)))
 
-(defn page []
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     ;; [view-sketch/generate :hexaflexagon]
-     [:div.readable-width]]))
-
 (sketch/definition hexaflexagon
-    {:created-at "2024-05-21"
-     :tags #{}
-     :type :svg}
-  (ctrl/mount page))
+  {:created-at "2024-05-21"
+   :tags #{}
+   :type :svg}
+  (ctrl/mount (usvg/page (usvg/with-controls sketch-args (fn [])) scene)))
