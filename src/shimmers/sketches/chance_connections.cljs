@@ -6,6 +6,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -219,16 +220,17 @@
      (untangle pts (simple-cycles (map :indices (intersections pts)))))
    path))
 
-(defn scene [bounds points segmentation settings]
-  (csvg/svg-timed {:width (g/width bounds)
-                   :height (g/height bounds)
-                   :stroke "black"
-                   :fill "none"}
-    (point-path (assoc settings :original points)
-                (if (:untangle settings)
-                  (remove-cycles points)
-                  points)
-                (cycle segmentation))))
+(defn scene [{{:keys [bounds points segmentation]} :params :as args}]
+  (let [settings @ui-state]
+    (csvg/svg-timed {:width (g/width bounds)
+                     :height (g/height bounds)
+                     :stroke "black"
+                     :fill "none"}
+      (point-path (assoc settings :original points)
+                  (if (:untangle settings)
+                    (remove-cycles points)
+                    points)
+                  (cycle segmentation)))))
 
 (defn explanation []
   [:div.readable-width
@@ -261,24 +263,28 @@
     (when (:chaikin @ui-state)
       [ctrl/numeric ui-state "Depth" [:depth] [1 6 1]])]])
 
-(defn page []
+(defn generate []
   (let [bounds (csvg/screen width height)
-        path (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 90))
-        segmentation (partition-range (count path) 3 1)]
-    (fn []
-      [:<>
-       [:div.canvas-frame [scene bounds path segmentation @ui-state]]
-       [:div.contained
-        [:div.evencols {:style {:gap "0 0"}}
-         [:div
-          [:p]
-          [view-sketch/generate :chance-connections]
-          [:p]
-          [controls]]
-         [explanation]]]])))
+        path (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 90))]
+    {:bounds bounds
+     :points path
+     :segmentation (partition-range (count path) 3 1)}))
+
+(defn two-column [sketch-args]
+  [:div.contained
+   [:div.evencols {:style {:gap "0 0"}}
+    [:div
+     [:p]
+     [usvg/generate-link sketch-args]
+     [:p]
+     [controls]]
+    [explanation]]])
 
 (sketch/definition chance-connections
   {:created-at "2023-06-01"
    :tags #{}
    :type :svg}
-  (ctrl/mount (page)))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-param-gen generate)
+                  (usvg/with-controls two-column)
+                  (usvg/let-page scene))))
