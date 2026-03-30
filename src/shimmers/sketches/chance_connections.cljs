@@ -247,6 +247,20 @@
         randomizes the widths at each segment for each offset, and show original
         overlays the original, untangled path in red."]])
 
+(defn controls []
+  [:div {:style {:min-width "20em"}}
+   [ctrl/checkbox ui-state "Untangle" [:untangle]]
+   [ctrl/checkbox ui-state "Displaced Lines" [:displaced-lines]]
+   [ctrl/checkbox ui-state "Vary Widths" [:vary-width]]
+   [ctrl/checkbox ui-state "Show Original" [:show-original]]
+   [ctrl/checkbox ui-state "Show Points" [:show-points]]
+   [ctrl/checkbox ui-state "Show Intersections" [:show-intersections]]
+   [ctrl/checkbox ui-state "Show Tight Bends" [:show-tight-bends]]
+   [:div.flexcols {:style {:gap "0px 1.5em"}}
+    [ctrl/checkbox ui-state "Chaiken Smooth" [:chaikin]]
+    (when (:chaikin @ui-state)
+      [ctrl/numeric ui-state "Depth" [:depth] [1 6 1]])]])
+
 (defn page []
   (let [bounds (csvg/screen width height)
         path (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 90))
@@ -260,18 +274,7 @@
           [:p]
           [view-sketch/generate :chance-connections]
           [:p]
-          [:div {:style {:min-width "20em"}}
-           [ctrl/checkbox ui-state "Untangle" [:untangle]]
-           [ctrl/checkbox ui-state "Displaced Lines" [:displaced-lines]]
-           [ctrl/checkbox ui-state "Vary Widths" [:vary-width]]
-           [ctrl/checkbox ui-state "Show Original" [:show-original]]
-           [ctrl/checkbox ui-state "Show Points" [:show-points]]
-           [ctrl/checkbox ui-state "Show Intersections" [:show-intersections]]
-           [ctrl/checkbox ui-state "Show Tight Bends" [:show-tight-bends]]
-           [:div.flexcols {:style {:gap "0px 1.5em"}}
-            [ctrl/checkbox ui-state "Chaiken Smooth" [:chaikin]]
-            (when (:chaikin @ui-state)
-              [ctrl/numeric ui-state "Depth" [:depth] [1 6 1]])]]]
+          [controls]]
          [explanation]]]])))
 
 (sketch/definition chance-connections
