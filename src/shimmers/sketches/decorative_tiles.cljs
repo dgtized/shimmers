@@ -179,33 +179,35 @@
             (rest plan)
             settings)))
 
-(defn scene [plan {:keys [auto-scale color-tiles max-overlap] :as settings}]
-  (csvg/svg-timed {:width width
-                   :height height
-                   :stroke "black"
-                   :fill-opacity (if color-tiles
-                                   (/ 2 (+ (or max-overlap 4) 3))
-                                   "5%")
-                   :fill "black"
-                   :stroke-width 1.0}
-    (let [tiles (shapes plan settings)
-          radial-height (max (* 0.25 height)
-                             (apply max (map (comp rect/top :bounds) tiles)))
-          scale (/ height (* 2 (+ radial-height 2)))]
-      (csvg/group {:transform
-                   (str (csvg/translate (rv 0.5 0.5))
-                        " "
-                        (if auto-scale
-                          (csvg/scale scale scale)
-                          ""))}
-        (map :shape tiles)))))
-
 (defn sanitize-depth [{:keys [limit-overlap recursion-depth]}]
   (let [depth (if (number? recursion-depth)
                 recursion-depth
                 8)]
     (min (if limit-overlap depth 9)
          depth)))
+
+(defn scene [{{:keys [plan]} :params}]
+  (let [{:keys [auto-scale color-tiles max-overlap] :as settings} @ui-state
+        depth (sanitize-depth settings)]
+    (csvg/svg-timed {:width width
+                     :height height
+                     :stroke "black"
+                     :fill-opacity (if color-tiles
+                                     (/ 2 (+ (or max-overlap 4) 3))
+                                     "5%")
+                     :fill "black"
+                     :stroke-width 1.0}
+      (let [tiles (shapes (take depth plan) settings)
+            radial-height (max (* 0.25 height)
+                               (apply max (map (comp rect/top :bounds) tiles)))
+            scale (/ height (* 2 (+ radial-height 2)))]
+        (csvg/group {:transform
+                     (str (csvg/translate (rv 0.5 0.5))
+                          " "
+                          (if auto-scale
+                            (csvg/scale scale scale)
+                            ""))}
+          (map :shape tiles))))))
 
 (def palettes
   (->> [:yellow-slate-white-mint-red
@@ -264,11 +266,6 @@
     {:plan plan
      :palette palette}))
 
-(defn plan->scene [{{:keys [plan]} :params}]
-  (let [settings @ui-state
-        depth (sanitize-depth settings)]
-    [scene (take depth plan) settings]))
-
 (defn side-by-side [{{:keys [palette]} :params :as sketch-args}]
   (let [settings @ui-state]
     [:div
@@ -279,12 +276,14 @@
        (when (:color-tiles @ui-state)
          [palette/as-svg {:class "center"} palette])]
       [controls settings]]
-
      [explanation]]))
 
 (sketch/definition decorative-tiles
   {:created-at "2023-01-20"
    :type :svg
    :tags #{}}
-  (ctrl/mount (usvg/let-page (usvg/with-controls (usvg/with-param-gen sketch-args gen-params) side-by-side)
-                             plan->scene)))
+  (ctrl/mount
+   (-> sketch-args
+       (usvg/with-param-gen gen-params)
+       (usvg/with-controls side-by-side)
+       (usvg/let-page scene))))
