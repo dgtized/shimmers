@@ -5,9 +5,9 @@
    [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core]
@@ -124,7 +124,7 @@
         (scene 192 (assoc config :depth (inc i)))])])])
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
-(defn page []
+(defn page [sketch-args]
   (let [{:keys [seed palette] :as config} (scene-options)]
     (fn []
       (let [{:keys [show-scene]} @ui-settings]
@@ -134,7 +134,7 @@
            [examples seed])
          [:div.contained
           [:div.evencols
-           [view-sketch/generate :mosaic-tiling]
+           [usvg/generate-link sketch-args]
            [:div
             (ctrl/checkbox ui-settings "Show Scene" [:show-scene])
             (ctrl/checkbox ui-settings "Show Borders" [:show-borders])]
@@ -146,4 +146,4 @@
   {:created-at "2021-04-09"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount page))
+  (ctrl/mount (page sketch-args)))
