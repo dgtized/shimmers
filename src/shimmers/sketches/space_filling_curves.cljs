@@ -29,6 +29,7 @@
 ;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/fu-intr-2_themes-hilbert-sec.html
 ;; TODO: https://en.wikipedia.org/wiki/Z-order_curve
 ;; See also: https://onlinemathtools.com/l-system-generator
+;; https://justinpombrio.net/2026/02/16/l-systems.html
 
 (defn l-system [{:keys [axiom rules]}]
   (let [products (cs/map-kv seq rules)]
