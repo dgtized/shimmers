@@ -219,7 +219,7 @@
      (untangle pts (simple-cycles (map :indices (intersections pts)))))
    path))
 
-(defn scene [{{:keys [bounds points segmentation]} :params :as args}]
+(defn scene [{{:keys [bounds points segmentation]} :params}]
   (let [settings @ui-state]
     (csvg/svg-timed {:width (g/width bounds)
                      :height (g/height bounds)
