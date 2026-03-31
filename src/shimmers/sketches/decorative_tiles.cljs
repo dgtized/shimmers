@@ -4,13 +4,13 @@
    [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.sketches.radial-mosaic :as radial-mosaic]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils.intersect :as isec]
@@ -258,28 +258,33 @@
    (ctrl/checkbox ui-state "Color Tiles" [:color-tiles])
    (ctrl/checkbox ui-state "Single Layer Color" [:single-layer-color])))
 
-(defn page []
+(defn gen-params []
   (let [{:keys [palette]} (palette/generate palettes)
         plan (vec (repeatedly 11 (gen-shape palette)))]
-    (fn []
-      (let [settings @ui-state
-            {:keys [color-tiles]} settings
-            depth (sanitize-depth settings)]
-        [:div
-         [:div.canvas-frame [scene (take depth plan) settings]]
-         [:div.contained
-          [:div.flexcols
-           [:div
-            [:p.center (view-sketch/generate :decorative-tiles)]
-            [:p.center "Recursively layer regular polygons on each outward face."]
-            (when color-tiles
-              [palette/as-svg {:class "center"} palette])]
-           [controls settings]]
+    {:plan plan
+     :palette palette}))
 
-          [explanation]]]))))
+(defn plan->scene [{{:keys [plan]} :params}]
+  (let [settings @ui-state
+        depth (sanitize-depth settings)]
+    [scene (take depth plan) settings]))
+
+(defn side-by-side [{{:keys [palette]} :params :as sketch-args}]
+  (let [settings @ui-state]
+    [:div
+     [:div.flexcols
+      [:div
+       [:p.center (usvg/generate-link sketch-args)]
+       [:p.center "Recursively layer regular polygons on each outward face."]
+       (when (:color-tiles @ui-state)
+         [palette/as-svg {:class "center"} palette])]
+      [controls settings]]
+
+     [explanation]]))
 
 (sketch/definition decorative-tiles
   {:created-at "2023-01-20"
    :type :svg
    :tags #{}}
-  (ctrl/mount page))
+  (ctrl/mount (usvg/let-page (usvg/with-controls (usvg/with-param-gen sketch-args gen-params) side-by-side)
+                             plan->scene)))
