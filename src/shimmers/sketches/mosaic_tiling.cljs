@@ -106,7 +106,7 @@
         [svg-tile 200 (/ 200 (* 2 (math/sqrt (count seed))))
          (transform seed) title]])]))
 
-(defn explanation [{:keys [seed n operations] :as params}]
+(defn explanation [{{:keys [seed n operations] :as params} :params}]
   [:div.explanation
    [:div.flexcols
     [:p.readable-width
@@ -121,31 +121,33 @@
      (for [[i op] (map-indexed vector operations)]
        [:li {:key (str "step-" i)}
         [:div op]
-        (scene (assoc params
+        [scene (assoc params
                       :size 192
-                      :depth (inc i)))])])])
+                      :depth (inc i))]])])])
+
+(defn render-scene [{{:keys [seed] :as params} :params}]
+  (let [{:keys [show-scene]} @ui-settings]
+    (if show-scene
+      [scene (assoc params :size 1024)]
+      [examples seed])))
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
-(defn page [sketch-args]
-  (let [{:keys [seed palette] :as params} (scene-options)]
-    (fn []
-      (let [{:keys [show-scene]} @ui-settings]
-        [:<>
-         (if show-scene
-           [:div.canvas-frame [scene (assoc params :size 1024)]]
-           [examples seed])
-         [:div.contained
-          [:div.evencols
-           [usvg/generate-link sketch-args]
-           [:div
-            (ctrl/checkbox ui-settings "Show Scene" [:show-scene])
-            (ctrl/checkbox ui-settings "Show Borders" [:show-borders])]
-           [palette/as-svg {} palette]]
-          [:p]
-          [explanation params]]]))))
+(defn page [{{:keys [palette]} :params :as sketch-args}]
+  [:div
+   [:div.evencols
+    [usvg/generate-link sketch-args]
+    [:div
+     [ctrl/checkbox ui-settings "Show Scene" [:show-scene]]
+     [ctrl/checkbox ui-settings "Show Borders" [:show-borders]]]
+    [palette/as-svg {} palette]]
+   [:p]
+   [explanation sketch-args]])
 
 (sketch/definition mosaic-tiling
   {:created-at "2021-04-09"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (page sketch-args)))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-param-gen scene-options)
+                  (usvg/with-controls page)
+                  (usvg/let-page render-scene))))
