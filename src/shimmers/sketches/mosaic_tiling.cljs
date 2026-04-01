@@ -89,7 +89,7 @@
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
 ;; and then the error compounds?
-(defn scene [size {:keys [n depth seed operations]}]
+(defn scene [{:keys [size n depth seed operations]}]
   (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
     (let [scale (int (* size 0.85))]
       (csvg/timed
@@ -106,7 +106,7 @@
         [svg-tile 200 (/ 200 (* 2 (math/sqrt (count seed))))
          (transform seed) title]])]))
 
-(defn explanation [{:keys [seed n operations] :as config}]
+(defn explanation [{:keys [seed n operations] :as params}]
   [:div.explanation
    [:div.flexcols
     [:p.readable-width
@@ -121,16 +121,18 @@
      (for [[i op] (map-indexed vector operations)]
        [:li {:key (str "step-" i)}
         [:div op]
-        (scene 192 (assoc config :depth (inc i)))])])])
+        (scene (assoc params
+                      :size 192
+                      :depth (inc i)))])])])
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page [sketch-args]
-  (let [{:keys [seed palette] :as config} (scene-options)]
+  (let [{:keys [seed palette] :as params} (scene-options)]
     (fn []
       (let [{:keys [show-scene]} @ui-settings]
         [:<>
          (if show-scene
-           [:div.canvas-frame [scene 1024 config]]
+           [:div.canvas-frame [scene (assoc params :size 1024)]]
            [examples seed])
          [:div.contained
           [:div.evencols
@@ -140,7 +142,7 @@
             (ctrl/checkbox ui-settings "Show Borders" [:show-borders])]
            [palette/as-svg {} palette]]
           [:p]
-          [explanation config]]]))))
+          [explanation params]]]))))
 
 (sketch/definition mosaic-tiling
   {:created-at "2021-04-09"
