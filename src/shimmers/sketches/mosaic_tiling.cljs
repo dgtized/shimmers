@@ -79,14 +79,14 @@
   (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
     (let [cell-size (/ size (math/sqrt (count cells)))
           rect (rect/rect 0 0 cell-size cell-size)]
-      (csvg/svg {:width size
+      [csvg/svg {:width size
                  :height size
                  :stroke (if (:show-borders @ui-settings)
                            "black" "none")}
-        (for [{:keys [pos fill]} cells]
-          (-> rect
-              (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
-              (with-meta {:fill fill})))))))
+       (for [{:keys [pos fill]} cells]
+         (-> rect
+             (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
+             (with-meta {:fill fill})))])))
 
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
@@ -111,7 +111,7 @@
    from a palette, both of which can be seen to the right."]
     [svg-tile 128 seed]]
    [:div]
-   (ctrl/details
+   [ctrl/details
     "Operations applied to seed in sequence"
     [:ol
      (for [[i op] (map-indexed vector operations)]
@@ -119,7 +119,7 @@
         [:div op]
         [scene (assoc params
                       :size 192
-                      :operations (take i operations))]])])])
+                      :operations (take i operations))]])]]])
 
 (defn render-scene [{{:keys [seed] :as params} :params}]
   (let [{:keys [show-scene]} @ui-settings]
