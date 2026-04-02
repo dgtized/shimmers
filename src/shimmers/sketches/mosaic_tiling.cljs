@@ -78,7 +78,10 @@
 
 (defn svg-tile [size cell-size cells title]
   (let [rect (rect/rect 0 0 cell-size cell-size)]
-    (csvg/svg {:width size :height size :stroke (if (:show-borders @ui-settings) "black" "none")}
+    (csvg/svg {:width size
+               :height size
+               :stroke (if (:show-borders @ui-settings)
+                         "black" "none")}
       (into (for [{:keys [pos fill]} cells]
               (-> rect
                   (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
