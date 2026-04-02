@@ -77,33 +77,32 @@
      :operations operations}))
 
 (defn svg-tile [size cell-size cells]
-  (let [rect (rect/rect 0 0 cell-size cell-size)]
-    (csvg/svg {:width size
-               :height size
-               :stroke (if (:show-borders @ui-settings)
-                         "black" "none")}
-      (for [{:keys [pos fill]} cells]
-        (-> rect
-            (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
-            (with-meta {:fill fill}))))))
+  (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
+    (let [rect (rect/rect 0 0 cell-size cell-size)]
+      (csvg/svg {:width size
+                 :height size
+                 :stroke (if (:show-borders @ui-settings)
+                           "black" "none")}
+        (for [{:keys [pos fill]} cells]
+          (-> rect
+              (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
+              (with-meta {:fill fill})))))))
 
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
 ;; and then the error compounds?
 (defn scene [{:keys [size n depth seed operations]}]
-  (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
-    (let [scale (int (* size 0.85))]
-      (csvg/timed
-       [svg-tile scale (/ scale (* n (math/pow 2 depth)))
-        ((apply comp (map transformations (take depth operations))) seed)]))))
+  (let [scale (int (* size 0.85))]
+    (csvg/timed
+     [svg-tile scale (/ scale (* n (math/pow 2 depth)))
+      ((apply comp (map transformations (take depth operations))) seed)])))
 
 (defn examples [seed]
-  (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
-    [:div {:style {:column-count 2 :margin "2em"}}
-     (for [[title transform] transformations]
-       [:div {:key title}
-        [svg-tile 200 (/ 200 (* 2 (math/sqrt (count seed))))
-         (transform seed)]])]))
+  [:div {:style {:column-count 2 :margin "2em"}}
+   (for [[title transform] transformations]
+     [:div {:key title}
+      [svg-tile 200 (/ 200 (* 2 (math/sqrt (count seed))))
+       (transform seed)]])])
 
 (defn explanation [{{:keys [seed n operations] :as params} :params}]
   [:div.explanation
