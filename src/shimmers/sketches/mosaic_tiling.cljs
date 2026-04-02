@@ -73,7 +73,6 @@
     {:n n
      :palette palette
      :seed seed
-     :depth depth
      :operations operations}))
 
 (defn svg-tile [size cells]
@@ -92,10 +91,10 @@
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
 ;; and then the error compounds?
-(defn scene [{:keys [size depth seed operations]}]
+(defn scene [{:keys [size seed operations]}]
   (let [scale (int (* size 0.85))]
     (csvg/timed
-     [svg-tile scale ((apply comp (map transformations (take depth operations))) seed)])))
+     [svg-tile scale ((apply comp (map transformations operations)) seed)])))
 
 (defn examples [seed]
   [:div {:style {:column-count 2 :margin "2em"}}
@@ -120,7 +119,7 @@
         [:div op]
         [scene (assoc params
                       :size 192
-                      :depth (inc i))]])])])
+                      :operations (take i operations))]])])])
 
 (defn render-scene [{{:keys [seed] :as params} :params}]
   (let [{:keys [show-scene]} @ui-settings]
