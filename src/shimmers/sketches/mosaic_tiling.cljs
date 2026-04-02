@@ -76,18 +76,16 @@
      :depth depth
      :operations operations}))
 
-(defn svg-tile [size cell-size cells title]
+(defn svg-tile [size cell-size cells]
   (let [rect (rect/rect 0 0 cell-size cell-size)]
     (csvg/svg {:width size
                :height size
                :stroke (if (:show-borders @ui-settings)
                          "black" "none")}
-      (into (for [{:keys [pos fill]} cells]
-              (-> rect
-                  (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
-                  (with-meta {:fill fill})))
-            (when title
-              [[:title {:key "title"} title]])))))
+      (for [{:keys [pos fill]} cells]
+        (-> rect
+            (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
+            (with-meta {:fill fill}))))))
 
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
@@ -96,10 +94,8 @@
   (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
     (let [scale (int (* size 0.85))]
       (csvg/timed
-       (svg-tile scale
-                 (/ scale (* n (math/pow 2 depth)))
-                 ((apply comp (map transformations (take depth operations))) seed)
-                 "Scene")))))
+       [svg-tile scale (/ scale (* n (math/pow 2 depth)))
+        ((apply comp (map transformations (take depth operations))) seed)]))))
 
 (defn examples [seed]
   (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
@@ -107,7 +103,7 @@
      (for [[title transform] transformations]
        [:div {:key title}
         [svg-tile 200 (/ 200 (* 2 (math/sqrt (count seed))))
-         (transform seed) title]])]))
+         (transform seed)]])]))
 
 (defn explanation [{{:keys [seed n operations] :as params} :params}]
   [:div.explanation
