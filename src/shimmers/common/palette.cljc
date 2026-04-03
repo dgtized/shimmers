@@ -45,10 +45,12 @@
                (with-meta {:fill (str color)}))))]
       (csvg/svg {:width width :height height :stroke "none"}))))
 
-(defn named-url [[name url]]
-  {:name name
-   :url url
+(defn url->palette [url]
+  {:url url
    :colors (->> url url->colors (map (partial str "#")))})
+
+(defn named-url [[name url]]
+  (assoc (url->palette url) :name name))
 
 (def palette-urls
   {:blue-yellow-tan-brown

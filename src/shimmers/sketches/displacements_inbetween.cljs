@@ -129,19 +129,19 @@
 
 ;; TODO: improve palette selection
 (def palettes
-  (->> ["https://artsexperiments.withgoogle.com/artpalette/colors/395054-0c0c15-a35192-3ca6a8-d8ead8" ;; pink/teal
-        "https://artsexperiments.withgoogle.com/artpalette/colors/f2bc46-95968d-304e5a-633e15-bd8036" ;; yellow/blue/brown
-        "https://artsexperiments.withgoogle.com/artpalette/colors/2f403d-e9e6d9-b4533a-9b9270-ddbd67" ;; red/yellow
-        "https://artsexperiments.withgoogle.com/artpalette/colors/adc7e5-e1e6e7-5087ba-b89474-222982" ;; blue/tan
-        "https://artsexperiments.withgoogle.com/artpalette/colors/4f8e98-53ad74-aa93b7-e2eae9-415e98" ;; cyan/green/purple/blue
-        ]
-       palette/from-urls
-       (concat [["maroon" "gold" "black"]])))
+  (->>
+   ["https://artsexperiments.withgoogle.com/artpalette/colors/395054-0c0c15-a35192-3ca6a8-d8ead8" ;; pink/teal
+    "https://artsexperiments.withgoogle.com/artpalette/colors/f2bc46-95968d-304e5a-633e15-bd8036" ;; yellow/blue/brown
+    "https://artsexperiments.withgoogle.com/artpalette/colors/2f403d-e9e6d9-b4533a-9b9270-ddbd67" ;; red/yellow
+    "https://artsexperiments.withgoogle.com/artpalette/colors/adc7e5-e1e6e7-5087ba-b89474-222982" ;; blue/tan
+    "https://artsexperiments.withgoogle.com/artpalette/colors/4f8e98-53ad74-aa93b7-e2eae9-415e98" ;; cyan/green/purple/blue
+    "https://artsexperiments.withgoogle.com/artpalette/colors/800000-ffd700-000000" ;; maroon/gold/black
+    ]
+   (mapv palette/url->palette)))
 
 (defn parameters [_]
-  ;; TODO: switch to palette/generate
-  {:screen (g/scale-size (csvg/screen width height) 0.95)
-   :palette (dr/rand-nth palettes)})
+  (merge (palette/generate palettes)
+         {:screen (g/scale-size (csvg/screen width height) 0.95)}))
 
 (defn scene [{{:keys [screen palette]} :params}]
   (let [shapes (->> (lines (dr/shuffle (into palette (repeat 2 "white"))))
