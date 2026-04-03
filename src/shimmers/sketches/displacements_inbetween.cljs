@@ -6,9 +6,9 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug :include-macros true]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils :as gu]
@@ -138,7 +138,12 @@
        palette/from-urls
        (concat [["maroon" "gold" "black"]])))
 
-(defn scene [screen palette]
+(defn parameters [_]
+  ;; TODO: switch to palette/generate
+  {:screen (g/scale-size (csvg/screen width height) 0.95)
+   :palette (dr/rand-nth palettes)})
+
+(defn scene [{{:keys [screen palette]} :params}]
   (let [shapes (->> (lines (dr/shuffle (into palette (repeat 2 "white"))))
                     (fit-region screen)
                     #_(debug/time-it defo [:time :generate]))]
@@ -150,20 +155,12 @@
                 :stroke-width 1.0}
        shapes))))
 
-(defn page []
-  (let [screen (g/scale-size (csvg/screen width height) 0.95)
-        ;; TODO: switch to palette/generate
-        palette (dr/rand-nth palettes)]
-    [:<>
-     [:div.canvas-frame [scene screen palette]]
-     [:div.contained
-      [:div.evencols
-       [view-sketch/generate :displacements-inbetween]
-       [palette/as-svg {} palette]]
-      #_(debug/pre-edn @defo)]]))
-
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-param-gen parameters)
+                  (usvg/with-controls usvg/palette-controls)
+                  #_(usvg/with-explanation (fn [] (debug/pre-edn @defo)))
+                  (usvg/page scene))))
