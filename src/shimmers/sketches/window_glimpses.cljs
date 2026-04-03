@@ -517,12 +517,17 @@
      :layers layers}))
 
 (defn side-by-side [{{:keys [palette]} :params :as sketch-args}]
-  [:div.evencols
-   [usvg/generate-link sketch-args]
-   [:div
-    [palette/as-svg {} palette]
-    [ctrl/checkbox ui-state "Monochrome" [:monochrome]]
-    [ctrl/checkbox ui-state "Path Points" [:path-points]]]])
+  [:<>
+   [:div.evencols
+    [usvg/generate-link sketch-args]
+    [:div
+     [palette/as-svg {} palette]
+     [ctrl/checkbox ui-state "Monochrome" [:monochrome]]
+     [ctrl/checkbox ui-state "Path Points" [:path-points]]]]
+   [:div.evencols
+    [:div.readable-width
+     [:p "Generate two layers of shapes, and then clip one layer to only be
+    visible through the other."]]]])
 
 (defn render-scene [{{:keys [layers]} :params}]
   (let [{:keys [monochrome path-points]} @ui-state]
