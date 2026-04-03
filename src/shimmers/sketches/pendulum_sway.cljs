@@ -123,4 +123,4 @@
    (-> sketch-args
        (usvg/with-param-gen gen-parameters)
        (usvg/with-explanation ui-controls)
-       (usvg/let-page scene))))
+       (usvg/page scene))))

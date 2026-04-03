@@ -75,4 +75,4 @@
    (-> sketch-args
        (usvg/with-param-gen (fn [] {:d 0.3}))
        (usvg/with-explanation explanation)
-       (usvg/let-page scene))))
+       (usvg/page scene))))

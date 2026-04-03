@@ -77,4 +77,4 @@
    (-> sketch-args
        (usvg/with-param-gen gen-params)
        (usvg/with-explanation explanation)
-       (usvg/let-page scene))))
+       (usvg/page scene))))

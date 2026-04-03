@@ -63,4 +63,4 @@
    (-> sketch-args
        (usvg/with-controls usvg/palette-controls)
        (usvg/with-param-gen (fn [] (palette/generate palettes)))
-       (usvg/let-page scene))))
+       (usvg/page scene))))

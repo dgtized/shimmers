@@ -286,4 +286,4 @@
    (-> sketch-args
        (usvg/with-param-gen gen-params)
        (usvg/with-controls side-by-side)
-       (usvg/let-page scene))))
+       (usvg/page scene))))

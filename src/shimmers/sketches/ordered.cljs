@@ -301,4 +301,4 @@
    (-> sketch-args
        (usvg/with-param-gen ruleset)
        (usvg/with-explanation (fn [] [debug/display defo]))
-       (usvg/let-page scene))))
+       (usvg/page scene))))

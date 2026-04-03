@@ -111,4 +111,4 @@
        (assoc :ui-state (ctrl/state {:remove-freq 0}))
        (usvg/with-param-gen parameters)
        (usvg/with-explanation explanation)
-       (usvg/let-page scene))))
+       (usvg/page scene))))

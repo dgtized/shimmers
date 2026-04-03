@@ -79,4 +79,4 @@
    (-> sketch-args
        (usvg/with-param-gen parameters)
        (usvg/with-explanation (fn [{:keys [params]}] (debug/pre-edn params)))
-       (usvg/let-page scene))))
+       (usvg/page scene))))

@@ -286,4 +286,4 @@
   (ctrl/mount (-> sketch-args
                   (usvg/with-param-gen generate)
                   (usvg/with-controls two-column)
-                  (usvg/let-page scene))))
+                  (usvg/page scene))))

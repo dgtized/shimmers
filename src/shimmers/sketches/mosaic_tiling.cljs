@@ -146,4 +146,4 @@
   (ctrl/mount (-> sketch-args
                   (usvg/with-param-gen scene-options)
                   (usvg/with-controls page)
-                  (usvg/let-page render-scene))))
+                  (usvg/page render-scene))))

@@ -138,4 +138,4 @@
        (usvg/with-controls usvg/palette-controls)
        (usvg/with-param-gen (fn [] (palette/generate)))
        (usvg/with-explanation explanation)
-       (usvg/let-page scene))))
+       (usvg/page scene))))

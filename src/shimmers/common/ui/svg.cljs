@@ -52,7 +52,7 @@
 ;; parameters (or a sceen bounds) from the parameters to scene instead of per
 ;; sketch globals. An implementation of `rv` that took this context would also
 ;; be required.
-(defn page
+(defn frame-page
   "Create a sketch from `sketch-args` and a `scene` function.
 
   This is for SVG generation as it injects a download shortcut to save the
@@ -71,17 +71,17 @@
         [download-shortcut scene-id (name sketch-id)]]
        [controls args]])))
 
-(defn let-page
+(defn page
   "Bind parameters for page before creating the scene.
 
   This allows a sketch page to generate parameters before rendering the scene.
   Parameters like view or debug output can change without regenerating the
   parameters from scratch, but still re-rendering the scene."
   [{:keys [param-gen] :as sketch-args} scene]
-  (if param-gen
-    (let [params (param-gen sketch-args)]
-      (page (-> sketch-args
-                (dissoc :param-gen)
-                (update :params merge params))
-            scene))
-    (page sketch-args scene)))
+  (let [params (if param-gen
+                 (param-gen sketch-args)
+                 {})]
+    (frame-page (-> sketch-args
+                    (dissoc :param-gen)
+                    (update :params merge params))
+                scene)))

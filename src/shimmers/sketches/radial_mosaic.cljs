@@ -148,4 +148,4 @@
        (usvg/with-controls usvg/palette-controls)
        (usvg/with-param-gen mosaic-params)
        (usvg/with-explanation explanation)
-       (usvg/let-page sketch))))
+       (usvg/page sketch))))

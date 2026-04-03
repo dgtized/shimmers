@@ -138,4 +138,4 @@
   (ctrl/mount (-> sketch-args
                   (usvg/with-param-gen parameters)
                   (usvg/with-explanation explanation)
-                  (usvg/let-page scene))))
+                  (usvg/page scene))))

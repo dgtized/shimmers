@@ -104,7 +104,7 @@
     [:summary "Moves"]
     (debug/pre-edn (list-moves @state))]])
 
-;; FIXME: prefer let-page?
+;; FIXME: prefer using param-gen?
 (defn page [sketch-args]
   (let [state (ctrl/state (city-start))]
     (-> sketch-args

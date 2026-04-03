@@ -78,4 +78,4 @@
   (ctrl/mount (-> sketch-args
                   (usvg/with-controls usvg/palette-controls)
                   (usvg/with-param-gen (fn [] (palette/generate radial-mosaic/palettes)))
-                  (usvg/let-page scene))))
+                  (usvg/page scene))))

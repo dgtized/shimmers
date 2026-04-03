@@ -262,4 +262,4 @@
    (-> sketch-args
        (usvg/with-param-gen line-parameters)
        (usvg/with-explanation explanation)
-       (usvg/let-page scene))))
+       (usvg/page scene))))

@@ -178,4 +178,4 @@
    (-> sketch-args
        (usvg/with-param-gen generate-rules)
        (usvg/with-controls controls)
-       (usvg/let-page scene))))
+       (usvg/page scene))))
