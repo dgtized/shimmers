@@ -509,30 +509,35 @@
        (concat [["#ffeedd" "#ddeeff"]])
        dr/rand-nth))
 
-(defn page []
+(defn parameters [_]
   (let [palette (pick-palette)
         bounds (csvg/screen width height)
         layers (generate-layers bounds palette)]
-    (fn []
-      [:<>
-       [:div.canvas-frame
-        (let [{:keys [monochrome path-points]} @ui-state]
-          [scene
-           (cond-> layers
-             monochrome
-             (assoc :background "white" :palette [])
-             path-points
-             (assoc :show-path-points path-points))])]
-       [:div.contained
-        [:div.evencols
-         [view-sketch/generate :window-glimpses]
-         [:div
-          [palette/as-svg {} palette]
-          [ctrl/checkbox ui-state "Monochrome" [:monochrome]]
-          [ctrl/checkbox ui-state "Path Points" [:path-points]]]]]])))
+    {:palette palette
+     :layers layers}))
+
+(defn side-by-side [{{:keys [palette]} :params :as sketch-args}]
+  [:div.evencols
+   [usvg/generate-link sketch-args]
+   [:div
+    [palette/as-svg {} palette]
+    [ctrl/checkbox ui-state "Monochrome" [:monochrome]]
+    [ctrl/checkbox ui-state "Path Points" [:path-points]]]])
+
+(defn render-scene [{{:keys [layers]} :params}]
+  (let [{:keys [monochrome path-points]} @ui-state]
+    [scene
+     (cond-> layers
+       monochrome
+       (assoc :background "white" :palette [])
+       path-points
+       (assoc :show-path-points path-points))]))
 
 (sketch/definition window-glimpses
   {:created-at "2023-05-18"
    :tags #{}
    :type :svg}
-  (ctrl/mount page))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-param-gen parameters)
+                  (usvg/with-controls side-by-side)
+                  (usvg/page render-scene))))
