@@ -1,17 +1,13 @@
 (ns shimmers.sketches.motif-shapes
   (:require
    [clojure.math :as math]
-   [quil.core :as q :include-macros true]
-   [quil.middleware :as m]
-   [shimmers.common.framerate :as framerate]
-   [shimmers.common.quil :as cq]
-   [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.group :as gg]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.matrix :as mat]
@@ -152,39 +148,30 @@
 
 ;; (keep (fn [x] (let [f (fit-grid x)] (when (zero? (nth f 2)) [x f]))) (range 10 400))
 
-(defn setup []
-  (q/color-mode :hsl 1.0)
-  (q/ellipse-mode :radius)
-  (let [screen-sizes {64 1
-                      81 2
+(defn shapes [bounds]
+  (let [screen-sizes {81 2
                       110 3
                       144 4
                       156 2
                       256 1}]
-    {:shapes (->> (repeatedly (dr/weighted screen-sizes) random-shape)
-                  (gg/tile-grid (cq/screen-rect 0.9)))}))
+    (->> (repeatedly (dr/weighted screen-sizes) random-shape)
+         (gg/tile-grid (g/scale-size bounds 0.9))
+         :children)))
 
-(defn update-state [state]
-  state)
+(defn scene [{:keys [scene-id]}]
+  (let [width 900
+        height 600
+        bounds (csvg/screen width height)]
+    (csvg/svg-timed {:id scene-id
+                     :width width
+                     :height height
+                     :stroke "black"
+                     :fill "white"
+                     :stroke-width 0.75}
+      (shapes bounds))))
 
-(defn draw [{:keys [shapes]}]
-  (q/background 1.0)
-  (q/stroke-weight 0.66)
-  (qdg/draw shapes))
-
-(defn page []
-  [sketch/with-explanation
-   (sketch/component
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [:p.center (view-sketch/generate :motif-shapes)]])
-
-;; Convert to SVG?
 (sketch/definition motif-shapes
   {:created-at "2021-10-16"
    :tags #{:static :deterministic}
-   :type :quil}
-  (ctrl/mount page))
+   :type :svg}
+  (ctrl/mount (usvg/page sketch-args scene)))
