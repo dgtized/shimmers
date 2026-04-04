@@ -78,10 +78,9 @@
   Parameters like view or debug output can change without regenerating the
   parameters from scratch, but still re-rendering the scene."
   [{:keys [param-gen] :as sketch-args} scene]
-  (let [params (if param-gen
-                 (param-gen sketch-args)
-                 {})]
-    (frame-page (-> sketch-args
-                    (dissoc :param-gen)
-                    (update :params merge params))
-                scene)))
+  (frame-page (if param-gen (let [params (param-gen sketch-args)]
+                              (-> sketch-args
+                                  (dissoc :param-gen)
+                                  (update :params merge params)))
+                  sketch-args)
+              scene))
