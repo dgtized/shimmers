@@ -19,7 +19,6 @@
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.color.core :as col]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
