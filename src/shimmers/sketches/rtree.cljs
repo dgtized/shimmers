@@ -53,7 +53,9 @@
   (let [tree (tree-walk-with-depth rtree)
         max-depth (apply max (map :depth tree))
         show-circles (:show-circles @ui-state)]
-    (doseq [{:keys [bounds data depth]} tree]
+    ;; FIXME: why are there nil bounds in tree?
+    (doseq [{:keys [bounds data depth]} tree
+            :when bounds]
       (q/stroke (/ depth (inc max-depth)))
       (cq/rectangle bounds)
       (when show-circles
