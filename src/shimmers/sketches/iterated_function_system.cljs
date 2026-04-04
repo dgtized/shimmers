@@ -96,8 +96,8 @@
    :tags #{}
    :type :svg}
   (ctrl/mount
-   (usvg/page (assoc sketch-args
-                     :ui-state ui-state
-                     :params (ctrl/state (gen-params))
-                     :explanation ui-controls)
-              scene)))
+   (-> sketch-args
+       (assoc :ui-state ui-state
+              :params (ctrl/state (gen-params)))
+       (usvg/with-explanation ui-controls)
+       (usvg/page scene))))
