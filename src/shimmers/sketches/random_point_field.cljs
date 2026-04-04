@@ -59,15 +59,14 @@
   [:div.flexcenter
    [:div.flexcols
     [:div {:style {:width "40%"}}
-     [:p "Various approaches of generating a random set of points in a boundary."]
+     "Various approaches of generating a random set of points in a boundary."
      [:p (str "Generated " (count points) " points")]]
     [:div
-     [:p
-      (ctrl/change-mode ui-state (keys rp/modes))
-      (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
-      (when (= (:mode @ui-state) :halton-sequence)
-        [:div "Halton sequence from co-primes " (debug/pre-edn primes)])
-      (ctrl/checkbox ui-state "Show MST Circles" [:mst])]]]])
+     (ctrl/change-mode ui-state (keys rp/modes))
+     (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
+     (when (= (:mode @ui-state) :halton-sequence)
+       [:div "Halton sequence from co-primes " (debug/pre-edn primes)])
+     (ctrl/checkbox ui-state "Show MST Circles" [:mst])]]])
 
 (sketch/definition random-point-field
   {:created-at "2022-03-12"
