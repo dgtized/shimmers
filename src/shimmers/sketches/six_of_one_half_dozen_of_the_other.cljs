@@ -6,11 +6,11 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.hexagon :as hex]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]))
 
@@ -71,18 +71,18 @@
            hex/flat-hexagon->polygon
            cq/draw-polygon))))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
-    :size [1024 768]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [:p.center (view-sketch/generate :six-of-one-half-dozen-of-the-other)]])
+     :size [1024 768]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:p.center [usvg/generate-link sketch-args]]])
 
 (sketch/definition six-of-one-half-dozen-of-the-other
   {:created-at "2021-05-17"
    :tags #{:static :deterministic}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
