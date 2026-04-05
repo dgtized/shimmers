@@ -477,41 +477,38 @@
                     :stroke-width 1.0}
      (shapes layers))])
 
-(defn pick-palette []
-  (->> [:blue-yellow-tan-brown
-        :shell-blue-yellow-grey
-        :purple-shell-brown
-        :shell-grey-blues
-        :slate-shell-red-tan-yellow
-        :slate-red-yellow-blue-brown
-        :shell-grey-blues-bold ;; blues are maybe too close?
-        :yellow-blue-slate-grey-red
-        :red-black-yellow-grey-blue
-        :orange-black-blue-shell-red
-        :orange-maroon-blues
-        :blues-orange-black-shell
-        :yellow-slate-white-mint-red
-        :black-shell-red-maroon-red
-        :green-shades
-        :grey-charcoal-tan-mint-olive
-        :brown-tan-shell-blue-brown
-        :yellow-brown
-        :shell-olive-blue-charcoal-red
-        :blue-grey-red-white-lavender
-        :teals-shell-yellow-blue
-        :charcoal-grey-yellow-blue
-        :sand-sky-water-black-grey
-        :grey-brown-yellow-grey-blue
-        :tan-shell-forest-green-offwhite]
-       palette/by-names
-       (map :colors)
-       (concat [["#ffeedd" "#ddeeff"]])
-       dr/rand-nth))
+(def palettes
+  (palette/by-names
+   [:blue-yellow-tan-brown
+    :shell-blue-yellow-grey
+    :purple-shell-brown
+    :shell-grey-blues
+    :slate-shell-red-tan-yellow
+    :slate-red-yellow-blue-brown
+    :shell-grey-blues-bold ;; blues are maybe too close?
+    :yellow-blue-slate-grey-red
+    :red-black-yellow-grey-blue
+    :orange-black-blue-shell-red
+    :orange-maroon-blues
+    :blues-orange-black-shell
+    :yellow-slate-white-mint-red
+    :black-shell-red-maroon-red
+    :green-shades
+    :grey-charcoal-tan-mint-olive
+    :brown-tan-shell-blue-brown
+    :yellow-brown
+    :shell-olive-blue-charcoal-red
+    :blue-grey-red-white-lavender
+    :teals-shell-yellow-blue
+    :charcoal-grey-yellow-blue
+    :sand-sky-water-black-grey
+    :grey-brown-yellow-grey-blue
+    :tan-shell-forest-green-offwhite]))
 
 (defn parameters [_]
-  (let [palette (pick-palette)
+  (let [palette (:palette (palette/generate palettes))
         bounds (csvg/screen width height)
-        layers (generate-layers bounds palette)]
+        layers (generate-layers bounds (concat palette ["#ffeedd" "#ddeeff"]))]
     {:palette palette
      :layers layers}))
 
