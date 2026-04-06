@@ -4,10 +4,10 @@
    [quil.middleware :as m]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -60,17 +60,17 @@
               0.9)
       (cq/draw-polygon shape))))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
-    :size [900 600]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode])
-   [:p.center (view-sketch/generate :dispersion)]])
+     :size [900 600]
+     :setup setup
+     :draw draw
+     :middleware [m/fun-mode])
+   [:p.center [usvg/generate-link sketch-args]]])
 
 (sketch/definition dispersion
   {:created-at "2021-03-10"
    :tags #{:static :deterministic}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
