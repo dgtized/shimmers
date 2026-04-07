@@ -219,7 +219,7 @@
    :brushes draw-triangle-brushes
    :equilateral-links draw-equilateral-links})
 
-(defn ui-controls []
+(defn ui-controls [sketch-args]
   [:div
    [:p.readable-width
     "Drag a " [:a {:href "https://en.wikipedia.org/wiki/Kinematic_chain"}
@@ -247,7 +247,7 @@
    [ctrl/container
     [ctrl/dropdown ui-state "Screen Size" [:screen-size]
      (screen/sizes)
-     {:on-change #(view-sketch/restart-sketch :snake)}]
+     {:on-change #(view-sketch/restart-sketch sketch-args)}]
     [ctrl/checkbox ui-state "Debug Mode" [:debug]]]])
 
 (defn draw [{:keys [image target] :as state}]
@@ -263,7 +263,7 @@
     (q/stroke 0.1 0.5)
     (cq/circle target)))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
      :size (screen/parse-size (:screen-size @ui-state))
@@ -271,10 +271,10 @@
      :update update-state
      :draw draw
      :middleware [m/fun-mode framerate/mode])
-   [ui-controls]])
+   [ui-controls sketch-args]])
 
 (sketch/definition snake
   {:created-at "2022-04-02"
    :tags #{:deterministic}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
