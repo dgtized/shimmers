@@ -353,7 +353,7 @@
   (when (:debug @ui-state)
     (debug-view state)))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
      :size (screen/parse-size (:screen-size @ui-state))
@@ -373,7 +373,7 @@
        [ctrl/container
         [ctrl/dropdown ui-state "Screen Size" [:screen-size]
          (screen/sizes)
-         {:on-change #(view-sketch/restart-sketch :superposition-mirrored)}]
+         {:on-change #(view-sketch/restart-sketch sketch-args)}]
         [ctrl/checkbox ui-state "Debug" [:debug]]
         [ctrl/checkbox ui-state "Paused" [:paused]]
         [ctrl/change-mode ui-state [:infinite :limit]]
@@ -387,4 +387,4 @@
   {:created-at "2023-03-08"
    :tags #{}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))

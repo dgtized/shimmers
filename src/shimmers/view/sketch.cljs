@@ -51,8 +51,11 @@
     (when-let [node (dom/getElement id)]
       (rdom/unmount-component-at-node node))))
 
-(defn restart-sketch [sketch-id]
-  (sketch-link rfe/push-state sketch-id))
+(defn restart-sketch [sketch]
+  (sketch-link rfe/push-state
+               (if (seq sketch)
+                 (:sketch-id sketch)
+                 sketch)))
 
 (defn link [sketch-id]
   [:a {:href (sketch-link rfe/href sketch-id)} (name sketch-id)])
