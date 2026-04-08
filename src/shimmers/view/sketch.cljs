@@ -53,7 +53,7 @@
 
 (defn restart-sketch [sketch]
   (sketch-link rfe/push-state
-               (if (seq sketch)
+               (if (map? sketch)
                  (:sketch-id sketch)
                  sketch)))
 
