@@ -62,8 +62,9 @@
     (fn []
       [sketch/with-explanation
        [canvas/canvas-frame attributes canvas-state canvas/animate-frame]
-       [ctrl/container
-        [controls ui-state]]])))
+       [:div.evencols
+        [ctrl/container
+         [controls ui-state]]]])))
 
 (sketch/definition carrier-wave
   {:created-at "2024-02-12"
