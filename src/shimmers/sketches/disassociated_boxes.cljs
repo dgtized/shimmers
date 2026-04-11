@@ -6,10 +6,10 @@
    [shimmers.common.palette :as palette]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]))
 
@@ -165,19 +165,19 @@
       (q/no-fill))
     (cq/draw-polygon shape)))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
-    :size [1200 900]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [:p.center (view-sketch/generate :disassociated-boxes)]])
+     :size [1200 900]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:p.center [usvg/generate-link sketch-args]]])
 
 ;; TODO: convert svg?
 (sketch/definition disassociated-boxes
   {:created-at "2021-05-05"
    :tags #{:static :deterministic}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
