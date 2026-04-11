@@ -11,6 +11,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.string :as scs]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -320,7 +321,7 @@
                     (vector? v) [k (dr/rand-nth (apply range v))])))
       (update-in [:snap-resolution] str)))
 
-(defn ui-controls []
+(defn ui-controls [sketch-args]
   [:div.flexcols
    (ctrl/container
     (ctrl/dropdown settings "Algorithm" [:calc-points] (:calc-points ui-mappings))
@@ -364,25 +365,25 @@
           (ctrl/checkbox-after settings "Display" [:obstacles :display])
           (ctrl/checkbox-after settings "Voronoi" [:obstacles :voronoi])])]))
    [:div
-    (view-sketch/generate :flow-fields)
+    [usvg/generate-link sketch-args]
     [:button.generate
      {:style {:margin-left "1em"}
       :on-click #(do (swap! settings merge (shuffle-settings))
                      (view-sketch/restart-sketch :flow-fields))}
      "Shuffle Settings"]]])
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
-    :size [1024 768]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [ui-controls]])
+     :size [1024 768]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [ui-controls sketch-args]])
 
 (sketch/definition flow-fields
   {:created-at "2021-06-17"
    :tags #{:static :deterministic}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
