@@ -9,10 +9,10 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
@@ -98,18 +98,18 @@
         (doseq [{[p q] :points} (clip/hatch-rectangle r spacing theta [0.5 0.5])]
           (q/line p q))))))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
-    :size [1000 1000]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [:p.center (view-sketch/generate :plaid-arrangements)]])
+     :size [1000 1000]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:p.center [usvg/generate-link sketch-args]]])
 
 (sketch/definition plaid-arrangements
   {:created-at "2021-11-07"
    :tags #{:deterministic :static}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
