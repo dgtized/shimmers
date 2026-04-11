@@ -11,9 +11,9 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -246,7 +246,7 @@
     :intersections (draw-intersections path mouse)
     :graph (draw-graph path mouse)))
 
-(defn ui-controls []
+(defn ui-controls [sketch-args]
   (let [{:keys [mode]} @ui-state]
     [:div.flexcols
      (ctrl/container
@@ -256,21 +256,22 @@
       (if (= mode :intersections)
         (ctrl/change-mode ui-state edge-modes {:mode-key :edge-mode})
         (ctrl/change-mode ui-state graph-modes {:mode-key :graph-mode})))
-     [:div (view-sketch/generate :intertwined)
+     [:div
+      [usvg/generate-link sketch-args]
       (debug/display defo)]]))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [ui-controls]])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [ui-controls sketch-args]])
 
 (sketch/definition intertwined
   {:created-at "2021-10-23"
    :tags #{:deterministic}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
