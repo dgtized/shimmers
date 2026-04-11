@@ -7,8 +7,8 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.fraction :as fraction]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -46,7 +46,7 @@
      :rate (fraction/make "1 / 2")
      :phase (fraction/make "1 / 3")}}))
 
-(defn ui-controls [ui-state]
+(defn ui-controls [sketch-args ui-state]
   [:<>
    [:h3 "Parameters"]
    [ctrl/checkbox-after ui-state "Simple Harmonograph" [:simple-harmonograph]]
@@ -96,7 +96,7 @@
        [fraction/control ui-state "Rate" [:pen :rate]]
        [fraction/control ui-state "Phase" [:pen :phase]]])]
 
-   [view-sketch/generate :harmonograph]])
+   [usvg/generate-link sketch-args]])
 
 (defn dampening [lambda t]
   (math/exp (* (- lambda) t)))
@@ -180,7 +180,7 @@
                 (> (math/sin (+ (* (:rate pen) t) (:phase pen))) 0))
         (apply q/point (tm/+ (cq/rel-vec 0.5 0.5) (plot t)))))))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
      :size [800 600]
@@ -188,10 +188,10 @@
      :update update-state
      :draw draw
      :middleware [m/fun-mode framerate/mode])
-   [ui-controls ui-state]])
+   [ui-controls sketch-args ui-state]])
 
 (sketch/definition harmonograph
   {:created-at "2024-01-22"
    :tags #{}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
