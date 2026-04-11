@@ -7,9 +7,9 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
@@ -83,8 +83,8 @@
             (g/scale-size scale)
             cq/draw-polygon)))))
 
-(defn ui-controls []
-  [:div.flexcols
+(defn ui-controls [sketch-args]
+  [:div.evencols
    (ctrl/container
     (ctrl/slider ui-state (fn [v] (str "Max Iterations " v)) [:max-iterations] [1 1280 1.0])
     (ctrl/dropdown ui-state "Split Approach" [:algorithm]
@@ -93,20 +93,20 @@
     (when (:show-squares @ui-state)
       (ctrl/checkbox ui-state "Padding on Square" [:square-padding]))
     (ctrl/checkbox ui-state "Show Remaining Rectangle" [:show-remaining]))
-   [:div (view-sketch/generate :square-packing)]])
+   [:div [usvg/generate-link sketch-args]]])
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [ui-controls]])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [ui-controls sketch-args]])
 
 (sketch/definition square-packing
   {:created-at "2021-10-17"
    :tags #{:deterministic}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
