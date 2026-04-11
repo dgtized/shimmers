@@ -3,9 +3,9 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -83,7 +83,7 @@
     :generator #(tm/clamp01 (+ (dr/pareto 0.01 0.5) (dr/gaussian 0.0 0.02)))}
    ])
 
-(defn page []
+(defn page [sketch-args]
   [:div
    [:p]
    [:h3.contained.center "Visualize Probability Distributions"]
@@ -102,10 +102,10 @@
              (debug/pre-edn (dr/summary-stats samples) {:width 50})]]))
    [:div.explanation.contained
     [:div.center
-     [:div [view-sketch/generate :probability-distributions]]]]])
+     [:div [usvg/generate-link sketch-args]]]]])
 
 (sketch/definition probability-distributions
   {:created-at "2023-01-31"
    :type :svg
    :tags #{:debug}}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
