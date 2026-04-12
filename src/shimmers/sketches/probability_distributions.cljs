@@ -16,34 +16,34 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn scatter-1d [samples]
-  (csvg/svg {:width width
+  [csvg/svg {:width width
              :height height
              :stroke "none"
              :fill "black"
-             :stroke-width 0.5}
-    (for [x samples]
-      (rect/rect (- (* x width) 0.5) 0
-                 1.0 height))))
+             :stroke-width 0.1}
+   (for [x samples]
+     (rect/rect (- (* x width) 0.5) 0
+                1.0 height))])
 
 (defn histogram [samples]
-  (csvg/svg {:width width
+  [csvg/svg {:width width
              :height height
              :stroke "none"
              :fill "navy"
              :stroke-width 0.5}
-    (let [freqs (frequencies (map (comp int (partial * 10)) samples))
-          buckets (reduce-kv (fn [b k v]
-                               (update b
-                                       (cond (< k 0) -1
-                                             (> k 10) 11
-                                             :else k) (fnil + 0)
-                                       v))
-                             {} freqs)]
-      (for [[bucket value] (sort-by first buckets)]
-        (rect/rect (* width (/ (inc bucket) 12))
-                   (* height (- 1.0 (min 1.0 (/ (float value) 128))))
-                   (* width (/ 1 12))
-                   height)))))
+   (let [freqs (frequencies (map (comp int (partial * 10)) samples))
+         buckets (reduce-kv (fn [b k v]
+                              (update b
+                                      (cond (< k 0) -1
+                                            (> k 10) 11
+                                            :else k) (fnil + 0)
+                                      v))
+                            {} freqs)]
+     (for [[bucket value] (sort-by first buckets)]
+       (rect/rect (* width (/ (inc bucket) 12))
+                  (* height (- 1.0 (min 1.0 (/ (float value) 128))))
+                  (* width (/ 1 12))
+                  height)))])
 
 (defn approaches []
   [{:title "Uniform Random"
