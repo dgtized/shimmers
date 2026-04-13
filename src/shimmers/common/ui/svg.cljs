@@ -10,18 +10,15 @@
   [kb/kb-action "alt-s"
    (fn [] (svg-export/download id filename))])
 
-(defn generate-link [{:keys [sketch-id]}]
-  [view-sketch/generate sketch-id])
-
 (defn default-controls [{:keys [explanation] :as args}]
   [:div
-   [:p.center [generate-link args]]
+   [:p.center [view-sketch/generate args]]
    (when explanation
      [explanation args])])
 
 (defn column-controls [{:keys [explanation] :as args}]
   [:div.flexcols
-   [:p.center [generate-link args]]
+   [:p.center [view-sketch/generate args]]
    (when explanation
      [explanation args])])
 
@@ -31,7 +28,7 @@
     :as args}]
   [:div
    [:div.flexpalette
-    [generate-link args]
+    [view-sketch/generate args]
     [palette/as-svg {} palette]]
    (when explanation
      [:div.flexcenter

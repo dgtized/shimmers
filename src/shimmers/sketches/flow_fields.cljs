@@ -11,7 +11,6 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.string :as scs]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -365,7 +364,7 @@
           (ctrl/checkbox-after settings "Display" [:obstacles :display])
           (ctrl/checkbox-after settings "Voronoi" [:obstacles :voronoi])])]))
    [:div
-    [usvg/generate-link sketch-args]
+    [view-sketch/generate sketch-args]
     [:button.generate
      {:style {:margin-left "1em"}
       :on-click #(do (swap! settings merge (shuffle-settings))

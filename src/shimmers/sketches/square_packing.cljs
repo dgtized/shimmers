@@ -7,9 +7,9 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
@@ -93,7 +93,7 @@
     (when (:show-squares @ui-state)
       (ctrl/checkbox ui-state "Padding on Square" [:square-padding]))
     (ctrl/checkbox ui-state "Show Remaining Rectangle" [:show-remaining]))
-   [:div [usvg/generate-link sketch-args]]])
+   [:div [view-sketch/generate sketch-args]]])
 
 (defn page [sketch-args]
   [sketch/with-explanation

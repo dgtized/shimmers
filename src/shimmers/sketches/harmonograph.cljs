@@ -7,8 +7,8 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.fraction :as fraction]
-   [shimmers.common.ui.svg :as usvg]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -96,7 +96,7 @@
        [fraction/control ui-state "Rate" [:pen :rate]]
        [fraction/control ui-state "Phase" [:pen :phase]]])]
 
-   [usvg/generate-link sketch-args]])
+   [view-sketch/generate sketch-args]])
 
 (defn dampening [lambda t]
   (math/exp (* (- lambda) t)))

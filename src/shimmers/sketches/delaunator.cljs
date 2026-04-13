@@ -8,6 +8,7 @@
    [shimmers.common.ui.debug :as debug]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -130,7 +131,7 @@
   (let [mode (:mode @ui-state)]
     [:div.flexcols
      [:div {:style {:width "20em"}}
-      (usvg/generate-link sketch-args)
+      [view-sketch/generate sketch-args]
       [:h4 "Controls"]
       (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
       (ctrl/change-mode ui-state (keys rp/modes) {:mode-key :point-mode})

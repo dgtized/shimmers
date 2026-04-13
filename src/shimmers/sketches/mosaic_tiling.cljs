@@ -8,6 +8,7 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core]
@@ -131,7 +132,7 @@
 (defn page [{{:keys [palette]} :params :as sketch-args}]
   [:div
    [:div.evencols
-    [usvg/generate-link sketch-args]
+    [view-sketch/generate sketch-args]
     [:div
      [ctrl/checkbox ui-settings "Show Scene" [:show-scene]]
      [ctrl/checkbox ui-settings "Show Borders" [:show-borders]]]

@@ -91,5 +91,5 @@
   [:div
    [sketch-controls sketch known-names]])
 
-(defn generate [sketch-id]
+(defn generate [{:keys [sketch-id]}]
   [:button.generate {:on-click #(restart-sketch sketch-id)} "Generate"])

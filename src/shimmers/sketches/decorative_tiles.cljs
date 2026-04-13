@@ -11,6 +11,7 @@
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.sketches.radial-mosaic :as radial-mosaic]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils.intersect :as isec]
@@ -271,7 +272,7 @@
     [:div
      [:div.flexcols
       [:div
-       [:p.center (usvg/generate-link sketch-args)]
+       [:p.center [view-sketch/generate sketch-args]]
        [:p.center "Recursively layer regular polygons on each outward face."]
        (when (:color-tiles @ui-state)
          [palette/as-svg {:class "center"} palette])]

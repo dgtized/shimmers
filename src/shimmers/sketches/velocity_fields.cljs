@@ -12,6 +12,7 @@
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -165,7 +166,7 @@
   [:div.evencols
    [:div
     [:p]
-    [usvg/generate-link sketch-args]
+    [view-sketch/generate sketch-args]
     [:p]
     [debug/pre-edn (dissoc rules :seed :scale)]]
    [explanation]])

@@ -3,9 +3,9 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
-   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.rect :as rect]
    [thi.ng.math.core :as tm]))
 
@@ -97,7 +97,7 @@
              (debug/pre-edn (dr/summary-stats samples) {:width 50})]]))
    [:div.explanation.contained
     [:div.center
-     [:div [usvg/generate-link sketch-args]]]]])
+     [:div [view-sketch/generate sketch-args]]]]])
 
 (sketch/definition probability-distributions
   {:created-at "2023-01-31"

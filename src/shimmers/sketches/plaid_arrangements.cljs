@@ -9,10 +9,10 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
@@ -106,7 +106,7 @@
      :update update-state
      :draw draw
      :middleware [m/fun-mode framerate/mode])
-   [:p.center [usvg/generate-link sketch-args]]])
+   [:p.center [view-sketch/generate sketch-args]]])
 
 (sketch/definition plaid-arrangements
   {:created-at "2021-11-07"

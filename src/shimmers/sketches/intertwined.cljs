@@ -11,9 +11,9 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
-   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -257,7 +257,7 @@
         (ctrl/change-mode ui-state edge-modes {:mode-key :edge-mode})
         (ctrl/change-mode ui-state graph-modes {:mode-key :graph-mode})))
      [:div
-      [usvg/generate-link sketch-args]
+      [view-sketch/generate sketch-args]
       (debug/display defo)]]))
 
 (defn page [sketch-args]

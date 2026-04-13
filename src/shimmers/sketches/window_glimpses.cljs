@@ -19,6 +19,7 @@
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.color.core :as col]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -515,7 +516,7 @@
 (defn side-by-side [{{:keys [palette]} :params :as sketch-args}]
   [:<>
    [:div.evencols
-    [usvg/generate-link sketch-args]
+    [view-sketch/generate sketch-args]
     [:div
      [palette/as-svg {} palette]
      [ctrl/checkbox ui-state "Monochrome" [:monochrome]]
