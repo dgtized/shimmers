@@ -216,6 +216,7 @@
    shimmers.sketches.polygrowth2
    shimmers.sketches.position-out-of-phase
    shimmers.sketches.precipitation
+   shimmers.sketches.principles-of-chording
    shimmers.sketches.probabilistic-automata
    shimmers.sketches.probability-distributions
    shimmers.sketches.prophecies
