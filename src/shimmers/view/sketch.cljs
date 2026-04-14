@@ -69,24 +69,24 @@
    {:name sketch-id}
    {:seed (current-seed)}))
 
-(defn cycle-sketch [sketch known-names]
-  (->> (name (:sketch-id sketch))
+(defn cycle-sketch [sketch-args known-names]
+  (->> (name (:sketch-id sketch-args))
        (cs/cycle-next known-names)
        (sketch-link rfe/push-state)))
 
-(defn interface-controls [sketch known-names]
+(defn interface-controls [sketch-args known-names]
   [:section.interface-controls
    [:span
-    [:button {:on-click #(cycle-sketch sketch known-names)} "Next"]
-    [:button {:on-click #(restart-sketch sketch)} "Restart"]
+    [:button {:on-click #(cycle-sketch sketch-args known-names)} "Next"]
+    [:button {:on-click #(restart-sketch sketch-args)} "Restart"]
     [:button {:on-click #(rfe/push-state :shimmers.view.index/by-alphabetical)} "All"]]
    [:span
-    [:a {:href (:href (ui/code-link sketch))} (name (:sketch-id sketch))]]
+    [:a {:href (:href (ui/code-link sketch-args))} (name (:sketch-id sketch-args))]]
    [:span#framerate]])
 
-(defn sketch-by-name [sketch known-names]
+(defn sketch-by-name [sketch-args known-names]
   [:div
-   [interface-controls sketch known-names]])
+   [interface-controls sketch-args known-names]])
 
 (defn generate [sketch-args]
   [:button.generate {:on-click #(restart-sketch sketch-args)} "Generate"])
