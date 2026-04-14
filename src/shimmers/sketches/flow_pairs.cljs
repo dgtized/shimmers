@@ -77,7 +77,7 @@
   (when (< (count pairs) 64)
     (q/no-loop)))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
      :size (screen/parse-size (:screen-size @ui-state))
@@ -91,7 +91,7 @@
     ;; also consider marking this requires restart
     [ctrl/dropdown ui-state "Screen Size" [:screen-size]
      (screen/sizes)
-     {:on-change #(view-sketch/restart-sketch :flow-pairs)}]
+     {:on-change #(view-sketch/restart-sketch sketch-args)}]
     [ctrl/dropdown ui-state "Snap Resolution" [:snap]
      {"Disabled" 0
       "90 degrees" 4
@@ -99,7 +99,7 @@
       "45 degrees" 8}]]])
 
 (sketch/definition flow-pairs
-    {:created-at "2023-05-10"
-     :tags #{}
-     :type :quil}
-  (ctrl/mount page))
+  {:created-at "2023-05-10"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount (partial page sketch-args)))

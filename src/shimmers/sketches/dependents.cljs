@@ -130,7 +130,7 @@
                       (g/closest-point poly (:pos neighbor)))
               (q/line pos (:pos neighbor)))))))))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
      :size (screen/parse-size (:screen-size @ui-state))
@@ -148,7 +148,7 @@
      [ctrl/container
       [ctrl/dropdown ui-state "Screen Size" [:screen-size]
        (screen/sizes)
-       {:on-change #(view-sketch/restart-sketch :dependents)}]
+       {:on-change #(view-sketch/restart-sketch sketch-args)}]
       [ctrl/checkbox-after ui-state "Extrude Shapes" [:extrude-shapes]]
       [ctrl/checkbox-after ui-state "Connect Surfaces" [:connect-surfaces]]
       [ctrl/checkbox-after ui-state "Debug" [:show-debug]]]]
@@ -156,7 +156,7 @@
       [debug/display defo])]])
 
 (sketch/definition dependents
-    {:created-at "2023-11-02"
-     :tags #{}
-     :type :quil}
-  (ctrl/mount page))
+  {:created-at "2023-11-02"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount (partial page sketch-args)))

@@ -115,7 +115,7 @@
               (cq/draw-triangle (g/vertices triangle)))))))
     (q/no-loop)))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
      :size (screen/parse-size (:screen-size @ui-state))
@@ -136,10 +136,10 @@
     [ctrl/container
      [ctrl/dropdown ui-state "Screen Size" [:screen-size]
       (screen/sizes)
-      {:on-change #(view-sketch/restart-sketch :woven)}]]]])
+      {:on-change #(view-sketch/restart-sketch sketch-args)}]]]])
 
 (sketch/definition woven
   {:created-at "2023-10-25"
    :tags #{}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))

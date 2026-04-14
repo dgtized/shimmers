@@ -67,7 +67,7 @@
             [sx sy] (tm/mix center (g/point-at outline (sm/mix-mod a b (- 1.0 d1))) d2)]
         (q/bezier px py rx ry sx sy qx qy)))))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
      :size (screen/parse-size (:screen-size @ui-state))
@@ -78,10 +78,10 @@
    [ctrl/container
     [ctrl/dropdown ui-state "Screen Size" [:screen-size]
      (screen/sizes)
-     {:on-change #(view-sketch/restart-sketch :stretchy-curves)}]]])
+     {:on-change #(view-sketch/restart-sketch sketch-args)}]]])
 
 (sketch/definition stretchy-curves
   {:created-at "2024-06-01"
    :tags #{}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))

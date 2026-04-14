@@ -90,7 +90,7 @@
       (q/no-loop)
       (draw-frame params))))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
      :size (screen/parse-size (:screen-size @ui-state))
@@ -102,7 +102,7 @@
     [ctrl/container
      [ctrl/dropdown ui-state "Screen Size" [:screen-size]
       (screen/sizes)
-      {:on-change #(view-sketch/restart-sketch :remaining)}]]
+      {:on-change #(view-sketch/restart-sketch sketch-args)}]]
     [:div [:p]
      [debug/display defo]]]])
 
@@ -110,4 +110,4 @@
   {:created-at "2024-05-02"
    :tags #{}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))

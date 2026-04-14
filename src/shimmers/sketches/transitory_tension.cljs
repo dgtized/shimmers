@@ -42,7 +42,7 @@
       (q/line (+ x (dr/gaussian 0.0 2.0)) top
               (+ x (dr/gaussian 0.0 2.0)) bottom))))
 
-(defn page []
+(defn page [sketch-args]
   [sketch/with-explanation
    (sketch/component
      :size (screen/parse-size (:screen-size @ui-state))
@@ -57,10 +57,10 @@
     [ctrl/container
      [ctrl/dropdown ui-state "Screen Size" [:screen-size]
       (screen/sizes)
-      {:on-change #(view-sketch/restart-sketch :transitory-tension)}]]]])
+      {:on-change #(view-sketch/restart-sketch sketch-args)}]]]])
 
 (sketch/definition transitory-tension
   {:created-at "2024-01-10"
    :tags #{}
    :type :quil}
-  (ctrl/mount page))
+  (ctrl/mount (partial page sketch-args)))
