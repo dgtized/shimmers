@@ -51,11 +51,8 @@
     (when-let [node (dom/getElement id)]
       (rdom/unmount-component-at-node node))))
 
-(defn restart-sketch [sketch]
-  (sketch-link rfe/push-state
-               (if (map? sketch)
-                 (:sketch-id sketch)
-                 sketch)))
+(defn restart-sketch [{:keys [sketch-id]}]
+  (sketch-link rfe/push-state sketch-id))
 
 (defn link [sketch-id]
   [:a {:href (sketch-link rfe/href sketch-id)} (name sketch-id)])
@@ -81,7 +78,7 @@
   [:section.interface-controls
    [:span
     [:button {:on-click #(cycle-sketch sketch known-names)} "Next"]
-    [:button {:on-click #(restart-sketch (:sketch-id sketch))} "Restart"]
+    [:button {:on-click #(restart-sketch sketch)} "Restart"]
     [:button {:on-click #(rfe/push-state :shimmers.view.index/by-alphabetical)} "All"]]
    [:span
     [:a {:href (:href (ui/code-link sketch))} (name (:sketch-id sketch))]]
@@ -91,5 +88,5 @@
   [:div
    [sketch-controls sketch known-names]])
 
-(defn generate [{:keys [sketch-id]}]
-  [:button.generate {:on-click #(restart-sketch sketch-id)} "Generate"])
+(defn generate [sketch-args]
+  [:button.generate {:on-click #(restart-sketch sketch-args)} "Generate"])
