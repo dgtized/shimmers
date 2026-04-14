@@ -20,18 +20,18 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn maurer-rose [{:keys [n d]}]
+(defn maurer-rose [{:keys [samples n d]}]
   (let [center (rv 0.5 0.5)
         radius (* 0.49 height)
-        path (for [i (range 361)
+        path (for [i (range (inc samples))
                    :let [k (tm/radians (* d i))]]
                (v/+polar center (* radius (math/sin (* n k))) k))]
     (csvg/path (csvg/segmented-path path))))
 
-(defn chorded [{:keys [n d]}]
+(defn chorded [{:keys [samples n d]}]
   (let [center (rv 0.5 0.5)
         radius (* 0.49 height)]
-    (for [i (range 721)
+    (for [i (range (inc samples))
           :let [k (* n i)]]
       (gl/line2 (v/+polar center radius
                           (tm/radians i))
@@ -55,12 +55,14 @@
     (case method
       :maurer-rose
       {:method method
+       :samples (dr/rand-nth [360 720])
        :n ((if (dr/chance 0.5) math/round identity)
            (dr/random 2 16))
        :d ((if (dr/chance 0.3) math/round identity)
            (dr/random 2 128))}
       :chorded
       {:method method
+       :samples (dr/rand-nth [360 720])
        :n ((if (dr/chance 0.4) math/round identity)
            (min (dr/random 0.5 9)
                 (dr/random 0.5 9)))
