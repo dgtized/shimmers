@@ -74,7 +74,7 @@
        (cs/cycle-next known-names)
        (sketch-link rfe/push-state)))
 
-(defn sketch-controls [sketch known-names]
+(defn interface-controls [sketch known-names]
   [:section.interface-controls
    [:span
     [:button {:on-click #(cycle-sketch sketch known-names)} "Next"]
@@ -86,7 +86,7 @@
 
 (defn sketch-by-name [sketch known-names]
   [:div
-   [sketch-controls sketch known-names]])
+   [interface-controls sketch known-names]])
 
 (defn generate [sketch-args]
   [:button.generate {:on-click #(restart-sketch sketch-args)} "Generate"])
