@@ -36,7 +36,8 @@
     (shapes params)))
 
 (defn param-gen []
-  {:n (dr/random-int 2 16)
+  {:n ((if (dr/chance 0.5) math/round identity)
+       (dr/random 2 16))
    :d ((if (dr/chance 0.3) math/round identity)
        (dr/random 2 128))})
 
