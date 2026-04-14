@@ -38,6 +38,15 @@
                 (v/+polar center radius
                           (+ (tm/radians i) (mod (tm/radians k) d)))))))
 
+(defn modulo-chords [{:keys [samples n]}]
+  (let [center (rv 0.5 0.5)
+        radius (* 0.49 height)]
+    (for [i (range (inc samples))]
+      (gl/line2 (v/+polar center radius
+                          (tm/radians i))
+                (v/+polar center radius
+                          (mod (tm/radians (* n i )) eq/TAU))))))
+
 (defn scene [{:keys [scene-id params]}]
   (csvg/svg-timed {:id scene-id
                    :width width
@@ -46,12 +55,15 @@
                    :fill "none"
                    :stroke-width 0.5}
     (({:maurer-rose maurer-rose
-       :chorded chorded} (:method params))
+       :chorded chorded
+       :modulo-chords modulo-chords}
+      (:method params))
      params)))
 
 (defn param-gen []
-  (let [method (dr/weighted {:maurer-rose 1
-                             :chorded 1})]
+  (let [method (dr/weighted {:maurer-rose 1.25
+                             :chorded 1
+                             :modulo-chords 1})]
     (case method
       :maurer-rose
       {:method method
@@ -67,7 +79,12 @@
            (min (dr/random 0.5 9)
                 (dr/random 0.5 9)))
        :d (min (dr/random 1.0 eq/TAU)
-               (dr/random 1.0 eq/TAU))})))
+               (dr/random 1.0 eq/TAU))}
+      :modulo-chords
+      {:method method
+       :samples (dr/rand-nth [360 720])
+       :n (dr/weighted {(dr/random 0.1 5) 3
+                        (dr/random 0.1 360) 1})})))
 
 (defn explanation [{:keys [params]}]
   [:div.evencols (debug/pre-edn params)])
