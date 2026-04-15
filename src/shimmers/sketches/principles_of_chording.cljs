@@ -57,37 +57,47 @@
     (({:maurer-rose maurer-rose
        :chorded chorded
        :modulo-chords modulo-chords}
-      (:method params))
-     params)))
+      (:method @params))
+     @params)))
 
 (defn param-gen []
   (let [method (dr/weighted {:maurer-rose 1.25
                              :chorded 1
                              :modulo-chords 1})]
-    (case method
-      :maurer-rose
-      {:method method
-       :samples (dr/rand-nth [360 720])
-       :n ((if (dr/chance 0.5) math/round identity)
-           (dr/random 2 16))
-       :d ((if (dr/chance 0.3) math/round identity)
-           (dr/random 2 128))}
-      :chorded
-      {:method method
-       :samples (dr/rand-nth [360 720])
-       :n ((if (dr/chance 0.4) math/round identity)
-           (min (dr/random 0.5 9)
-                (dr/random 0.5 9)))
-       :d (min (dr/random 1.0 eq/TAU)
-               (dr/random 1.0 eq/TAU))}
-      :modulo-chords
-      {:method method
-       :samples (dr/rand-nth [360 720])
-       :n (dr/weighted {(dr/random 0.1 5) 3
-                        (dr/random 0.1 360) 1})})))
+    (ctrl/state
+     (case method
+       :maurer-rose
+       {:method method
+        :samples (dr/rand-nth [360 720])
+        :n ((if (dr/chance 0.5) math/round identity)
+            (dr/random 2 16))
+        :d ((if (dr/chance 0.3) math/round identity)
+            (dr/random 2 128))}
+       :chorded
+       {:method method
+        :samples (dr/rand-nth [360 720])
+        :n ((if (dr/chance 0.4) math/round identity)
+            (min (dr/random 0.5 9)
+                 (dr/random 0.5 9)))
+        :d (min (dr/random 1.0 eq/TAU)
+                (dr/random 1.0 eq/TAU))}
+       :modulo-chords
+       {:method method
+        :samples (dr/rand-nth [360 720])
+        :n (dr/weighted {(dr/random 0.1 5) 3
+                         (dr/random 0.1 360) 1})}))))
 
 (defn explanation [{:keys [params]}]
-  [:div.evencols (debug/pre-edn params)])
+  (let [{:keys [samples method d]} @params]
+    [:div.evencols
+     [ctrl/container
+      [:div.flexcols [:label "Samples: "] samples]
+      [:div.flexcols [:label "Method: "] [:code method]]
+      [:div.wide-input
+       [ctrl/numeric params "N" [:n] [0.01 360 0.0001]]]
+      (when d
+        [:div.wide-input
+         [ctrl/numeric params "D" [:d] [0.01 128 0.0001]]])]]))
 
 (sketch/definition principles-of-chording
   {:created-at "2026-04-14"
