@@ -88,15 +88,13 @@
 
 (defn explanation [{:keys [params]}]
   (let [{:keys [samples method]} @params]
-    [:div.evencols
+    [:div.evencols.wide-input
      [ctrl/container
       [:div.flexcols [:label "Samples: "] samples]
       [:div.flexcols [:label "Method: "] [:code method]]
-      [:div.wide-input
-       [ctrl/numeric params "N" [:n] [0.01 360 0.00001]]]
+      [ctrl/numeric params "N" [:n] [0.01 360 0.00001]]
       (when (not= method :modulo-chords)
-        [:div.wide-input
-         [ctrl/numeric params "D" [:d] [0.01 128 0.00001]]])]]))
+        [ctrl/numeric params "D" [:d] [0.01 128 0.00001]])]]))
 
 (sketch/definition principles-of-chording
   {:created-at "2026-04-14"
