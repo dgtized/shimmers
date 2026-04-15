@@ -88,14 +88,14 @@
                          (dr/random 0.1 360) 1})}))))
 
 (defn explanation [{:keys [params]}]
-  (let [{:keys [samples method d]} @params]
+  (let [{:keys [samples method]} @params]
     [:div.evencols
      [ctrl/container
       [:div.flexcols [:label "Samples: "] samples]
       [:div.flexcols [:label "Method: "] [:code method]]
       [:div.wide-input
        [ctrl/numeric params "N" [:n] [0.01 360 0.0001]]]
-      (when d
+      (when (not= method :modulo-chords)
         [:div.wide-input
          [ctrl/numeric params "D" [:d] [0.01 128 0.0001]]])]]))
 
