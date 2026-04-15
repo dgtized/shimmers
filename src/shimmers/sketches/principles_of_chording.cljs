@@ -19,32 +19,34 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn maurer-rose [{:keys [samples n d]}]
+(defn maurer-rose [{:keys [samples rotation n d]}]
   (let [center (rv 0.5 0.5)
         radius (* 0.49 height)
         path (for [i (range (inc samples))
                    :let [k (tm/radians (* d i))]]
-               (v/+polar center (* radius (math/sin (* n k))) k))]
+               (v/+polar center
+                         (* radius (math/sin (+ (tm/radians rotation) (* n k))))
+                         (+ k (tm/radians rotation))))]
     (csvg/path (csvg/segmented-path path))))
 
-(defn chorded [{:keys [samples n d]}]
+(defn chorded [{:keys [samples rotation n d]}]
   (let [center (rv 0.5 0.5)
         radius (* 0.49 height)]
     (for [i (range (inc samples))
-          :let [k (* n i)]]
-      (gl/line2 (v/+polar center radius
-                          (tm/radians i))
+          :let [base (+ (tm/radians i) (tm/radians rotation))
+                k (* n i)]]
+      (gl/line2 (v/+polar center radius base)
                 (v/+polar center radius
-                          (+ (tm/radians i) (mod (tm/radians k) d)))))))
+                          (+ base (mod (tm/radians k) d)))))))
 
-(defn modulo-chords [{:keys [samples n]}]
+(defn modulo-chords [{:keys [samples rotation n]}]
   (let [center (rv 0.5 0.5)
         radius (* 0.49 height)]
     (for [i (range (inc samples))]
       (gl/line2 (v/+polar center radius
-                          (tm/radians i))
+                          (+ (tm/radians i) (tm/radians rotation)))
                 (v/+polar center radius
-                          (mod (tm/radians (* n i )) eq/TAU))))))
+                          (mod (tm/radians (+ (* n i) rotation)) eq/TAU))))))
 
 (defn scene [{:keys [scene-id params]}]
   (csvg/svg-timed {:id scene-id
@@ -63,34 +65,34 @@
   (let [method (dr/weighted {:maurer-rose 1.25
                              :chorded 1
                              :modulo-chords 1})]
-    (ctrl/state
+    (->
      (case method
        :maurer-rose
-       {:method method
-        :samples (dr/rand-nth [360 720])
-        :n ((if (dr/chance 0.5) math/round identity)
+       {:n ((if (dr/chance 0.5) math/round identity)
             (dr/random 2 16))
         :d ((if (dr/chance 0.3) math/round identity)
             (dr/random 2 128))}
        :chorded
-       {:method method
-        :samples (dr/rand-nth [360 720])
-        :n ((if (dr/chance 0.4) math/round identity)
+       {:n ((if (dr/chance 0.4) math/round identity)
             (min (dr/random 0.5 9)
                  (dr/random 0.5 9)))
         :d (min (dr/random 1.0 eq/TAU)
                 (dr/random 1.0 eq/TAU))}
        :modulo-chords
-       {:method method
-        :samples (dr/rand-nth [360 720])
-        :n (dr/weighted {(dr/random 0.1 5) 3
-                         (dr/random 0.1 360) 1})}))))
+       {:n (dr/weighted {(dr/random 0.1 5) 3
+                         (dr/random 0.1 360) 1})})
+     (merge
+      {:method method
+       :rotation (if (dr/chance 0.1) (dr/random 0 360) 0)
+       :samples (dr/rand-nth [360 720])})
+     ctrl/state)))
 
 (defn explanation [{:keys [params]}]
   (let [{:keys [method]} @params]
     [:div.evencols.wide-input
      [ctrl/container
       [:div.flexcols [:label "Method: "] [:code method]]
+      [ctrl/numeric params "Rotation°" [:rotation] [0 360 0.1]]
       [ctrl/numeric params "Samples" [:samples] [1 5000 1]]
       [ctrl/numeric params "N" [:n] [0.01 360 0.00001]]
       (when (not= method :modulo-chords)
