@@ -95,10 +95,12 @@
 (defn dropdown
   ([settings label field-ref options]
    (dropdown settings label field-ref options nil))
-  ([settings label field-ref options {:keys [on-change]}]
+  ([settings label field-ref options
+    {:keys [on-change reader]
+     :or {reader identity}}]
    [:div.label-set.dropdown {:key (str "dropdown-" field-ref)}
     [:label label]
-    [:select {:on-change (assoc-value settings field-ref identity on-change)
+    [:select {:on-change (assoc-value settings field-ref reader on-change)
               :value (get-in @settings field-ref)}
      (for [[name value] options]
        [:option {:key value :value value} name])]]))
