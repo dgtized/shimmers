@@ -3,7 +3,8 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
-   [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -16,12 +17,15 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(def shape-seq
-  (let [circle (gc/circle (gv/vec2) (* 0.05 height))]
-    [circle
-     (g/as-polygon circle 5)
-     (g/bounds circle)
-     (triangle/inscribed-equilateral circle 0.0)]))
+(defn shape-seq []
+  (let [radius (* 0.05 height)
+        circle (gc/circle (gv/vec2) radius)]
+    (take (dr/random-int 3 7)
+          (dr/shuffle
+           (into [circle]
+                 (for [size (range 3 9)]
+                   (g/rotate (poly/regular-n-gon size radius)
+                             (dr/random-tau))))))))
 
 (defn path [t]
   (g/point-at (gc/circle (rv 0.5 0.5) (* height 0.4)) t))
@@ -31,12 +35,13 @@
     (tm/mix (g/point-at from v) (g/point-at to v) t)))
 
 (defn shapes []
-  (for [t (butlast (tm/norm-range 24))]
-    (let [base (int (* t (count shape-seq)))]
-      (g/translate (gp/polygon2 (morph (nth shape-seq base)
-                                       (nth shape-seq (mod (inc base) (count shape-seq)))
-                                       (mod (* t (count shape-seq)) 1.0)))
-                   (path t)))))
+  (let [shape-xs (shape-seq)]
+    (for [t (butlast (tm/norm-range 24))]
+      (let [base (int (* t (count shape-xs)))]
+        (g/translate (gp/polygon2 (morph (nth shape-xs base)
+                                         (nth shape-xs (mod (inc base) (count shape-xs)))
+                                         (mod (* t (count shape-xs)) 1.0)))
+                     (path t))))))
 
 (defn scene []
   (csvg/svg-timed {:width width
@@ -46,8 +51,17 @@
                    :stroke-width 1.0}
     (shapes)))
 
+(defn explanation []
+  [:div.evencols
+   [:div.readable-width
+    [:p "Create a set of N (3-6) shapes. The shapes can be a polygon of up to 8
+   sides, or a circle. Once the shapres are selected, then morph between each of
+   the shapes along a set path."]]])
+
 (sketch/definition all-the-shapes-in-between
   {:created-at "2023-01-02"
    :type :svg
    :tags #{:genuary2023}}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-explanation explanation)
+                  (usvg/page scene))))
