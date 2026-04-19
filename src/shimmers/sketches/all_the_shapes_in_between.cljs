@@ -25,7 +25,7 @@
            (into [circle]
                  (for [size (range 3 9)]
                    (g/rotate (poly/regular-n-gon size radius)
-                             (dr/random-tau))))))))
+                             (dr/random (- tm/QUARTER_PI) tm/QUARTER_PI))))))))
 
 (defn path [t]
   (g/point-at (gc/circle (rv 0.5 0.5) (* height 0.4)) t))
