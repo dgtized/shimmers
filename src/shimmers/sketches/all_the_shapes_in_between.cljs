@@ -74,7 +74,9 @@
    [:div.readable-width
     [:p "Create a set of N (3-6) shapes. The shapes can be a polygon of up to 8
    sides, or a circle. Once the shapres are selected, then morph between each of
-   the shapes along a set path."]]])
+   the shapes along a set path. The morphing function samples 32 points on each
+   shape in the same clockwise order, and then does a linear mix between the
+   corresponding points."]]])
 
 (sketch/definition all-the-shapes-in-between
   {:created-at "2023-01-02"
