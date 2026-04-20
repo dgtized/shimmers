@@ -27,14 +27,14 @@
 (defn draw [{[w0 w1] :weights [p0 p1] :phase :keys [outline]}]
   (q/background 1.0)
   (let [N 256
-        secs (/ (q/millis) 1000.0)
-        t (+ (* 0.9 secs)
-             (math/sin (+ w0 (* 0.75 secs)
-                          (* 2 (eq/cube (math/sin (+ p0 (* 0.5 secs))))))))]
+        t (/ (q/millis) 2000.0)
+        lt (+ (* 0.9 t)
+              (math/sin (+ w0 (* 0.53 t)
+                           (* 1.5 (eq/cube (math/sin (+ p0 (* 0.41 t))))))))]
     (dotimes [i N]
-      (let [a (mod (/ (- i (* 0.09 t) (* 0.6 N (math/sin (+ (* w0 i) (* 0.25 t) p0))))
+      (let [a (mod (/ (- i (* 0.09 lt) (* 0.6 N (math/sin (+ (* w0 i) (* 0.19 lt) p0))))
                       (float N)) 1.0)
-            b (mod (/ (+ i (* 0.13 t) (* 0.7 N (math/sin (- (* w1 i) (* 0.35 t) p1))))
+            b (mod (/ (+ i (* 0.13 lt) (* 0.7 N (math/sin (- (* w1 i) (* 0.29 lt) p1))))
                       (float N)) 1.0)]
         (q/line (g/point-at outline a)
                 (g/point-at outline b))))))
