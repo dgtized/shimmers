@@ -71,7 +71,8 @@
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:p "Genuary 2023 Day 19 - Black & White"]])
+   [:div.evencols
+    [:p "Genuary 2023 Day 19 - Black & White"]]])
 
 (sketch/definition barcodes
   {:created-at "2023-01-19"

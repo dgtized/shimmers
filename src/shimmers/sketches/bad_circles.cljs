@@ -92,7 +92,7 @@
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.readable-width
+   [:dev.evencols
     [:p "Genuary2025 Day 17 - What happens if pi=4"]]])
 
 (sketch/definition bad-circles

@@ -79,9 +79,10 @@
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:p.readable-width
-    "Modeling a balloon using point forces across the surface. The pressure of
-     the balloon varies over time, causing it to expand and contract."]])
+   [:div.evencols
+    [:p.readable-width
+     "Modeling a balloon using point forces across the surface. The pressure of
+     the balloon varies over time, causing it to expand and contract."]]])
 
 (sketch/definition balloon
   {:created-at "2023-03-01"
