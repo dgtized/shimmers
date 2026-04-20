@@ -40,13 +40,16 @@
                 (g/point-at outline b))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div.evencols
+    [:p "Draw connecting lines across a shape, with the start and end points
+    modulated by time and various multiples."]]])
 
 (sketch/definition stretchy-lines
   {:created-at "2024-05-31"
