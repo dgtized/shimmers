@@ -36,8 +36,8 @@
         (apply q/sketch (apply concat (assoc options :host @!dom-node))))
       :component-will-unmount
       (fn []
-        (when-let [div-host @!dom-node]
-          (q/with-sketch (.-processing-obj div-host) (q/exit))))
+        (when-let [p5sketch (some-> @!dom-node .-processing-obj)]
+          (q/with-sketch p5sketch (q/exit))))
       :reagent-render
       (fn [_sketch-args]
         [:div.canvas-frame {:style {:position "relative"}
