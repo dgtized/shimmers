@@ -119,12 +119,14 @@
         (shapes (csvg/screen width height))))))
 
 (defn explanation [_]
-  [:div
+  [:div.evencols
    [:p "Genuary 2026 - Day 12 - Boxes Only"]])
 
+;; FIXME: this is *almost* deterministic but between layers and cell hatching
+;; it's not always a deterministic result from a seed.
 (sketch/definition boxes-boxes-boxes
   {:created-at "2026-01-13"
-   :tags #{:genuary2026}
+   :tags #{:genuary2026 :non-deterministic}
    :type :svg}
   (ctrl/mount
    (usvg/page (usvg/with-explanation sketch-args explanation) scene)))
