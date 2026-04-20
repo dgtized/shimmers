@@ -80,7 +80,7 @@
          :style {:background "#000000"}}]
     (fn []
       [:div.contained
-       [:div.flexcols
+       [:div.evencols
         [:div
          [:h4 "Frame 1"]
          [canvas/canvas-frame attributes canvas-state
@@ -89,14 +89,15 @@
          [:h4 "Frame 2"]
          [canvas/canvas-frame attributes canvas-state
           (draw-frame :b telemetry)]]]
-       [:div.explanation
-        [:p.readable-width
-         "Experimenting with an alternative Canvas renderer from Quil. As it can
+       [:div.evencols
+        [:div.explanation
+         [:p.readable-width
+          "Experimenting with an alternative Canvas renderer from Quil. As it can
    mount as a React component, it's easier to host multiple in a single
    sketch."]
-        [:button {:on-click #(toggle-size canvas-state)} "Toggle Size"]
-        (debug/display canvas-state)
-        (debug/display telemetry)]])))
+         [:button {:on-click #(toggle-size canvas-state)} "Toggle Size"]
+         (debug/display canvas-state)
+         (debug/display telemetry)]]])))
 
 (sketch/definition canvas-test
   {:created-at "2021-11-18"
