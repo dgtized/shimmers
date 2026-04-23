@@ -4,11 +4,17 @@
              [bb.tasks :as t])
   clean
   {:task (do (println "Remove target directory")
-             (fs/delete-tree "target"))}
+          (fs/delete-tree "target"))}
+
+  prep
+  {:task
+   (do (clojure "-X:deps prep")
+    (shell "npm install"))}
+
   compile
-  {:depends [clean]
-   :task (do (shell "npm install")
-             (clojure "-Mdev -m figwheel.main -bo release"))}
+  {:depends [clean prep]
+   :task (clojure "-Mdev -m figwheel.main -bo release")}
+
   create-static-site
   {:task (t/build-static-site
           :from "resources/public"
