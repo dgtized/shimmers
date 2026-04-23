@@ -16,8 +16,8 @@
   [{[width height] :size :as bounds}]
   (let [c (gv/vec2 (dr/random) (dr/random))
         [x y] c
-        r (* (min (* (min x (- 1 x)) width)
-                  (* (min y (- 1 y)) height)))]
+        r (min (* (min x (- 1 x)) width)
+               (* (min y (- 1 y)) height))]
     (gc/circle (g/unmap-point bounds c) (dr/random r))))
 
 (comment
