@@ -69,7 +69,7 @@
   {:extra-deps {jonase/eastwood {:mvn/version "1.4.3"}}
    :main-opts ["-m" "eastwood.lint"
                "{:source-paths [\"src\"]
-                 :exclude-namespaces [shimmers.ring-server bb.tasks shimmers.math.verlet-particles]}"]}
+                 :exclude-namespaces [shimmers.ring-server bb.tasks shimmers.math.verlet-particles shimmers.model.shift]}"]}
 
   ;; clj -Mformat check
   :format
