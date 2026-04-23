@@ -53,14 +53,11 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install dependencies
-        run: npm --version && npm ci
+      - name: Build
+        run: bb build
 
       - name: Lint
         run: bin/lint
-
-      - name: Build
-        run: bb build
 
       - name: Test CLJC
         run: bin/kaocha unit-cljc

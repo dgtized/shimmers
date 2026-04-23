@@ -9,7 +9,7 @@
   prep
   {:task
    (do (clojure "-X:deps prep")
-    (shell "npm install"))}
+    (shell "npm ci"))}
 
   compile
   {:depends [clean prep]
