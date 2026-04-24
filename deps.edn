@@ -5,7 +5,7 @@
         ;; provided through npm
         quil/quil {;; :mvn/version "4.3.1323"
                    :git/url "https://github.com/quil/quil"
-                   :git/sha "de4de7a683600914654a1d62b562f3566c7a7ea4"}
+                   :git/sha "bfe9caf6c78ccbe3e0c9541a542788c51061b4b2"}
 
         ;; alternative SVG library
         io.github.adam-james-v/svg-clj {:mvn/version "0.0.11"}
