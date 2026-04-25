@@ -10,6 +10,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -36,15 +37,23 @@
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [-3 2] [5 3])) "line crosses rectangle")))
 
 (deftest bounded
-  (is (sut/bounded? (gc/circle 2) (gv/vec2)) "inside")
-  (is (sut/bounded? (gc/circle 2) (gv/vec2 2 0)) "on radius")
-  (is (not (sut/bounded? (gc/circle 2) (gv/vec2 4 4))))
-  (is (sut/bounded? (gc/circle 2) (gc/circle 1)))
-  (is (sut/bounded? (gc/circle 2) (gc/circle 2)))
-  (is (not (sut/bounded? (gc/circle 2) (gc/circle 3))))
-  (is (sut/bounded? (gc/circle 2) (gc/circle [1 0] 1)))
-  (is (not (sut/bounded? (gc/circle 2) (gc/circle [1.1 0] 1))))
-  (is (not (sut/bounded? (gc/circle 2) (gc/circle [1 0] 2)))))
+  (t/testing "Circle2 Vec2"
+    (is (sut/bounded? (gc/circle 2) (gv/vec2)) "inside")
+    (is (sut/bounded? (gc/circle 2) (gv/vec2 2 0)) "on radius")
+    (is (not (sut/bounded? (gc/circle 2) (gv/vec2 4 4)))))
+  (t/testing "Circle2 Circle2"
+    (is (sut/bounded? (gc/circle 2) (gc/circle 1)))
+    (is (sut/bounded? (gc/circle 2) (gc/circle 2)))
+    (is (not (sut/bounded? (gc/circle 2) (gc/circle 3))))
+    (is (sut/bounded? (gc/circle 2) (gc/circle [1 0] 1)))
+    (is (not (sut/bounded? (gc/circle 2) (gc/circle [1.1 0] 1))))
+    (is (not (sut/bounded? (gc/circle 2) (gc/circle [1 0] 2)))))
+  (t/testing "Circle2 Triangle"
+    (is (sut/bounded? (gc/circle 1) (gt/triangle2 [0 0] [1 0] [0 1])))
+    (is (not (sut/bounded? (gc/circle 1) (gt/triangle2 [0 0] [2 0] [0 1])))))
+  (t/testing "Circle2 Rect2"
+    (is (sut/bounded? (gc/circle 2) (rect/rect 1)))
+    (is (not (sut/bounded? (gc/circle 2) (rect/rect 2))))))
 
 (deftest coincident-segment?
   (is (tm/delta= (sut/coincident-segment? [(gv/vec2 0 0) (gv/vec2 0 5)]

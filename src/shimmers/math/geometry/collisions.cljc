@@ -239,6 +239,11 @@
        (g/contains-point? bounds q)))
 
 (defmethod bounded?
+  [Circle2 Triangle2] [bounds triangle]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices triangle)))
+
+(defmethod bounded?
   [Circle2 Rect2] [bounds rect]
   (every? (fn [p] (g/contains-point? bounds p))
           (g/vertices rect)))
