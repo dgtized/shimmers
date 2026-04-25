@@ -117,16 +117,23 @@
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
-    {:id scene-id
-     :width width
-     :height height
-     :stroke "black"
-     :fill "none"
-     :stroke-width 1.0}
-    (shapes (csvg/screen width height))))
+   {:id scene-id
+    :width width
+    :height height
+    :stroke "black"
+    :fill "none"
+    :stroke-width 1.0}
+   (shapes (csvg/screen width height))))
+
+(defn explanation []
+  [:div.evencols
+   [:p.readable-width
+    "Concentric circles that extrude copies along random radius lines."]])
 
 (sketch/definition amplification
   {:created-at "2023-03-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-explanation explanation)
+                  (usvg/page scene))))
