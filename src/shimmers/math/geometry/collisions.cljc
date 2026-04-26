@@ -276,10 +276,11 @@
                  (g/vertices bounds))))
 
 (defmethod bounded?
-  [Polygon2 Circle2] [bounds circle]
+  [Polygon2 Circle2] [bounds {:keys [p r] :as circle}]
   (and (every? (fn [p] (g/contains-point? bounds p))
                (g/vertices (g/bounds circle)))
-       (not-any? (fn [p] (g/contains-point? circle p))
+       (not-any? (fn [q] (and (g/contains-point? circle q)
+                             (< (g/dist p q) r)))
                  (g/vertices bounds))))
 
 (defmethod bounded?
