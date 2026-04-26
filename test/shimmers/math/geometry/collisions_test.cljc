@@ -37,6 +37,50 @@
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [-3 2] [5 3])) "line crosses rectangle")))
 
 (deftest bounded
+  (t/testing "Triangle2 Vec2"
+    (is (sut/bounded? (gt/triangle2 [0 0] [1 1] [1 0])
+                      (gv/vec2 0.5 0.5)))
+    (is (not (sut/bounded? (gt/triangle2 [0 0] [1 1] [1 0])
+                           (gv/vec2 2.0 0.0)))))
+  (t/testing "Triangle2 Line2"
+    (is (sut/bounded? (gt/triangle2 [0 0] [1 1] [1 0])
+                      (gl/line2 0.4 0.25 0.6 0.25)))
+    (is (not (sut/bounded? (gt/triangle2 [0 0] [1 1] [1 0])
+                           (gl/line2 0.4 0.25 1.6 0.25)))))
+  (t/testing "Triangle2 Triangle2"
+    (is (sut/bounded? (gt/triangle2 [0 0] [1 1] [1 0])
+                      (gt/triangle2 [0 0] [1 1] [1 0]))
+        "identity")
+    (is (sut/bounded? (gt/triangle2 [0 0] [0 1] [1 0])
+                      (gt/triangle2 [0.1 0.1] [0.1 0.9] [0.9 0.1]))
+        "contained")
+    (is (not (sut/bounded? (gt/triangle2 [0 0] [0 1] [1 0])
+                           (gt/triangle2 [0 0] [1 1] [1 0])))
+        "crossing outside")
+    (is (not (sut/bounded? (gt/triangle2 [0 0] [0 1] [1 0])
+                           (gt/triangle2 [2 0] [2 1] [3 0])))
+        "outside"))
+  (t/testing "Triangle2 Rect2"
+    (is (sut/bounded? (gt/triangle2 [0 0] [0 2] [2 0])
+                      (rect/rect 0 0 1 1)))
+    (is (not (sut/bounded? (gt/triangle2 [0 0] [0 2] [2 0])
+                           (rect/rect 1 0 1 1)))
+        "overlap")
+    (is (not (sut/bounded? (gt/triangle2 [0 0] [0 2] [2 0])
+                           (rect/rect 5 0 1 1)))
+        "outside"))
+  (t/testing "Triangle2 Polygon2"
+    (is (sut/bounded? (gt/triangle2 [0 0] [0 2] [2 0])
+                      (g/as-polygon (gc/circle 0.5 0.5 0.5) 6)))
+    (is (not (sut/bounded? (gt/triangle2 [0 0] [0 2] [2 0])
+                           (g/as-polygon (gc/circle 1.0 0.5 0.5) 6)))))
+  (t/testing "Triangle2 Circle2"
+    (is (sut/bounded? (gt/triangle2 [0 0] [0 2] [2 0])
+                      (gc/circle 0.5 0.5 0.2)))
+    (is (not (sut/bounded? (gt/triangle2 [0 0] [0 2] [2 0])
+                           (gc/circle 0.5 0.5 0.6))))
+    (is (not (sut/bounded? (gt/triangle2 [0 0] [0 2] [2 0])
+                           (gc/circle 3 1.0 0.6)))))
   (t/testing "Circle2 Vec2"
     (is (sut/bounded? (gc/circle 2) (gv/vec2)) "inside")
     (is (sut/bounded? (gc/circle 2) (gv/vec2 2 0)) "on radius")
