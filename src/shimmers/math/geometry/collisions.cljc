@@ -264,11 +264,15 @@
        (not-any? (fn [p] (g/contains-point? triangle p))
                  (g/vertices bounds))))
 
+;; This covers some AABB cases but not all, consider
+;; https://www.gorillasun.de/blog/an-algorithm-for-polygon-intersections/
 (defmethod bounded?
   [Polygon2 Rect2] [bounds rect]
   (and (every? (fn [p] (g/contains-point? bounds p))
                (g/vertices rect))
-       (not-any? (fn [p] (g/contains-point? rect p))
+       (not-any? (fn [p] (and (g/contains-point? rect p)
+                             ;; contains-point? includes shared vertices
+                             (not-any? (fn [q] (tm/delta= p q)) (g/vertices rect))))
                  (g/vertices bounds))))
 
 (defmethod bounded?

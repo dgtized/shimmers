@@ -102,6 +102,11 @@
   (t/testing "Rect2 Circle2"
     (is (sut/bounded? (rect/rect 2) (gc/circle 1.0 1.0 1.0)))
     (is (not (sut/bounded? (rect/rect 2) (gc/circle 1.5 1.0 1.0)))))
+  (t/testing "Polygon2 Rect2"
+    (is (sut/bounded? (gp/polygon2 [0.0 0.0] [0.0 2.0] [2.0 2.0] [2.0 0.0])
+                      (rect/rect 2)))
+    (is (not (sut/bounded? (gp/polygon2 [0.0 0.0] [0.5 1.0] [0.0 2.0] [2.0 2.0] [2.0 0.0])
+                           (rect/rect 2)))))
   (t/testing "Circle2 Vec2"
     (is (sut/bounded? (gc/circle 2) (gv/vec2)) "inside")
     (is (sut/bounded? (gc/circle 2) (gv/vec2 2 0)) "on radius")
