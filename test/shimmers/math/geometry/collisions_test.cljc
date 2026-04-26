@@ -51,6 +51,9 @@
   (t/testing "Circle2 Rect2"
     (is (sut/bounded? (gc/circle 2) (rect/rect 1)))
     (is (not (sut/bounded? (gc/circle 2) (rect/rect 2)))))
+  (t/testing "Circle2 Polygon2"
+    (is (sut/bounded? (gc/circle 2) (g/as-polygon (gc/circle 1) 5)))
+    (is (not (sut/bounded? (gc/circle 2) (g/as-polygon (gc/circle 1.25 0 1) 6)))))
   (t/testing "Circle2 Circle2"
     (is (sut/bounded? (gc/circle 2) (gc/circle 1)))
     (is (sut/bounded? (gc/circle 2) (gc/circle 2)))
