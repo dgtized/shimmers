@@ -81,6 +81,27 @@
                            (gc/circle 0.5 0.5 0.6))))
     (is (not (sut/bounded? (gt/triangle2 [0 0] [0 2] [2 0])
                            (gc/circle 3 1.0 0.6)))))
+  (t/testing "Rect2 Vec2"
+    (is (sut/bounded? (rect/rect 2) (gv/vec2 0.5 0.5)))
+    (is (sut/bounded? (rect/rect 2) (gv/vec2)))
+    (is (not (sut/bounded? (rect/rect 2) (gv/vec2 -1 0)))))
+  (t/testing "Rect2 Line2"
+    (is (sut/bounded? (rect/rect 2) (gl/line2 0.5 0.5 1.5 1.5)))
+    (is (not (sut/bounded? (rect/rect 2) (gl/line2 0.5 0.5 3.0 3.0))))
+    (is (not (sut/bounded? (rect/rect 2) (gl/line2 3.0 2.0 4.0 1.0)))))
+  (t/testing "Rect2 Triangle2"
+    (is (sut/bounded? (rect/rect 2) (gt/triangle2 [0.5 0.5] [0.5 1.5] [1.5 0.5])))
+    (is (not (sut/bounded? (rect/rect 2) (gt/triangle2 [0.5 0.5] [3.0 1.5] [1.5 0.5])))))
+  (t/testing "Rect2 Rect2"
+    (is (sut/bounded? (rect/rect 2) (rect/rect 1)))
+    (is (not (sut/bounded? (rect/rect 1) (rect/rect 2))))
+    (is (not (sut/bounded? (rect/rect 1) (g/translate (rect/rect 1) (gv/vec2 1.0 0.0))))))
+  (t/testing "Rect2 Polygon2"
+    (is (sut/bounded? (rect/rect 2) (g/as-polygon (gc/circle 1.0 1.0 1.0) 5)))
+    (is (not (sut/bounded? (rect/rect 2) (g/as-polygon (gc/circle 1.5 1.0 1.0) 5)))))
+  (t/testing "Rect2 Circle2"
+    (is (sut/bounded? (rect/rect 2) (gc/circle 1.0 1.0 1.0)))
+    (is (not (sut/bounded? (rect/rect 2) (gc/circle 1.5 1.0 1.0)))))
   (t/testing "Circle2 Vec2"
     (is (sut/bounded? (gc/circle 2) (gv/vec2)) "inside")
     (is (sut/bounded? (gc/circle 2) (gv/vec2 2 0)) "on radius")
