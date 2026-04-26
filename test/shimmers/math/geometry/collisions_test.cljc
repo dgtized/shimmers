@@ -41,7 +41,11 @@
     (is (sut/bounded? (gc/circle 2) (gv/vec2)) "inside")
     (is (sut/bounded? (gc/circle 2) (gv/vec2 2 0)) "on radius")
     (is (not (sut/bounded? (gc/circle 2) (gv/vec2 4 4)))))
-  (t/testing "Circle2 Triangle"
+  (t/testing "Circle2 Line2"
+    (is (sut/bounded? (gc/circle 2) (gl/line2 0 0 1 1)))
+    (is (sut/bounded? (gc/circle 2) (gl/line2 0 0 2 0)))
+    (is (not (sut/bounded? (gc/circle 2) (gl/line2 1 0 3 1)))))
+  (t/testing "Circle2 Triangle2"
     (is (sut/bounded? (gc/circle 1) (gt/triangle2 [0 0] [1 0] [0 1])))
     (is (not (sut/bounded? (gc/circle 1) (gt/triangle2 [0 0] [2 0] [0 1])))))
   (t/testing "Circle2 Rect2"
