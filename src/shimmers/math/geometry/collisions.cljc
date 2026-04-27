@@ -261,8 +261,11 @@
   [Polygon2 Triangle2] [bounds triangle]
   (and (every? (fn [p] (g/contains-point? bounds p))
                (g/vertices triangle))
-       (not-any? (fn [p] (g/contains-point? triangle p))
-                 (g/vertices bounds))))
+       (not-any?
+        (fn [p] (and (g/contains-point? triangle p)
+                    (not-any? (fn [v] (tm/delta= v p))
+                              (g/vertices triangle))))
+        (g/vertices bounds))))
 
 ;; This covers some AABB cases but not all, consider
 ;; https://www.gorillasun.de/blog/an-algorithm-for-polygon-intersections/

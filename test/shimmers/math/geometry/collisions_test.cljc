@@ -102,6 +102,15 @@
   (t/testing "Rect2 Circle2"
     (is (sut/bounded? (rect/rect 2) (gc/circle 1.0 1.0 1.0)))
     (is (not (sut/bounded? (rect/rect 2) (gc/circle 1.5 1.0 1.0)))))
+  (t/testing "Polygon2 Triangle2"
+    (is (sut/bounded? (gp/polygon2 [0 0] [0 1] [1 1] [1 0.5])
+                      (gt/triangle2 [0.1 0.1] [0.1 0.9] [0.9 0.9])))
+    (is (sut/bounded? (gp/polygon2 [0 0] [0 2] [2 0])
+                      (gt/triangle2 [0.5 0.5] [0.5 1.5] [1.5 0.5])))
+    (is (sut/bounded? (gp/polygon2 [0 0] [0 1] [1 1] [1 0.5])
+                      (gt/triangle2 [0 0] [0 1] [1 1])))
+    (is (not (sut/bounded? (gp/polygon2 [0 0] [0 1] [1 1] [1 0.5])
+                           (gt/triangle2 [0 0] [0 1] [2 1])))))
   (t/testing "Polygon2 Rect2"
     (is (sut/bounded? (gp/polygon2 [0.0 0.0] [0.0 2.0] [2.0 2.0] [2.0 0.0])
                       (rect/rect 2)))
