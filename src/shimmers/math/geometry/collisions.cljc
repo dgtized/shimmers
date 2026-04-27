@@ -279,8 +279,9 @@
   [Polygon2 Circle2] [bounds {:keys [p r] :as circle}]
   (and (every? (fn [p] (g/contains-point? bounds p))
                (g/vertices (g/bounds circle)))
-       (not-any? (fn [q] (and (g/contains-point? circle q)
-                             (< (g/dist p q) r)))
+       ;; No polygon vertices inside of bounded circle, but allow vertices on
+       ;; the circumfrences of the circle.
+       (not-any? (fn [q] (< (g/dist-squared p q) (* r r)))
                  (g/vertices bounds))))
 
 (defmethod bounded?
