@@ -276,13 +276,14 @@
                  (g/vertices bounds))))
 
 (defmethod bounded?
-  [Polygon2 Circle2] [bounds {:keys [p r] :as circle}]
-  (and (every? (fn [p] (g/contains-point? bounds p))
-               (g/vertices (g/bounds circle)))
-       ;; No polygon vertices inside of bounded circle, but allow vertices on
-       ;; the circumfrences of the circle.
-       (not-any? (fn [q] (< (g/dist-squared p q) (* r r)))
-                 (g/vertices bounds))))
+  [Polygon2 Circle2] [bounds {:keys [p r]}]
+  (and
+   ;; Center of circle is inside of bounding polygon
+   (g/contains-point? bounds p)
+   ;; Every polygon vertice is outside of or on the perimeter of the contained
+   ;; circle.
+   (every? (fn [q] (>= (g/dist-squared p q) (* r r)))
+           (g/vertices bounds))))
 
 (defmethod bounded?
   [Polygon2 Polygon2] [bounds poly]

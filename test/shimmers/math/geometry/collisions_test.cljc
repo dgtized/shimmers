@@ -110,6 +110,8 @@
   (t/testing "Polygon2 Circle2"
     (is (sut/bounded? (gp/polygon2 [0.0 0.0] [0.5 1.0] [0.0 2.0] [2.0 2.0] [2.0 0.0])
                       (gc/circle 1 1 0.5)))
+    (is (sut/bounded? (gp/polygon2 [0 0] [0 1] [0.98 1] [1 0.98] [1 0])
+                      (gc/circle 0.5 0.5 0.5)))
     (is (not (sut/bounded? (gp/polygon2 [0.0 0.0] [0.5 1.0] [0.0 2.0] [2.0 2.0] [2.0 0.0])
                            (gc/circle 1 1 1)))))
   (t/testing "Circle2 Vec2"
