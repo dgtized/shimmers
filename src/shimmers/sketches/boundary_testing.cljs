@@ -8,6 +8,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -26,11 +27,11 @@
   (let [point-gen (fn [] (cq/rel-vec (dr/random 0.3 0.7) (dr/random 0.3 0.7)))]
     (dr/weighted
      [[(gl/line2 (point-gen) (point-gen)) 1.0]
-      [(interesting-triangle (point-gen) (point-gen)) 1.0]
-      [(rect/rect (point-gen) (point-gen)) 1.0]
+      [(interesting-triangle (point-gen) (point-gen)) 2.0]
+      [(rect/rect (point-gen) (point-gen)) 2.0]
       [(gp/polygon2 (repeatedly (dr/random-int 3 9) point-gen)) 1.0]
       [(gc/circle (point-gen) (cq/rel-h (dr/random 0.1 0.25)))
-       1.0]])))
+       2.0]])))
 
 (defn object [shape pos vel]
   {:shape shape
@@ -48,10 +49,13 @@
    :t (q/millis)})
 
 (defn update-object [bounds t dt {:keys [shape pos prev angle spin] :as object}]
-  (-> object
-      (update :pos tm/+ (tm/* (tm/- pos prev) (* 0.01 dt)))
-      (assoc :prev pos)
-      (update :angle + (* spin dt))))
+  (let [vel (if (collide/bounded? bounds shape)
+              (tm/* (tm/- pos prev) (* 0.01 dt))
+              (tm/* (tm/- (g/closest-point bounds pos) pos) (* 0.1 dt)))]
+    (-> object
+        (update :pos tm/+ vel)
+        (assoc :prev pos)
+        (update :angle + (* spin dt)))))
 
 (defn update-state [{:keys [bounds t] :as state}]
   (let [dt (- (q/millis) t)]
