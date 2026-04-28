@@ -50,7 +50,7 @@
   (q/color-mode :hsl 1.0)
   (q/no-fill)
   {:bounds (cq/screen-rect 1.0)
-   :objects (repeatedly 12 (fn [] (object (random-shape) (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
+   :objects (repeatedly 16 (fn [] (object (random-shape) (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
                                          (dr/randvec2 0.125))))
    :t (q/millis)})
 
@@ -74,7 +74,19 @@
 
 (defn draw [{:keys [objects]}]
   (q/background 1.0)
+  (q/stroke-weight 1.0)
   (doseq [object objects]
+    (q/stroke-weight (if (some (fn [other]
+                                 (and (not= object other)
+                                      (collide/overlaps? (object-at object) (object-at other))))
+                               objects)
+                       3.0 1.0))
+
+    #_(q/stroke (if (some (fn [other]
+                            (and (not= object other)
+                                 (collide/bounded? (object-at other) (object-at object))))
+                          objects)
+                  0.0 0.0))
     (qdg/draw (object-at object))))
 
 (defn page []
