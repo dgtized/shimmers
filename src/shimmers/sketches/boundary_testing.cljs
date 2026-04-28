@@ -35,21 +35,30 @@
 (defn object [shape pos vel]
   {:shape shape
    :pos pos
-   :prev (tm/- pos vel)})
+   :prev (tm/- pos vel)
+   :spin (dr/random -0.005 0.005)
+   :angle 0})
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/no-fill)
   {:objects (repeatedly 12 (fn [] (object (random-shape) (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
-                                         (dr/randvec2 1.0))))})
+                                         (dr/randvec2 1.0))))
+   :t (q/millis)})
 
-(defn update-state [state]
-  state)
+(defn update-object [t dt {:keys [shape pos prev angle spin] :as object}]
+  (update object :angle + (* spin dt)))
+
+(defn update-state [{:keys [t] :as state}]
+  (let [dt (- (q/millis) t)]
+    (-> state
+        (update :objects (partial mapv (partial update-object t dt)))
+        (update :t + dt))))
 
 (defn draw [{:keys [objects]}]
   (q/background 1.0)
-  (doseq [{:keys [shape pos]} objects]
-    (qdg/draw (g/center shape pos))))
+  (doseq [{:keys [shape pos angle]} objects]
+    (qdg/draw (g/center (g/rotate shape angle) pos))))
 
 (defn page []
   [:div
