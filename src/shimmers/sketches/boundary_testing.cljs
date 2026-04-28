@@ -23,13 +23,19 @@
         perp (g/scale (g/rotate (tm/- b a) (* eq/TAU 0.25 (dr/rand-nth [-1 1]))) (dr/random 0.2 1.0))]
     (gt/triangle2 a (tm/+ m perp) b)))
 
+(defn interesting-polygon [p]
+  (let [center p
+        xs (g/vertices (g/as-polygon (gc/circle p (cq/rel-h (dr/random 0.1 0.25))) (dr/random-int 3 9)))]
+    (gp/polygon2 (for [vertice xs]
+                   (tm/mix center vertice (dr/random 0.25 1.5))))))
+
 (defn random-shape []
   (let [point-gen (fn [] (cq/rel-vec (dr/random 0.3 0.7) (dr/random 0.3 0.7)))]
     (dr/weighted
      [[(gl/line2 (point-gen) (point-gen)) 1.0]
       [(interesting-triangle (point-gen) (point-gen)) 2.0]
       [(rect/rect (point-gen) (point-gen)) 2.0]
-      [(gp/polygon2 (repeatedly (dr/random-int 3 9) point-gen)) 1.0]
+      [(interesting-polygon (point-gen)) 1.0]
       [(gc/circle (point-gen) (cq/rel-h (dr/random 0.1 0.25)))
        2.0]])))
 
