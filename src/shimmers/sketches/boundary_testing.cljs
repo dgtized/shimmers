@@ -82,11 +82,11 @@
                                objects)
                        3.0 1.0))
 
-    #_(q/stroke (if (some (fn [other]
-                            (and (not= object other)
-                                 (collide/bounded? (object-at other) (object-at object))))
-                          objects)
-                  0.0 0.0))
+    (q/stroke (if (some (fn [other]
+                          (and (not= object other)
+                               (collide/bounded? (object-at other) (object-at object))))
+                        objects)
+                0.40 0.0))
     (qdg/draw (object-at object))))
 
 (defn page []

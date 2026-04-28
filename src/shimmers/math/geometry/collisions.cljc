@@ -166,6 +166,22 @@
   (fn [bounds shape] [(type bounds) (type shape)]))
 
 (defmethod bounded?
+  [Line2 Line2] [bounds line]
+  (tm/delta= bounds line))
+
+(defmethod bounded?
+  [Line2 Triangle2] [_bounds _line]
+  nil)
+
+(defmethod bounded?
+  [Line2 Polygon2] [_bounds _polygon]
+  nil)
+
+(defmethod bounded?
+  [Line2 Circle2] [_bounds _circle]
+  nil)
+
+(defmethod bounded?
   [Triangle2 Vec2] [bounds point]
   (g/contains-point? bounds point))
 
@@ -255,6 +271,10 @@
 (defmethod bounded?
   [Polygon2 Vec2] [bounds point]
   (g/contains-point? bounds point))
+
+(defmethod bounded?
+  [Polygon2 Line2] [bounds line]
+  (every? (fn [p] (g/contains-point? bounds p)) (g/vertices line)))
 
 ;; FIXME: optimize better for concave shapes?
 (defmethod bounded?
