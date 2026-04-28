@@ -166,11 +166,20 @@
   (fn [bounds shape] [(type bounds) (type shape)]))
 
 (defmethod bounded?
+  [Line2 Vec2] [_bounds _point]
+  nil)
+
+;; TODO: test for inner, coincident line segments?
+(defmethod bounded?
   [Line2 Line2] [bounds line]
   (tm/delta= bounds line))
 
 (defmethod bounded?
   [Line2 Triangle2] [_bounds _line]
+  nil)
+
+(defmethod bounded?
+  [Line2 Rect2] [_bounds _rectangle]
   nil)
 
 (defmethod bounded?
