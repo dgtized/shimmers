@@ -36,29 +36,36 @@
   {:shape shape
    :pos pos
    :prev (tm/- pos vel)
-   :spin (dr/random -0.005 0.005)
+   :spin (dr/random -0.001 0.001)
    :angle 0})
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/no-fill)
-  {:objects (repeatedly 12 (fn [] (object (random-shape) (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
-                                         (dr/randvec2 1.0))))
+  {:bounds (cq/screen-rect 1.0)
+   :objects (repeatedly 12 (fn [] (object (random-shape) (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
+                                         (dr/randvec2 0.125))))
    :t (q/millis)})
 
-(defn update-object [t dt {:keys [shape pos prev angle spin] :as object}]
-  (update object :angle + (* spin dt)))
+(defn update-object [bounds t dt {:keys [shape pos prev angle spin] :as object}]
+  (-> object
+      (update :pos tm/+ (tm/* (tm/- pos prev) (* 0.01 dt)))
+      (assoc :prev pos)
+      (update :angle + (* spin dt))))
 
-(defn update-state [{:keys [t] :as state}]
+(defn update-state [{:keys [bounds t] :as state}]
   (let [dt (- (q/millis) t)]
     (-> state
-        (update :objects (partial mapv (partial update-object t dt)))
+        (update :objects (partial mapv (partial update-object bounds t dt)))
         (update :t + dt))))
+
+(defn object-at [{:keys [shape pos angle]}]
+  (g/center (g/rotate shape angle) pos))
 
 (defn draw [{:keys [objects]}]
   (q/background 1.0)
-  (doseq [{:keys [shape pos angle]} objects]
-    (qdg/draw (g/center (g/rotate shape angle) pos))))
+  (doseq [object objects]
+    (qdg/draw (object-at object))))
 
 (defn page []
   [:div
