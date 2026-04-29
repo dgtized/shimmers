@@ -77,17 +77,20 @@
   (q/background 1.0)
   (q/stroke-weight 1.0)
   (doseq [object objects]
-    (q/stroke-weight (if (some (fn [other]
-                                 (and (not= object other)
-                                      (collide/overlaps? (object-at object) (object-at other))))
-                               objects)
-                       3.0 1.0))
-
-    (q/stroke (if (some (fn [other]
-                          (and (not= object other)
-                               (collide/bounded? (object-at other) (object-at object))))
+    (let [overlap (some (fn [other]
+                          (when (and (not= object other)
+                                     (collide/overlaps? (object-at object) (object-at other)))
+                            other))
                         objects)
-                0.40 0.0))
+          bounded (some (fn [other]
+                          (when (and (not= object other)
+                                     (collide/bounded? (object-at other) (object-at object)))
+                            other))
+                        objects)]
+      (q/stroke-weight (if overlap 3.0 1.0))
+      (if bounded
+        (q/stroke 0.475 0.6 0.5)
+        (q/stroke 0.0)))
     (qdg/draw (object-at object))))
 
 (defn page []
