@@ -89,7 +89,7 @@
                         objects)]
       (q/stroke-weight (if overlap 3.0 1.0))
       (if bounded
-        (q/stroke 0.475 0.6 0.5)
+        (q/stroke 0.575 0.75 0.5)
         (q/stroke 0.0)))
     (qdg/draw (object-at object))))
 
