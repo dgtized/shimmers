@@ -274,10 +274,8 @@
           (g/vertices rect)))
 
 (defmethod bounded?
-  [Circle2 Circle2] [{c :p radius :r} {:keys [p r]}]
-  #_(and (<= (g/dist c p) radius)
-         (<= r radius))
-  (<= (g/dist c p) (- radius r)))
+  [Circle2 Circle2] [{bp :p br :r} {:keys [p r]}]
+  (<= (+ (g/dist bp p) r) br))
 
 (defmethod bounded?
   [Polygon2 Vec2] [bounds point]
