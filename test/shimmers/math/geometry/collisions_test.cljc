@@ -17,6 +17,7 @@
 (deftest overlap?
   (t/testing "Rect2 Rect2"
     (is (sut/overlaps? (rect/rect 4) (rect/rect 4)) "identity")
+    (is (sut/overlaps? (rect/rect 3) (rect/rect 2)))
     (is (sut/overlaps? (rect/rect 4) (rect/rect 1 1 2)) "contains")
     (is (sut/overlaps? (rect/rect 4) (rect/rect 2 2 4)) "overlap")
     (is (sut/overlaps? (rect/rect 4) (rect/rect 0 4 2 2)) "touching edge"))
@@ -34,7 +35,11 @@
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [4 3] [4 2])) "line overlaps edge")
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [2 2] [3 2])) "line inside rectangle")
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [2 2] [5 3])) "line exits rectangle")
-    (is (sut/overlaps? (rect/rect 4) (gl/line2 [-3 2] [5 3])) "line crosses rectangle")))
+    (is (sut/overlaps? (rect/rect 4) (gl/line2 [-3 2] [5 3])) "line crosses rectangle"))
+  (t/testing "Circle2 Polygon2"
+    (is (sut/overlaps? (gc/circle 10) (gp/polygon2 [2 0] [2 4] [12 5] [3 1])))
+    (is (sut/overlaps? (gc/circle 10) (gp/polygon2 [2 0] [2 4] [5 5] [1 1] [2 1])))
+    (is (not (sut/overlaps? (gc/circle 1) (gp/polygon2 [6 2] [3 4] [5 5] [3 4] [2 3]))))))
 
 (deftest bounded
   (t/testing "Triangle2 Vec2"

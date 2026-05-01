@@ -33,7 +33,8 @@
   (intersect/circle-line-overlap? circle line))
 
 (defmethod overlaps?
-  [Circle2 Polygon2] [circle poly]
+  [Circle2 Polygon2] [{:keys [p r] :as circle} poly]
+  #_(<= (apply min (map (partial g/dist p) (g/vertices poly))) r)
   (or (g/contains-point? poly (:p circle))
       (some (fn [[p q]] (intersect/circle-segment-overlap? circle p q))
             (g/edges poly))))
