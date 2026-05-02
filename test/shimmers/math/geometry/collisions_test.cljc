@@ -41,6 +41,10 @@
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [2 2] [3 2])) "line inside rectangle")
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [2 2] [5 3])) "line exits rectangle")
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [-3 2] [5 3])) "line crosses rectangle"))
+  (t/testing "Circle2 Triangle2"
+    (is (sut/overlaps? (gc/circle [1 1] 1) (gt/triangle2 [1 1.5] [3.0 2.0] [1.5 3.0])))
+    (is (sut/overlaps? (gc/circle [1 1] 1) (gt/triangle2 [0.5 0.5] [1.5 1.25] [0.75 1.0])))
+    (is (not (sut/overlaps? (gc/circle [1 1] 1) (gt/triangle2 [5 4] [2 3] [3 7])))))
   (t/testing "Circle2 Polygon2"
     (is (sut/overlaps? (gc/circle 10) (gp/polygon2 [2 0] [2 4] [12 5] [3 1])))
     (is (sut/overlaps? (gc/circle 10) (gp/polygon2 [2 0] [2 4] [5 5] [1 1] [2 1])))
