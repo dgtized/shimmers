@@ -75,8 +75,9 @@
 
 (defn draw [{:keys [objects]}]
   (q/background 1.0)
-  (q/stroke-weight 1.0)
   (doseq [object objects]
+    (q/stroke-weight 1.0)
+    (q/stroke 0.0)
     (let [overlap (some (fn [other]
                           (when (and (not= object other)
                                      (collide/overlaps? (object-at object) (object-at other)))
@@ -87,10 +88,11 @@
                                      (collide/bounded? (object-at other) (object-at object)))
                             other))
                         objects)]
-      (q/stroke-weight (if overlap 3.0 1.0))
-      (if bounded
-        (q/stroke 0.575 0.75 0.5)
-        (q/stroke 0.0)))
+      (when bounded
+        (q/line (g/centroid (object-at object))
+                (g/centroid (object-at bounded)))
+        (q/stroke 0.575 0.75 0.5))
+      (q/stroke-weight (if overlap 3.0 1.0)))
     (qdg/draw (object-at object))))
 
 (defn page []
