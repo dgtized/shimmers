@@ -50,9 +50,12 @@
   (q/color-mode :hsl 1.0)
   (q/no-fill)
   {:bounds (cq/screen-rect 1.0)
-   :objects (repeatedly (dr/random-int 8 17)
-                        (fn [] (object (random-shape) (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
-                                      (dr/randvec2 0.125))))
+   :objects
+   (->> (fn [] (object (random-shape) (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
+                      (dr/randvec2 0.125)))
+        (repeatedly (dr/random-int 8 17))
+        (map-indexed (fn [idx obj] (assoc obj :idx idx)))
+        vec)
    :t (q/millis)})
 
 (defn update-object [bounds _t dt {:keys [shape pos prev _angle spin] :as object}]
@@ -79,12 +82,12 @@
     (q/stroke-weight 1.0)
     (q/stroke 0.0)
     (let [overlap (some (fn [other]
-                          (when (and (not= object other)
+                          (when (and (not= (:idx object) (:idx other))
                                      (collide/overlaps? (object-at object) (object-at other)))
                             other))
                         objects)
           bounded (some (fn [other]
-                          (when (and (not= object other)
+                          (when (and (not= (:idx object) (:idx other))
                                      (collide/bounded? (object-at other) (object-at object)))
                             other))
                         objects)]
