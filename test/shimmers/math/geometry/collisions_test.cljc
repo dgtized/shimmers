@@ -27,7 +27,8 @@
     (is (sut/overlaps? (rect/rect 4) (rect/rect 0 4 2 2)) "touching edge"))
   (t/testing "Rect2 Circle2"
     (is (sut/overlaps? (rect/rect 4) (gc/circle 2)) "overlap")
-    (is (sut/overlaps? (rect/rect 4) (gc/circle 2 2 1)) "contains"))
+    (is (sut/overlaps? (rect/rect 4) (gc/circle 2 2 1)) "contains")
+    (is (not (sut/overlaps? (rect/rect 2) (gc/circle [3.0 3.0] 1.0))) "outside"))
   (t/testing "Polygon2 Circle2"
     (is (sut/overlaps? (g/rotate (g/center (rect/rect 4)) (* 0.25 eq/TAU))
                        (gc/circle 1)) "polygon contains")
