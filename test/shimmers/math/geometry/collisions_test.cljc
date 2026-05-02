@@ -150,7 +150,8 @@
     (is (not (sut/bounded? (gc/circle 1) (gt/triangle2 [0 0] [2 0] [0 1])))))
   (t/testing "Circle2 Rect2"
     (is (sut/bounded? (gc/circle 2) (rect/rect 1)))
-    (is (not (sut/bounded? (gc/circle 2) (rect/rect 2)))))
+    (is (not (sut/bounded? (gc/circle 2) (rect/rect 2))))
+    (is (not (sut/bounded? (gc/circle [1 1] 1) (rect/rect 2.1 1.1 1.0 1.0)))))
   (t/testing "Circle2 Polygon2"
     (is (sut/bounded? (gc/circle 2) (g/as-polygon (gc/circle 1) 5)))
     (is (not (sut/bounded? (gc/circle 2) (g/as-polygon (gc/circle 1.25 0 1) 6)))))
