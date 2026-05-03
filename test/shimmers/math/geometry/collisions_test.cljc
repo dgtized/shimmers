@@ -15,6 +15,11 @@
    [thi.ng.math.core :as tm]))
 
 (deftest overlap?
+  (t/testing "Rect2 Line2"
+    (is (sut/overlaps? (rect/rect 2) (gl/line2 1 1 3 3)) "inside/outside")
+    (is (sut/overlaps? (rect/rect 2) (gl/line2 0.5 0.5 1.5 1.5)) "contained")
+    (is (sut/overlaps? (rect/rect 2) (gl/line2 2 2 3 2)) "touches")
+    (is (not (sut/overlaps? (rect/rect 2) (gl/line2 3 3 3 2))) "outside"))
   (t/testing "Rect2 Triangle2"
     (is (sut/overlaps? (rect/rect 2) (gt/triangle2 [0.0 1.0] [1.5 1.5] [1.0 0.5])))
     (is (sut/overlaps? (rect/rect 2) (gt/triangle2 [0.5 1.0] [2.5 1.5] [1.0 0.5])))
