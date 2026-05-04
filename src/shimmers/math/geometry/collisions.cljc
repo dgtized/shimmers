@@ -120,16 +120,8 @@
 
 ;; Triangle2
 (defmethod overlaps?
-  [Triangle2 Circle2] [triangle circle]
-  (overlaps? (g/as-polygon triangle) circle))
-
-(defmethod overlaps?
   [Triangle2 Line2] [triangle line]
   (overlaps? (g/as-polygon triangle) line))
-
-(defmethod overlaps?
-  [Triangle2 Polygon2] [triangle polygon]
-  (overlaps? polygon (g/as-polygon triangle)))
 
 (defmethod overlaps?
   [Triangle2 Rect2] [triangle rect]
@@ -139,26 +131,35 @@
   [Triangle2 Triangle2] [a b]
   (overlaps? (g/as-polygon a) (g/as-polygon b)))
 
-;; Rectangle
 (defmethod overlaps?
-  [Rect2 Circle2] [r c]
-  (isec/intersect-rect-circle? r c))
+  [Triangle2 Polygon2] [triangle polygon]
+  (overlaps? polygon (g/as-polygon triangle)))
+
+(defmethod overlaps?
+  [Triangle2 Circle2] [triangle circle]
+  (overlaps? (g/as-polygon triangle) circle))
+
+;; Rectangle
 
 (defmethod overlaps?
   [Rect2 Line2] [rect line]
   (overlaps? (g/as-polygon rect) line))
 
 (defmethod overlaps?
-  [Rect2 Polygon2] [rect poly]
-  (overlaps? poly (g/as-polygon rect)))
+  [Rect2 Triangle2] [rect triangle]
+  (overlaps? (g/as-polygon rect) (g/as-polygon triangle)))
 
 (defmethod overlaps?
   [Rect2 Rect2] [a b]
   (isec/intersect-rect-rect? a b))
 
 (defmethod overlaps?
-  [Rect2 Triangle2] [rect triangle]
-  (overlaps? (g/as-polygon rect) (g/as-polygon triangle)))
+  [Rect2 Circle2] [r c]
+  (isec/intersect-rect-circle? r c))
+
+(defmethod overlaps?
+  [Rect2 Polygon2] [rect poly]
+  (overlaps? poly (g/as-polygon rect)))
 
 ;; TODO: handle cases where bounds is not a rectangle, circle / convex
 ;; TODO: Add Triangle2 support since it's convex
