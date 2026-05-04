@@ -85,7 +85,7 @@
 
 (defn circles-overlap? [a b]
   (let [distance (+ (:r a) (:r b))]
-    (< (g/dist (:p a) (:p b)) distance)))
+    (<= (g/dist (:p a) (:p b)) distance)))
 
 ;; TODO: extend IBoundary/contains-entity? for other shapes
 (defn contains-circle? [boundary {:keys [p r]}]
