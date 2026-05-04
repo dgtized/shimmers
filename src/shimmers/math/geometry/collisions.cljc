@@ -26,7 +26,8 @@
 ;; Circle2
 (defmethod overlaps?
   [Circle2 Circle2] [a b]
-  (geometry/circles-overlap? a b))
+  (let [distance (+ (:r a) (:r b))]
+    (<= (g/dist (:p a) (:p b)) distance)))
 
 (defmethod overlaps?
   [Circle2 Line2] [circle line]

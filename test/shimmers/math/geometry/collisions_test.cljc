@@ -70,7 +70,14 @@
   (t/testing "Circle2 Polygon2"
     (is (sut/overlaps? (gc/circle 10) (gp/polygon2 [2 0] [2 4] [12 5] [3 1])))
     (is (sut/overlaps? (gc/circle 10) (gp/polygon2 [2 0] [2 4] [5 5] [1 1] [2 1])))
-    (is (not (sut/overlaps? (gc/circle 1) (gp/polygon2 [6 2] [3 4] [5 5] [3 4] [2 3]))))))
+    (is (not (sut/overlaps? (gc/circle 1) (gp/polygon2 [6 2] [3 4] [5 5] [3 4] [2 3])))))
+  (t/testing "Circle2 Circle2"
+    (is (sut/overlaps? (gc/circle 1) (gc/circle 1)) "identity")
+    (is (sut/overlaps? (gc/circle 2) (gc/circle 1)) "constains")
+    (is (sut/overlaps? (gc/circle 1) (gc/circle 2)) "contained by")
+    (is (sut/overlaps? (gc/circle 1) (gc/circle [1 0] 1)))
+    (is (sut/overlaps? (gc/circle 1) (gc/circle [2 0] 1)) "touches")
+    (is (not (sut/overlaps? (gc/circle 1) (gc/circle [3 0] 1))))))
 
 (deftest bounded
   (t/testing "Triangle2 Vec2"
