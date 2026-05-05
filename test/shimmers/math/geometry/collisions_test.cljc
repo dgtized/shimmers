@@ -23,13 +23,13 @@
     (is (not (sut/overlaps? (gt/triangle2 [0 0] [0 1] [1 0]) (gl/line2 [1 1] [1 2]))) "outside"))
   (t/testing "Triangle2 Triangle2"
     (is (sut/overlaps? (gt/triangle2 [0 0] [0 1] [1 0])
-                       (gt/triangle2 [0 0] [0 1] [1 0]) "identity"))
+                       (gt/triangle2 [0 0] [0 1] [1 0])) "identity")
     (is (sut/overlaps? (gt/triangle2 [0 0] [0 1] [1 0])
-                       (gt/triangle2 [0.4 0.4] [1 1] [1 0.4]) "shared inside"))
+                       (gt/triangle2 [0.4 0.4] [1 1] [1 0.4])) "shared inside")
     (is (sut/overlaps? (gt/triangle2 [0 0] [0 1] [1 0])
-                       (gt/triangle2 [0 1] [1 1] [1 0]) "shared hypotenuse"))
+                       (gt/triangle2 [0 1] [1 1] [1 0])) "shared hypotenuse")
     (is (sut/overlaps? (gt/triangle2 [0 0] [0 1] [1 0])
-                       (gt/triangle2 [0 1] [1 1] [1 2]) "shared point"))
+                       (gt/triangle2 [0 1] [1 1] [1 2])) "shared point")
     (is (not (sut/overlaps? (gt/triangle2 [0 0] [0 1] [1 0])
                             (gt/triangle2 [1 1] [1 2] [2 1]))) "outside"))
   (t/testing "Rect2 Line2"
