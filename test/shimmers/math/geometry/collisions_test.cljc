@@ -70,6 +70,8 @@
   (t/testing "Circle2 Polygon2"
     (is (sut/overlaps? (gc/circle 10) (gp/polygon2 [2 0] [2 4] [12 5] [3 1])))
     (is (sut/overlaps? (gc/circle 10) (gp/polygon2 [2 0] [2 4] [5 5] [1 1] [2 1])))
+    (is (sut/overlaps? (gc/circle 1) (gp/polygon2 [1 0] [2 2] [3 1])) "contact point")
+    (is (sut/overlaps? (gc/circle 1) (gp/polygon2 [1 1] [1 -1] [2 3])) "contact line")
     (is (not (sut/overlaps? (gc/circle 1) (gp/polygon2 [6 2] [3 4] [5 5] [3 4] [2 3])))))
   (t/testing "Circle2 Circle2"
     (is (sut/overlaps? (gc/circle 1) (gc/circle 1)) "identity")
