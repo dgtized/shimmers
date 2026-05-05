@@ -1,7 +1,6 @@
 (ns shimmers.math.geometry.collisions
   (:require [clojure.math.combinatorics :as mc]
             [shimmers.algorithm.lines :as lines]
-            [shimmers.math.geometry :as geometry]
             [shimmers.math.geometry.intersection :as intersect]
             [shimmers.math.interval :as interval]
             [thi.ng.geom.core :as g]
@@ -34,7 +33,7 @@
   (intersect/circle-line-overlap? circle line))
 
 (defmethod overlaps?
-  [Circle2 Polygon2] [{:keys [p r] :as circle} poly]
+  [Circle2 Polygon2] [circle poly]
   #_(<= (apply min (map (partial g/dist p) (g/vertices poly))) r)
   (or (g/contains-point? poly (:p circle))
       (some (fn [[p q]] (intersect/circle-segment-overlap? circle p q))
