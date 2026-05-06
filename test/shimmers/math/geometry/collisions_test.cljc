@@ -41,6 +41,10 @@
                        (gp/polygon2 [2 2] [3 7] [8 10])))
     (is (not (sut/overlaps? (gt/triangle2 [0 10] [10 10] [10 0])
                             (gp/polygon2 [0 0] [1 1] [2 1] [3 0])))))
+  (t/testing "Triangle2 Circle2"
+    (is (sut/overlaps? (gt/triangle2 [0 0] [0 1] [1 0]) (gc/circle 1)))
+    (is (sut/overlaps? (gt/triangle2 [1 0] [1 1] [2 0]) (gc/circle 1)))
+    (is (sut/overlaps? (gt/triangle2 [0 1] [1 1] [1 0]) (gc/circle 1))))
   (t/testing "Rect2 Line2"
     (is (sut/overlaps? (rect/rect 2) (gl/line2 1 1 3 3)) "inside/outside")
     (is (sut/overlaps? (rect/rect 2) (gl/line2 0.5 0.5 1.5 1.5)) "contained")
