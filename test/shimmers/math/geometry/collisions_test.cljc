@@ -46,6 +46,12 @@
     (is (sut/overlaps? (gt/triangle2 [1 0] [1 1] [2 0]) (gc/circle 1)))
     (is (sut/overlaps? (gt/triangle2 [0 1] [1 1] [1 0]) (gc/circle 1))))
   (t/testing "Rect2 Line2"
+    (is (sut/overlaps? (rect/rect 4) (gl/line2 [4 4] [5 4])) "line starts at vertex")
+    (is (sut/overlaps? (rect/rect 4) (gl/line2 [3 5] [5 3])) "line crosses corner")
+    (is (sut/overlaps? (rect/rect 4) (gl/line2 [4 3] [4 2])) "line overlaps edge")
+    (is (sut/overlaps? (rect/rect 4) (gl/line2 [2 2] [3 2])) "line inside rectangle")
+    (is (sut/overlaps? (rect/rect 4) (gl/line2 [2 2] [5 3])) "line exits rectangle")
+    (is (sut/overlaps? (rect/rect 4) (gl/line2 [-3 2] [5 3])) "line crosses rectangle")
     (is (sut/overlaps? (rect/rect 2) (gl/line2 1 1 3 3)) "inside/outside")
     (is (sut/overlaps? (rect/rect 2) (gl/line2 0.5 0.5 1.5 1.5)) "contained")
     (is (sut/overlaps? (rect/rect 2) (gl/line2 2 2 3 2)) "touches")
@@ -78,13 +84,6 @@
                        (gc/circle 1)) "polygon contains")
     (is (sut/overlaps? (g/rotate (g/center (rect/rect 1)) (* 0.25 eq/TAU))
                        (gc/circle 4)) "circle contains"))
-  (t/testing "Rect2 Line2"
-    (is (sut/overlaps? (rect/rect 4) (gl/line2 [4 4] [5 4])) "line starts at vertex")
-    (is (sut/overlaps? (rect/rect 4) (gl/line2 [3 5] [5 3])) "line crosses corner")
-    (is (sut/overlaps? (rect/rect 4) (gl/line2 [4 3] [4 2])) "line overlaps edge")
-    (is (sut/overlaps? (rect/rect 4) (gl/line2 [2 2] [3 2])) "line inside rectangle")
-    (is (sut/overlaps? (rect/rect 4) (gl/line2 [2 2] [5 3])) "line exits rectangle")
-    (is (sut/overlaps? (rect/rect 4) (gl/line2 [-3 2] [5 3])) "line crosses rectangle"))
   (t/testing "Circle2 Triangle2"
     (is (sut/overlaps? (gc/circle [1 1] 1) (gt/triangle2 [1 1.5] [3.0 2.0] [1.5 3.0])))
     (is (sut/overlaps? (gc/circle [1 1] 1) (gt/triangle2 [0.5 0.5] [1.5 1.25] [0.75 1.0])))
