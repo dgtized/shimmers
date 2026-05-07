@@ -79,6 +79,8 @@
     (is (sut/overlaps? (rect/rect 4) (gc/circle 2)) "overlap")
     (is (sut/overlaps? (rect/rect 4) (gc/circle 2 2 1)) "contains")
     (is (not (sut/overlaps? (rect/rect 2) (gc/circle [3.0 3.0] 1.0))) "outside"))
+  (t/testing "Polygon2 Line2"
+    (is (sut/overlaps? (gp/polygon2 [0 0] [2 4] [4 3] [6 0]) (gl/line2 [0 0] [-1 -1]))))
   (t/testing "Polygon2 Circle2"
     (is (sut/overlaps? (g/rotate (g/center (rect/rect 4)) (* 0.25 eq/TAU))
                        (gc/circle 1)) "polygon contains")
