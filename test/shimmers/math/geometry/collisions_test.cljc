@@ -84,6 +84,14 @@
     (is (sut/overlaps? (gp/polygon2 [0 0] [2 4] [4 3] [6 0]) (gl/line2 [2 4] [4 3])) "edge")
     (is (sut/overlaps? (gp/polygon2 [0 0] [2 4] [4 3] [6 0]) (gl/line2 [2 3] [9 9])) "inside")
     (is (not (sut/overlaps? (gp/polygon2 [0 0] [2 4] [4 3] [6 0]) (gl/line2 [10 10] [8 8]))) "outside"))
+  (t/testing "Polygon2 Triangle2"
+    (is (sut/overlaps? (gp/polygon2 [1 1] [2 3] [3 2] [3 0]) (gt/triangle2 [0 0] [0 2] [2 0])))
+    (is (sut/overlaps? (gp/polygon2 [1 1] [1 3] [3 3] [3 2]) (gt/triangle2 [0 0] [0 10] [10 0]))
+        "contained by")
+    (is (sut/overlaps? (gp/polygon2 [1 1] [1 3] [3 3] [3 2]) (gt/triangle2 [0 0] [1 3] [1 0]))
+        "shared edge")
+    (is (not (sut/overlaps? (gp/polygon2 [1 1] [1 3] [3 3] [3 2]) (gt/triangle2 [0 0] [0 1] [1 0])))
+        "outside"))
   (t/testing "Polygon2 Circle2"
     (is (sut/overlaps? (g/rotate (g/center (rect/rect 4)) (* 0.25 eq/TAU))
                        (gc/circle 1)) "polygon contains")
