@@ -16,7 +16,10 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
+   [shimmers.common.ui.debug :as debug]
    [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state {}))
 
 (defn interesting-triangle [a b]
   (let [m (tm/mix a b (dr/random))
@@ -77,35 +80,39 @@
   (g/center (g/rotate shape angle) pos))
 
 (defn draw [{:keys [objects]}]
+  (reset! defo {})
   (q/background 1.0)
-  (doseq [object objects]
+  (doseq [object objects
+          :let [obj (object-at object)]]
     (q/stroke-weight 1.0)
     (q/stroke 0.0)
     (let [overlap (some (fn [other]
                           (when (and (not= (:idx object) (:idx other))
-                                     (collide/overlaps? (object-at object) (object-at other)))
+                                     (collide/overlaps? obj (object-at other)))
                             other))
                         objects)
           bounded (some (fn [other]
                           (when (and (not= (:idx object) (:idx other))
-                                     (collide/bounded? (object-at other) (object-at object)))
+                                     (collide/bounded? (object-at other) obj))
                             other))
                         objects)]
       (when bounded
         (q/line (g/centroid (object-at object))
                 (g/centroid (object-at bounded)))
-        (q/stroke 0.575 0.75 0.5))
+        (q/stroke 0.575 0.75 0.5)
+        (swap! defo update :bounded conj [(object-at bounded) obj]))
       (q/stroke-weight (if overlap 3.0 1.0)))
     (qdg/draw (object-at object))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+    :middleware [m/fun-mode framerate/mode])
+   [debug/display defo]])
 
 (sketch/definition boundary-testing
   {:created-at "2026-04-27"
