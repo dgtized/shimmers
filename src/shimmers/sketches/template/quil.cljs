@@ -8,12 +8,14 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/ellipse-mode :radius)
   {})
 
 (defn update-state [state]
   state)
 
 (defn draw [state]
+  (q/background 1.0)
   state)
 
 (defn page []
