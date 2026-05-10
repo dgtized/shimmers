@@ -65,7 +65,7 @@
 (defn update-object [bounds _t dt {:keys [shape pos prev _angle spin] :as object}]
   (let [vel (if (collide/bounded? bounds shape)
               (tm/* (tm/- pos prev) (* 0.02 dt))
-              (tm/* (tm/- (g/closest-point bounds pos) pos) (* 0.1 dt)))]
+              (tm/* (tm/- (g/closest-point bounds pos) pos) (* 0.00001 dt)))]
     (-> object
         (update :pos tm/+ vel)
         (assoc :prev pos)
