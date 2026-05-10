@@ -51,6 +51,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/ellipse-mode :radius)
   (q/no-fill)
   {:bounds (cq/screen-rect 1.0)
    :objects
