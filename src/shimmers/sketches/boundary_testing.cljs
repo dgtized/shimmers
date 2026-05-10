@@ -46,7 +46,7 @@
   {:shape shape
    :pos pos
    :prev (tm/- pos vel)
-   :spin (dr/random -0.001 0.001)
+   :spin (dr/random -0.0005 0.0005)
    :angle 0})
 
 (defn setup []
@@ -56,7 +56,7 @@
   {:bounds (cq/screen-rect 1.0)
    :objects
    (->> (fn [] (object (random-shape) (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
-                      (dr/randvec2 0.125)))
+                      (dr/randvec2 1.0)))
         (repeatedly (dr/random-int 8 17))
         (map-indexed (fn [idx obj] (assoc obj :idx idx)))
         vec)
@@ -64,7 +64,7 @@
 
 (defn update-object [bounds _t dt {:keys [shape pos prev _angle spin] :as object}]
   (let [vel (if (collide/bounded? bounds shape)
-              (tm/* (tm/- pos prev) (* 0.02 dt))
+              (tm/* (tm/- pos prev) (* 0.00001 dt))
               (tm/* (tm/- (g/closest-point bounds pos) pos) (* 0.00001 dt)))]
     (-> object
         (update :pos tm/+ vel)
