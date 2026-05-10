@@ -6,6 +6,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
@@ -16,7 +17,6 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
-   [shimmers.common.ui.debug :as debug]
    [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state {}))
