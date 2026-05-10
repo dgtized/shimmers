@@ -28,17 +28,17 @@
 
 (defn interesting-polygon [p]
   (let [center p
-        xs (g/vertices (g/as-polygon (gc/circle p (cq/rel-h (dr/random 0.1 0.25))) (dr/random-int 3 9)))]
+        xs (g/vertices (g/as-polygon (gc/circle p (cq/rel-h (dr/random 0.05 0.2))) (dr/random-int 3 9)))]
     (gp/polygon2 (for [vertice xs]
                    (tm/mix center vertice (dr/random 0.25 1.5))))))
 
 (defn random-shape []
-  (let [point-gen (fn [] (cq/rel-vec (dr/random 0.3 0.7) (dr/random 0.3 0.7)))]
+  (let [point-gen (fn [] (cq/rel-vec (dr/random 0.35 0.65) (dr/random 0.35 0.65)))]
     (->> [[(gl/line2 (point-gen) (point-gen)) 1.0]
           [(interesting-triangle (point-gen) (point-gen)) 2.0]
           [(rect/rect (point-gen) (point-gen)) 2.0]
           [(interesting-polygon (point-gen)) 1.0]
-          [(gc/circle (point-gen) (cq/rel-h (dr/random 0.1 0.25))) 2.0]]
+          [(gc/circle (point-gen) (cq/rel-h (dr/random 0.05 0.2))) 2.0]]
          dr/weighted
          g/center)))
 
