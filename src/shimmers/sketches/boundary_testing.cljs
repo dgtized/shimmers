@@ -39,10 +39,10 @@
 (defn random-shape []
   (let [point-gen (fn [] (cq/rel-vec (dr/random 0.35 0.65) (dr/random 0.35 0.65)))]
     (->> [[(gl/line2 (point-gen) (point-gen)) 1.0]
-          [(interesting-triangle (point-gen) (point-gen)) 2.0]
-          [(rect/rect (point-gen) (point-gen)) 2.0]
-          [(interesting-polygon) 1.0]
-          [(gen-circle) 2.0]]
+          [(interesting-triangle (point-gen) (point-gen)) 1.5]
+          [(rect/rect (point-gen) (point-gen)) 1.5]
+          [(interesting-polygon) 1.25]
+          [(gen-circle) 1.5]]
          dr/weighted
          g/center)))
 
