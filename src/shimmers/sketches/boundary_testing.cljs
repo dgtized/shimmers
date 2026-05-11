@@ -23,17 +23,18 @@
 (defonce defo (debug/state {}))
 
 (defn gen-circle []
-  (gc/circle (cq/rel-h (min (dr/random 0.05 0.25) (dr/random 0.05 0.25)))))
+  (gc/circle (cq/rel-h (min (dr/random 0.025 0.25) (dr/random 0.025 0.25)))))
 
 (defn interesting-triangle [a b]
   (let [m (tm/mix a b (dr/random))
-        perp (g/scale (g/rotate (tm/- b a) (* eq/TAU 0.25 (dr/rand-nth [-1 1]))) (dr/random 0.2 1.0))]
+        perp (g/scale (g/rotate (tm/- b a) (* eq/TAU 0.25 (dr/rand-nth [-1 1])))
+                      (dr/random 0.2 0.9))]
     (gt/triangle2 a (tm/+ m perp) b)))
 
 (defn interesting-polygon []
   (let [xs (g/vertices (g/as-polygon (gen-circle) (dr/random-int 3 9)))]
     (gp/polygon2 (for [vertice xs]
-                   (tm/mix (gv/vec2) vertice (dr/random 0.25 1.5))))))
+                   (tm/mix (gv/vec2) vertice (dr/random 0.25 1.33))))))
 
 (defn random-shape []
   (let [point-gen (fn [] (cq/rel-vec (dr/random 0.35 0.65) (dr/random 0.35 0.65)))]
@@ -60,7 +61,7 @@
    :objects
    (->> (fn [] (object (random-shape) (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
                       (dr/randvec2 1.0)))
-        (repeatedly (dr/random-int 8 17))
+        (repeatedly (dr/random-int 8 23))
         (map-indexed (fn [idx obj] (assoc obj :idx idx)))
         vec)
    :t (q/millis)})
