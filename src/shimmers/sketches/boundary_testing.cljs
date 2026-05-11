@@ -53,6 +53,9 @@
    :spin (dr/random -0.0005 0.0005)
    :angle 0})
 
+(defn object-at [{:keys [shape pos angle]}]
+  (g/center (g/rotate shape angle) pos))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
@@ -66,10 +69,12 @@
         vec)
    :t (q/millis)})
 
-(defn update-object [bounds _t dt {:keys [shape pos prev _angle spin] :as object}]
-  (let [vel (if (collide/bounded? bounds shape)
-              (tm/* (tm/- pos prev) (* 0.00001 dt))
-              (tm/* (tm/- (g/closest-point bounds pos) pos) (* 0.00001 dt)))]
+(defn update-object [bounds _t dt {:keys [pos prev _angle spin] :as object}]
+  (let [vel (if (collide/bounded? bounds (object-at object))
+              (tm/* (tm/- pos prev) (* 0.01 dt)) ;; FIXME: dampening acc
+              (let [close (g/closest-point bounds pos)
+                    center (g/centroid bounds)]
+                (tm/* (tm/- center close) (* (/ 0.1 (g/dist center close)) dt))))]
     (-> object
         (update :pos tm/+ vel)
         (assoc :prev pos)
@@ -80,9 +85,6 @@
     (-> state
         (update :objects (partial mapv (partial update-object bounds t dt)))
         (update :t + dt))))
-
-(defn object-at [{:keys [shape pos angle]}]
-  (g/center (g/rotate shape angle) pos))
 
 (defn draw [{:keys [objects]}]
   (reset! defo {})
