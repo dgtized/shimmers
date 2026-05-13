@@ -91,9 +91,9 @@
   (q/background 1.0)
   (doseq [object objects
           :let [obj (object-at object)]]
-    (q/stroke-weight 1.0)
+    (q/stroke-weight 0.5)
     (q/stroke 0.0)
-    (let [overlap (some (fn [other]
+    (let [overlap (keep (fn [other]
                           (when (and (not= (:idx object) (:idx other))
                                      (collide/overlaps? obj (object-at other)))
                             other))
@@ -108,7 +108,7 @@
                 (g/centroid (object-at bounded)))
         (q/stroke 0.575 0.75 0.5)
         (swap! defo update :bounded conj [(object-at bounded) obj]))
-      (q/stroke-weight (if overlap 3.0 1.0)))
+      (q/stroke-weight (inc (* 0.75 (count overlap)))))
     (qdg/draw (object-at object))))
 
 (defn page []
