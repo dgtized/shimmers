@@ -3,6 +3,12 @@
    [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.common.sequence :as sut]))
 
+(deftest index-of
+  (is (= 2 (sut/index-of [:a :b :c :d] :c))))
+
+(deftest find-first
+  (is (= [1 :b] (sut/find-first (fn [x] (= (first x) 1)) [[0 :a] [1 :b] [1 :c] [2 :d]]))))
+
 (deftest rotate
   (is (= [1 2 3] (sut/rotate 0 [1 2 3])))
   (is (= [2 3 1] (sut/rotate 1 [1 2 3])))
