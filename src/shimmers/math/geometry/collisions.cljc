@@ -309,6 +309,8 @@
                              (not-any? (fn [q] (tm/delta= p q)) (g/vertices rect))))
                  (g/vertices bounds))))
 
+;; FIXME: https://gamedev.stackexchange.com/questions/7735/how-do-i-test-if-a-circle-and-concave-polygon-intersect
+;; Need to handle circles in concave polygons correctly with odd/even test
 (defmethod bounded?
   [Polygon2 Circle2] [bounds {:keys [p r]}]
   (and
