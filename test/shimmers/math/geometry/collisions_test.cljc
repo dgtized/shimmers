@@ -96,7 +96,9 @@
     (is (sut/overlaps? (g/rotate (g/center (rect/rect 4)) (* 0.25 eq/TAU))
                        (gc/circle 1)) "polygon contains")
     (is (sut/overlaps? (g/rotate (g/center (rect/rect 1)) (* 0.25 eq/TAU))
-                       (gc/circle 4)) "circle contains"))
+                       (gc/circle 4)) "circle contains")
+    (is (not (sut/overlaps? (gp/polygon2 [0 0] [0 10] [2 10] [2 4] [8 4] [8 10] [10 10] [10 0])
+                            (gc/circle [5 6] 1)))))
   (t/testing "Circle2 Triangle2"
     (is (sut/overlaps? (gc/circle [1 1] 1) (gt/triangle2 [1 1.5] [3.0 2.0] [1.5 3.0])))
     (is (sut/overlaps? (gc/circle [1 1] 1) (gt/triangle2 [0.5 0.5] [1.5 1.25] [0.75 1.0])))
@@ -208,6 +210,8 @@
                       (gc/circle 1 1 0.5)))
     (is (sut/bounded? (gp/polygon2 [0 0] [0 1] [0.98 1] [1 0.98] [1 0])
                       (gc/circle 0.5 0.5 0.5)))
+    (is (not (sut/bounded? (gp/polygon2 [0 0] [0 10] [2 10] [2 4] [8 4] [8 10] [10 10] [10 0])
+                           (gc/circle [5 6] 1))))
     (is (not (sut/bounded? (gp/polygon2 [0.0 0.0] [0.5 1.0] [0.0 2.0] [2.0 2.0] [2.0 0.0])
                            (gc/circle 1 1 1)))))
   (t/testing "Circle2 Vec2"
