@@ -60,8 +60,15 @@
                    :stroke-width 0.5}
     (shapes)))
 
+(defn explanation []
+  [:div.flexcenter
+   "Generate a grid of randomly generated glyphs. Some are letter like, some are just random squiggles."])
+
 (sketch/definition glyphs
   {:created-at "2022-01-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount
+   (-> sketch-args
+       (usvg/with-explanation explanation)
+       (usvg/page scene))))
