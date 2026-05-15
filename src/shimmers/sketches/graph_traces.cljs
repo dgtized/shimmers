@@ -151,13 +151,22 @@
       (cq/circle pos 4.0))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div.flexcenter
+    [:div
+     [:p.readable-width
+      "Create a small random graph, and then animate particles moving along the
+    graph's edges, while simultaneously updating vertice positions by applying
+    forces to each vertice based on surrounding vertices."]
+     [:p.readable-width
+      "Mostly just an exercise in animating particles on top of another animation
+     system, in this case the skeleton of the graph."]]]])
 
 (sketch/definition graph-traces
   {:created-at "2024-01-06"
