@@ -217,8 +217,17 @@
     (shapes (csvg/screen width height)
             (examples))))
 
+(defn explanation []
+  [:div.flexcenter
+   [:div
+    [:p.readable-width
+     "Verifying that different fill and hatching algorithms apply correctly to
+     rotated rectangles."]]])
+
 (sketch/definition hatch-test
   {:created-at "2025-01-22"
    :tags #{}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount (-> sketch-args
+                  (usvg/with-explanation explanation)
+                  (usvg/page scene))))
