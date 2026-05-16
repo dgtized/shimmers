@@ -17,9 +17,8 @@
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
-  {:radius (cq/rel-h 0.05)
-   :n1 (dr/random-int 3 13)
-   :n2 (dr/random-int 3 13)})
+  {:radius (cq/rel-h 0.02)
+   :n (repeatedly 5 #(dr/random-int 3 13))})
 
 (defn update-state [state]
   state)
@@ -31,16 +30,20 @@
     (for [s (butlast (tm/norm-range n))]
       (gc/circle (g/point-at circle s) r'))))
 
-(defn circles [radius n1 n2]
-  (let [layer1 (surround (gc/circle radius) n1)]
-    (concat [(gc/circle radius)]
-            layer1
-            (surround (gc/circle (+ radius (* 2 (:r (first layer1))))) n2))))
+(defn circles [radius xs]
+  (loop [circles [(gc/circle radius)] r radius xs xs]
+    (if (seq xs)
+      (let [additions (surround (gc/circle r) (first xs))]
+        (recur
+         (concat circles additions)
+         (+ r (* 2 (:r (first additions))))
+         (rest xs)))
+      circles)))
 
-(defn draw [{:keys [radius n1 n2]}]
+(defn draw [{:keys [radius n]}]
   (q/background 1.0)
   (q/translate (cq/rel-vec 0.5 0.5))
-  (doseq [c (circles radius n1 n2)]
+  (doseq [c (circles radius n)]
     (qdg/draw c)))
 
 (defn page []
