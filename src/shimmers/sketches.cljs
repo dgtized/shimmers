@@ -164,6 +164,7 @@
    shimmers.sketches.langton-ant
    shimmers.sketches.lattice-in-steps
    shimmers.sketches.lattice-of-common-chords
+   shimmers.sketches.lattice-reflections
    shimmers.sketches.layered-intersections
    shimmers.sketches.layered-layers
    shimmers.sketches.ley-lines
