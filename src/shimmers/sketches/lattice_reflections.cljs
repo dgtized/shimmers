@@ -8,6 +8,7 @@
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -18,33 +19,36 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   {:radius (cq/rel-h 0.02)
-   :n (repeatedly 5 #(dr/random-int 3 13))})
+   :n (repeatedly 5 #(dr/random-int 3 13))
+   :p (repeatedly 5 #(dr/gaussian 1 0.3))})
 
 (defn update-state [state]
   state)
 
-(defn surround [{:keys [p r]} n]
+(defn surround [{:keys [p r]} n phase t]
   (let [sv (math/sin (/ tm/PI n))
         r' (/ (* r sv) (- 1 sv))
         circle (gc/circle p (+ r r'))]
     (for [s (butlast (tm/norm-range n))]
-      (gc/circle (g/point-at circle s) r'))))
+      (gc/circle (g/point-at circle (+ s (* phase t))) r'))))
 
-(defn circles [radius xs]
-  (loop [circles [(gc/circle radius)] r radius xs xs]
+(defn circles [radius xs ps t]
+  (loop [circles [(gc/circle radius)] r radius xs xs ps ps]
     (if (seq xs)
-      (let [additions (surround (gc/circle r) (first xs))]
+      (let [additions (surround (gc/circle r) (first xs) (first ps) t)]
         (recur
          (concat circles additions)
          (+ r (* 2 (:r (first additions))))
-         (rest xs)))
+         (rest xs)
+         (rest ps)))
       circles)))
 
-(defn draw [{:keys [radius n]}]
+(defn draw [{:keys [radius n p]}]
   (q/background 1.0)
   (q/translate (cq/rel-vec 0.5 0.5))
-  (doseq [c (circles radius n)]
-    (qdg/draw c)))
+  (let [t (/ (q/millis) 3000.0)]
+    (doseq [c (circles (* radius (+ 1 (* 0.5 (eq/unit-sin t)))) n p (/ t 8.0))]
+      (qdg/draw c))))
 
 (defn page []
   [:div
