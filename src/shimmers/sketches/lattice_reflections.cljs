@@ -45,9 +45,11 @@
 
 (defn draw [{:keys [radius n p]}]
   (q/background 1.0)
+  (q/stroke-weight 2.0)
   (q/translate (cq/rel-vec 0.5 0.5))
   (let [t (/ (q/millis) 3000.0)]
-    (doseq [c (circles (* radius (+ 1 (* 0.5 (eq/unit-sin t)))) n p (/ t 9.0))]
+    (doseq [c (circles (* radius (+ 1 (* 0.5 (eq/unit-sin t)))) n p
+                       (/ t 10.0))]
       (qdg/draw c))))
 
 (defn page []
