@@ -44,14 +44,25 @@
          (rest ps)))
       circles)))
 
+(defn features [circles radius t]
+  (let [s (* 0.11 (math/sin t))]
+    (mapcat
+     (fn [c]
+       (if (< (:r c) (* 1.1 radius))
+         [(g/scale-size c (+ 0.5 s))]
+         [(g/scale-size c (+ 0.66 s))
+          (g/scale-size c (- 0.33 s))]))
+     circles)))
+
 (defn draw [{:keys [radius n p]}]
   (q/background 1.0)
   (q/stroke-weight 2.0)
   (q/translate (cq/rel-vec 0.5 0.5))
-  (let [t (/ (q/millis) 3000.0)]
-    (doseq [c (circles (* radius (+ 1 (* 0.5 (eq/unit-sin t)))) n p
-                       (/ t 10.0))]
-      (qdg/draw c))))
+  (let [t (/ (q/millis) 3000.0)
+        radius' (* radius (+ 1 (* 0.5 (eq/unit-sin t))))
+        circles (circles radius' n p (/ t 10.0))]
+    (doseq [obj (concat circles (features circles radius' t))]
+      (qdg/draw obj))))
 
 (defn page []
   [:div
