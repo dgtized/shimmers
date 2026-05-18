@@ -20,7 +20,8 @@
   (q/no-fill)
   {:radius (cq/rel-h 0.02)
    :n (repeatedly 6 #(dr/random-int 3 13))
-   :p (repeatedly 6 #(dr/gaussian 1 0.35))})
+   :p (repeatedly 6 #(* (dr/random-sign 0.6)
+                        (tm/clamp (dr/gaussian 1 0.4) 0.05 1.95)))})
 
 (defn update-state [state]
   state)
