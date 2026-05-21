@@ -65,13 +65,16 @@
       (qdg/draw obj))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div.evencols
+    [:p.readable-width
+     "Experimenting with fitting N circles perfectly around an inner circle for K iterations."]]])
 
 (sketch/definition lattice-reflections
   {:created-at "2026-05-16"
