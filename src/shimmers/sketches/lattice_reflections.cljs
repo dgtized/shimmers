@@ -36,9 +36,10 @@
 (defn circles [radius xs ps t]
   (loop [circles [(gc/circle radius)] r radius xs xs ps ps]
     (if (seq xs)
-      (let [additions (surround (gc/circle r) (first xs) (first ps) t)]
+      (let [lcircle (gc/circle r)
+            additions (surround lcircle (first xs) (first ps) t)]
         (recur
-         (concat circles additions)
+         (concat circles (conj additions (vary-meta lcircle assoc :lcircle true)))
          (+ r (* 2 (:r (first additions))))
          (rest xs)
          (rest ps)))
@@ -48,10 +49,13 @@
   (let [s (* 0.11 (math/sin t))]
     (mapcat
      (fn [c]
-       (if (< (:r c) (* 1.1 radius))
+       (cond
+         (:lcircle (meta c))
+         []
+         (< (:r c) (* 1.1 radius))
          [(g/scale-size c (+ 0.5 s))]
-         [(g/scale-size c (+ 0.66 s))
-          (g/scale-size c (- 0.33 s))]))
+         :else [(g/scale-size c (+ 0.66 s))
+                (g/scale-size c (- 0.33 s))]))
      circles)))
 
 (defn draw [{:keys [radius n p]}]
