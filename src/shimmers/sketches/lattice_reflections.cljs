@@ -84,6 +84,7 @@
 (defn draw [{:keys [radius n p]}]
   (q/background 1.0)
   (q/stroke-weight 2.0)
+  ;; TODO add translation drift over time
   (q/translate (cq/rel-vec 0.5 0.5))
   (let [t (/ (q/millis) 3000.0)
         radius' (* radius (+ 1 (* 0.5 (eq/unit-sin t))))
