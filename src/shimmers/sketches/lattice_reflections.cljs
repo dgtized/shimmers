@@ -39,7 +39,13 @@
       (let [lcircle (gc/circle r)
             additions (surround lcircle (first xs) (first ps) t)]
         (recur
-         (concat circles (conj additions (vary-meta lcircle assoc :lcircle true)))
+         (concat circles
+                 (conj (map (fn [c]
+                              (if (even? (count xs))
+                                (vary-meta c assoc :nested (int (dec (* tm/PHI (first xs)))))
+                                c))
+                            additions)
+                       (vary-meta lcircle assoc :lcircle true)))
          (+ r (* 2 (:r (first additions))))
          (rest xs)
          (rest ps)))
@@ -54,8 +60,12 @@
          []
          (< (:r c) (* 1.1 radius))
          [(g/scale-size c (+ 0.5 s))]
-         :else [(g/scale-size c (+ 0.66 s))
-                (g/scale-size c (- 0.33 s))]))
+         :else
+         (concat [(g/scale-size c (+ 0.66 s))
+                  (g/scale-size c (- 0.33 s))]
+                 (if (:nested (meta c))
+                   (surround (g/scale-size c (- 0.33 s)) (:nested (meta c)) (* 0.5 s) t)
+                   []))))
      circles)))
 
 (defn draw [{:keys [radius n p]}]
