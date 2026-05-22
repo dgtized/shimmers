@@ -33,6 +33,16 @@
     (for [s (butlast (tm/norm-range n))]
       (gc/circle (g/point-at circle (+ s (* phase t))) r'))))
 
+(defn even [x]
+  (let [x' (int x)]
+    (cond (even? x') x'
+          (< x' x)
+          (inc x')
+          :else
+          (dec x'))))
+
+(comment (odd 3.2) (odd 3.6) (odd 4.3) (odd 4) (odd 5.3))
+
 (defn circles [radius xs ps t]
   (loop [circles [(gc/circle radius)] r radius xs xs ps ps]
     (if (seq xs)
@@ -42,7 +52,8 @@
          (concat circles
                  (conj (map (fn [c]
                               (if (even? (count xs))
-                                (vary-meta c assoc :nested (int (dec (* tm/PHI (first xs)))))
+                                (let [v (even (* tm/PHI (first xs)))]
+                                  (vary-meta c assoc :nested v))
                                 c))
                             additions)
                        (vary-meta lcircle assoc :lcircle true)))
@@ -64,7 +75,8 @@
          (concat [(g/scale-size c (+ 0.66 s))
                   (g/scale-size c (- 0.33 s))]
                  (if (:nested (meta c))
-                   (surround (g/scale-size c (- 0.33 s)) (:nested (meta c)) (* 0.5 s) t)
+                   (keep-indexed (fn [i x] (when (even? i) x))
+                                 (surround (g/scale-size c (- 0.33 s)) (:nested (meta c)) (* 0.5 s) t))
                    []))))
      circles)))
 
