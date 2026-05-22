@@ -62,6 +62,7 @@
          (rest ps)))
       circles)))
 
+;; FIXME: support both odd or even subdivisions not even only
 (defn features [circles radius t]
   (let [s (* 0.11 (math/sin t))]
     (mapcat
