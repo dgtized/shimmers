@@ -19,7 +19,7 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   {:radius (cq/rel-h 0.02)
-   :rules (->> (fn []
+   :plans (->> (fn []
                  {:n (dr/random-int 3 13)
                   :phase (tm/clamp (dr/gaussian 1 0.4) 0.05 1.95)})
                (repeatedly 6)
@@ -45,11 +45,11 @@
 
 (comment (odd 3.2) (odd 3.6) (odd 4.3) (odd 4) (odd 5.3))
 
-(defn circles [radius rules t]
-  (loop [circles [(gc/circle radius)] r radius rules rules]
-    (if (seq rules)
+(defn circles [radius plans t]
+  (loop [circles [(gc/circle radius)] r radius plans plans]
+    (if (seq plans)
       (let [lcircle (gc/circle r)
-            {:keys [idx n phase]} (first rules)
+            {:keys [idx n phase]} (first plans)
             additions (surround lcircle n phase t)
             r' (:r (first additions))]
         (recur
@@ -62,7 +62,7 @@
                             additions)
                        (vary-meta lcircle assoc :lcircle true)))
          (+ r (* 2 r'))
-         (rest rules)))
+         (rest plans)))
       circles)))
 
 ;; FIXME: support both odd or even subdivisions not even only
@@ -85,14 +85,14 @@
                    []))))
      circles)))
 
-(defn draw [{:keys [radius rules]}]
+(defn draw [{:keys [radius plans]}]
   (q/background 1.0)
   (q/stroke-weight 2.0)
   ;; TODO add translation drift over time
   (q/translate (cq/rel-vec 0.5 0.5))
   (let [t (/ (q/millis) 3000.0)
         radius' (* radius (+ 1 (* 0.5 (eq/unit-sin t))))
-        circles (circles radius' rules (/ t 10.0))]
+        circles (circles radius' plans (/ t 10.0))]
     (doseq [obj (concat circles (features circles radius' t))]
       (qdg/draw obj))))
 
