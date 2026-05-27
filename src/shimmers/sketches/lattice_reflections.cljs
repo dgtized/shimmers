@@ -43,7 +43,7 @@
           :else
           (dec x'))))
 
-(comment (odd 3.2) (odd 3.6) (odd 4.3) (odd 4) (odd 5.3))
+(comment (mapv (fn [x] [x (even x)]) [3.2 3.6 4.3 4 5.3]))
 
 (defn circles [radius plans t]
   (loop [circles [(gc/circle radius)] r radius plans plans]
@@ -65,7 +65,6 @@
          (rest plans)))
       circles)))
 
-;; FIXME: support both odd or even subdivisions not even only
 (defn features [circles radius t]
   (let [s (* 0.11 (math/sin t))]
     (mapcat
@@ -76,13 +75,13 @@
          (< (:r c) (* 1.1 radius))
          [(g/scale-size c (+ 0.5 s))]
          :else
-         (concat [(g/scale-size c (+ 0.66 s))
-                  (g/scale-size c (- 0.33 s))]
-                 (if (:nested (meta c))
-                   (keep-indexed
-                    (fn [i x] (when (even? i) x))
-                    (surround (g/scale-size c (- 0.33 s)) (:nested (meta c)) (* 0.5 s) t))
-                   []))))
+         (concat
+          [(g/scale-size c (+ 0.66 s))
+           (g/scale-size c (- 0.33 s))]
+          (when-let [nested (:nested (meta c))]
+            (keep-indexed
+             (fn [i x] (when (even? i) x))
+             (surround (g/scale-size c (- 0.33 s)) nested (* 0.5 s) t))))))
      circles)))
 
 (defn draw [{:keys [radius plans]}]
