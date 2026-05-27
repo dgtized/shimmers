@@ -78,8 +78,9 @@
          (concat [(g/scale-size c (+ 0.66 s))
                   (g/scale-size c (- 0.33 s))]
                  (if (:nested (meta c))
-                   (keep-indexed (fn [i x] (when (even? i) x))
-                                 (surround (g/scale-size c (- 0.33 s)) (:nested (meta c)) (* 0.5 s) t))
+                   (keep-indexed
+                    (fn [i x] (when (even? i) x))
+                    (surround (g/scale-size c (- 0.33 s)) (:nested (meta c)) (* 0.5 s) t))
                    []))))
      circles)))
 
