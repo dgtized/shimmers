@@ -19,9 +19,11 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   {:radius (cq/rel-h 0.02)
-   :n (repeatedly 6 #(dr/random-int 3 13))
-   :p (repeatedly 6 #(* (dr/random-sign 0.6)
-                        (tm/clamp (dr/gaussian 1 0.4) 0.05 1.95)))})
+   :rules (->> (fn []
+                 {:n (dr/random-int 3 13)
+                  :phase (tm/clamp (dr/gaussian 1 0.4) 0.05 1.95)})
+               (repeatedly 6)
+               (map-indexed (fn [i r] (assoc r :idx i))))})
 
 (defn update-state [state]
   state)
@@ -43,23 +45,23 @@
 
 (comment (odd 3.2) (odd 3.6) (odd 4.3) (odd 4) (odd 5.3))
 
-(defn circles [radius xs ps t]
-  (loop [circles [(gc/circle radius)] r radius xs xs ps ps]
-    (if (seq xs)
+(defn circles [radius rules t]
+  (loop [circles [(gc/circle radius)] r radius rules rules]
+    (if (seq rules)
       (let [lcircle (gc/circle r)
-            additions (surround lcircle (first xs) (first ps) t)]
+            {:keys [idx n phase]} (first rules)
+            additions (surround lcircle n phase t)]
         (recur
          (concat circles
                  (conj (map (fn [c]
-                              (if (even? (count xs))
-                                (let [v (even (* tm/PHI (first xs)))]
+                              (if (even? idx)
+                                (let [v (even (* tm/PHI n))]
                                   (vary-meta c assoc :nested v))
                                 c))
                             additions)
                        (vary-meta lcircle assoc :lcircle true)))
          (+ r (* 2 (:r (first additions))))
-         (rest xs)
-         (rest ps)))
+         (rest rules)))
       circles)))
 
 ;; FIXME: support both odd or even subdivisions not even only
@@ -81,14 +83,14 @@
                    []))))
      circles)))
 
-(defn draw [{:keys [radius n p]}]
+(defn draw [{:keys [radius rules]}]
   (q/background 1.0)
   (q/stroke-weight 2.0)
   ;; TODO add translation drift over time
   (q/translate (cq/rel-vec 0.5 0.5))
   (let [t (/ (q/millis) 3000.0)
         radius' (* radius (+ 1 (* 0.5 (eq/unit-sin t))))
-        circles (circles radius' n p (/ t 10.0))]
+        circles (circles radius' rules (/ t 10.0))]
     (doseq [obj (concat circles (features circles radius' t))]
       (qdg/draw obj))))
 
