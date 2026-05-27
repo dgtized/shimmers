@@ -50,7 +50,8 @@
     (if (seq rules)
       (let [lcircle (gc/circle r)
             {:keys [idx n phase]} (first rules)
-            additions (surround lcircle n phase t)]
+            additions (surround lcircle n phase t)
+            r' (:r (first additions))]
         (recur
          (concat circles
                  (conj (map (fn [c]
@@ -60,7 +61,7 @@
                                 c))
                             additions)
                        (vary-meta lcircle assoc :lcircle true)))
-         (+ r (* 2 (:r (first additions))))
+         (+ r (* 2 r'))
          (rest rules)))
       circles)))
 
