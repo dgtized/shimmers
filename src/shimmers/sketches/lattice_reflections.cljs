@@ -21,7 +21,7 @@
   {:radius (cq/rel-h 0.02)
    :plans (->> (fn []
                  {:n (dr/random-int 3 13)
-                  :rate (tm/clamp (dr/gaussian 1 0.4) 0.05 1.95)})
+                  :rate (tm/clamp (dr/gaussian 1 0.33) 0.05 1.95)})
                (repeatedly 6)
                (map-indexed (fn [i r] (assoc r :idx i))))})
 
