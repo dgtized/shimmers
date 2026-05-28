@@ -28,12 +28,12 @@
 (defn update-state [state]
   state)
 
-(defn surround [{:keys [p r]} n rate t]
+(defn surround [{:keys [p r]} {:keys [n rate phase]} t]
   (let [sv (math/sin (/ tm/PI n))
         r' (/ (* r sv) (- 1 sv))
         circle (gc/circle p (+ r r'))]
     (for [s (butlast (tm/norm-range n))]
-      (gc/circle (g/point-at circle (+ s (* rate t))) r'))))
+      (gc/circle (g/point-at circle (+ s (* rate t) phase)) r'))))
 
 (defn even [x]
   (let [x' (int x)]
@@ -49,8 +49,8 @@
   (loop [circles [(gc/circle radius)] r radius plans plans]
     (if (seq plans)
       (let [lcircle (gc/circle r)
-            {:keys [idx n rate]} (first plans)
-            additions (surround lcircle n rate t)
+            {:keys [idx n] :as plan} (first plans)
+            additions (surround lcircle plan t)
             r' (:r (first additions))]
         (recur
          (concat circles
@@ -81,7 +81,9 @@
           (when-let [nested (:nested (meta c))]
             (keep-indexed
              (fn [i x] (when (even? i) x))
-             (surround (g/scale-size c (- 0.33 s)) nested (* 0.5 s) t))))))
+             (surround (g/scale-size c (- 0.33 s))
+                       {:n nested :rate (* 0.5 s) :phase 0}
+                       t))))))
      circles)))
 
 (defn draw [{:keys [radius plans]}]
