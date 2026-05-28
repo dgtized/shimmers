@@ -21,19 +21,19 @@
   {:radius (cq/rel-h 0.02)
    :plans (->> (fn []
                  {:n (dr/random-int 3 13)
-                  :phase (tm/clamp (dr/gaussian 1 0.4) 0.05 1.95)})
+                  :rate (tm/clamp (dr/gaussian 1 0.4) 0.05 1.95)})
                (repeatedly 6)
                (map-indexed (fn [i r] (assoc r :idx i))))})
 
 (defn update-state [state]
   state)
 
-(defn surround [{:keys [p r]} n phase t]
+(defn surround [{:keys [p r]} n rate t]
   (let [sv (math/sin (/ tm/PI n))
         r' (/ (* r sv) (- 1 sv))
         circle (gc/circle p (+ r r'))]
     (for [s (butlast (tm/norm-range n))]
-      (gc/circle (g/point-at circle (+ s (* phase t))) r'))))
+      (gc/circle (g/point-at circle (+ s (* rate t))) r'))))
 
 (defn even [x]
   (let [x' (int x)]
@@ -49,8 +49,8 @@
   (loop [circles [(gc/circle radius)] r radius plans plans]
     (if (seq plans)
       (let [lcircle (gc/circle r)
-            {:keys [idx n phase]} (first plans)
-            additions (surround lcircle n phase t)
+            {:keys [idx n rate]} (first plans)
+            additions (surround lcircle n rate t)
             r' (:r (first additions))]
         (recur
          (concat circles
