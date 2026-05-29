@@ -20,8 +20,12 @@
   (q/no-fill)
   {:radius (cq/rel-h 0.02)
    :plans (->> (fn []
-                 {:n (dr/random-int 3 13)
-                  :rate (tm/clamp (dr/gaussian 1 0.33) 0.05 1.95)})
+                 (let [nested (dr/chance 0.66)]
+                   {:n (dr/random-int 3 13)
+                    :rate (tm/clamp (dr/gaussian 1 0.33) 0.05 1.95)
+                    :nested nested
+                    :filtered (dr/weighted {even? 1.0
+                                            (constantly true) 1.0})}))
                (repeatedly 6)
                (map-indexed (fn [i r] (assoc r :idx i))))})
 
@@ -49,15 +53,17 @@
   (loop [circles [(gc/circle radius)] r radius plans plans]
     (if (seq plans)
       (let [lcircle (gc/circle r)
-            {:keys [idx n] :as plan} (first plans)
+            {:keys [n] :as plan} (first plans)
             additions (surround lcircle plan t)
             r' (:r (first additions))]
         (recur
          (concat circles
                  (conj (map (fn [c]
-                              (if (even? idx)
+                              (if (:nested plan)
                                 (let [v (even (* tm/PHI n))]
-                                  (vary-meta c assoc :nested v))
+                                  (vary-meta c assoc
+                                             :nested v
+                                             :filtered (:filtered plan)))
                                 c))
                             additions)
                        (vary-meta lcircle assoc :lcircle true)))
@@ -78,12 +84,13 @@
          (concat
           [(g/scale-size c (+ 0.66 s))
            (g/scale-size c (- 0.33 s))]
-          (when-let [nested (:nested (meta c))]
-            (keep-indexed
-             (fn [i x] (when (even? i) x))
-             (surround (g/scale-size c (- 0.33 s))
-                       {:n nested :rate (* 0.5 s) :phase 0}
-                       t))))))
+          (let [m (meta c)]
+            (when-let [nested (:nested m)]
+              (keep-indexed
+               (fn [i x] (when ((:filtered m) i) x))
+               (surround (g/scale-size c (- 0.33 s))
+                         {:n nested :rate (* 0.5 s) :phase 0}
+                         t)))))))
      circles)))
 
 (defn draw [{:keys [radius plans]}]
