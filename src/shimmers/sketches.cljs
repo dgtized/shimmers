@@ -315,6 +315,7 @@
    shimmers.sketches.video-delay-shader
    shimmers.sketches.video-shader
    shimmers.sketches.voronoi-after-effect
+   shimmers.sketches.warped-grid
    shimmers.sketches.wave-function-collapse
    shimmers.sketches.wavetracker
    shimmers.sketches.waystation
