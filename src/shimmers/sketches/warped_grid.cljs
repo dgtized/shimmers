@@ -7,6 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn setup []
@@ -17,11 +18,10 @@
 (defn update-state [state]
   state)
 
-(defn fi [i j t]
-  (* 0.05 (math/cos (* j (math/tan (+ (* math/PI i) t))))))
-
-(defn fj [i j t]
-  (* 0.05 (math/sin (* i (math/sin (+ (* math/PI j) t))))))
+(defn f [i j t]
+  (gv/vec2
+   (+ i (* 0.05 (math/cos (* j (math/tan (+ (* math/PI i) t))))))
+   (+ j (* 0.05 (math/sin (* i (math/sin (+ (* math/PI j) t))))))))
 
 (defn draw [state]
   (q/background 1.0)
@@ -29,7 +29,7 @@
   (let [t (/ (q/millis) 10000.0)]
     (doseq [i (tm/norm-range 80)
             j (tm/norm-range 60)]
-      (cq/circle (cq/rel-vec (+ i (fi i j t)) (+ j (fj i j t)))
+      (cq/circle (cq/rel-vec (f i j t))
                  1.0)))
   state)
 
