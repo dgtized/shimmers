@@ -20,8 +20,10 @@
 
 (defn f [i j t]
   (gv/vec2
-   (+ i (* 0.05 (math/cos (* j (math/tan (+ (* math/PI i) t))))))
-   (+ j (* 0.05 (math/sin (* i (math/sin (+ (* math/PI j) t))))))))
+   (+ i (* 0.05 (math/cos
+                 (* math/PI (+ (math/sin (* math/PI t)) j)
+                    (math/tan (+ (* math/PI i) t))))))
+   (+ j (* 0.05 (math/sin (* math/PI i (math/sin (+ (* math/PI j) t))))))))
 
 (defn draw [state]
   (q/background 1.0)
