@@ -18,7 +18,7 @@
   {:v 1.0})
 
 (defn update-state [state]
-  (if (dr/chance (* 0.15 (eq/unit-sin (/ (q/millis) 15000.0))))
+  (if (dr/chance (* 0.1 (eq/unit-sin (/ (q/millis) 15000.0))))
     (assoc state :v (dr/rand-nth [1.0 1.33 1.66 2.0]))
     state))
 
