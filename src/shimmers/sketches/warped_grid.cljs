@@ -29,7 +29,7 @@
   (let [t (/ (q/millis) 10000.0)]
     (doseq [i (tm/norm-range 80)
             j (tm/norm-range 60)]
-      (cq/circle (cq/rel-vec (f i j t))
+      (cq/circle (cq/rel-vec (f (- (* 1.1 i) 0.05) (- (* 1.1 j) 0.05) t))
                  1.0)))
   state)
 
