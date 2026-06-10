@@ -12,15 +12,19 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn stime []
+  (/ (q/millis) 10000.0))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:v 1.0})
 
 (defn update-state [state]
-  (if (dr/chance (* 0.1 (eq/unit-sin (/ (q/millis) 15000.0))))
-    (assoc state :v (dr/rand-nth [1.0 1.33 1.66 2.0]))
-    state))
+  (let [t (* 0.4 (stime))]
+    (if (dr/chance (* 0.1 (eq/unit-sin (+ t (eq/unit-sin (* 1.33 t))))))
+      (assoc state :v (dr/rand-nth [1.0 1.33 1.66 2.0]))
+      state)))
 
 (defn f [i j t v]
   (gv/vec2
@@ -33,7 +37,7 @@
 (defn draw [{:keys [v]}]
   (q/background 1.0)
   (q/stroke-weight 0.9)
-  (let [t (/ (q/millis) 10000.0)]
+  (let [t (stime)]
     (doseq [i (tm/norm-range 80)
             j (tm/norm-range 60)]
       (cq/circle (cq/rel-vec (f (- (* 1.1 i) 0.05) (- (* 1.1 j) 0.05) t v))
