@@ -102,6 +102,16 @@
                                 (* (dr/gaussian 0.75 0.08) flight-time)))]
     (update state :projectiles conj projectile)))
 
+(defn create-burst [burst pos vel mass]
+  (let [spread (dr/weighted {3.0 1.5 4.0 1.5
+                             6.0 1.0 8.0 1.0})]
+    (repeatedly burst
+                (fn []
+                  (->Shell pos
+                           (tm/+ vel (tm/* (gv/vec2 (dr/gaussian 0.0 spread) 0.0)))
+                           (* 2.0 (/ mass burst))
+                           1.0)))))
+
 ;; TODO: check projectile/projectile collisions?
 (defn update-projectile [ground turrets dt]
   (fn [state {:keys [pos vel explode mass flight-time] :as projectile}]
@@ -135,13 +145,7 @@
         proj'
         (update :projectiles conj (update (dissoc proj' :burst) :flight-time - dt))
         (> burst 0)
-        (update :projectiles into
-                (repeatedly burst
-                            (fn []
-                              (->Shell pos
-                                       (tm/+ vel (tm/* (gv/vec2 (dr/gaussian 0.0 3.0) 0.0)))
-                                       (* 2.0 (/ mass burst))
-                                       1.0))))))))
+        (update :projectiles into (create-burst burst pos vel mass))))))
 
 (defn pick-target [{:keys [pos]} turrets]
   (some->> turrets
