@@ -130,7 +130,7 @@
                                 turrets)
                           ;; projectile/projectile collisions
                           (some (fn [{shell :pos size :mass}]
-                                  (and (< (g/dist shell pos) (+ mass size))
+                                  (and (< (g/dist shell pos) (* 0.75 (+ mass size)))
                                        (not (tm/delta= shell pos))))
                                 shells))
                       (-> projectile
