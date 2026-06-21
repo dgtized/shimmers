@@ -260,7 +260,8 @@
     (into
      [(-> (rect/rect 0 0 (* tm/PHI s) s)
           g/center
-          (g/translate pos))
+          (g/translate pos)
+          (assoc :fill [0.35 0.4 0.66]))
       (let [barrel-width (* 0.33 s)
             length (* 1.25 s)]
         (-> (rect/rect 0 (* -0.5 barrel-width) length barrel-width)
@@ -279,7 +280,8 @@
                           dist (tm/clamp (dr/gaussian (- (* 2.0 s) r) s) 0 (* 8 s))]
                       (assoc
                        (gc/circle (v/+polar pos dist (dr/random (* 0.48 eq/TAU) (* 1.02 eq/TAU))) r)
-                       :fill (if (dr/chance 0.33) 0.0 1.0))))
+                       :fill (if (dr/chance 0.33) [(dr/gaussian 0.1 0.03) 0.75 0.6]
+                                 0.0))))
        []))))
 
 (defn draw [{:keys [ground turrets projectiles]}]
@@ -300,12 +302,12 @@
         (q/no-fill))
       (qdg/draw s)))
 
-  (q/fill 0.25)
   (doseq [{:keys [pos mass explode]} projectiles]
-    (cq/circle pos
-               (if (> explode 0)
-                 (dr/random (* 0.5 mass) (* 3.0 mass))
-                 mass))))
+    (q/fill 0.25)
+    (if (> explode 0)
+      (do (q/fill (dr/rand-nth [[0.1 0.6 0.6]]))
+          (cq/circle pos (dr/random (* 0.5 mass) (* 3.0 mass))))
+      (cq/circle pos mass))))
 
 (defn page []
   [sketch/with-explanation
