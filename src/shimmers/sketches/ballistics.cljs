@@ -83,9 +83,8 @@
   (let [dir (v/polar 1.0 angle)
         [x y] (tm/abs (tm/- (:pos target) pos))
         ;; v0 is ignoring drag
-        v0 (initial-velocity angle [x y])
-        v0' (* v0 (dr/gaussian 1.0 0.12))
-        muzzle-velocity (tm/* dir v0')
+        v0 (dr/gaussian (initial-velocity angle [x y]) 0.15)
+        muzzle-velocity (tm/* dir v0)
         mass (dr/weighted {3.0 3.0
                            3.5 2.5
                            4.0 2.0
@@ -94,7 +93,7 @@
                            8.0 0.2
                            10.0 0.1})
         initial-pos (tm/+ pos (tm/* dir (start-dist mass)))
-        flight-time (time-of-flight angle v0' x)
+        flight-time (time-of-flight angle v0 x)
         projectile (if (dr/chance 0.8)
                      (->Shell initial-pos muzzle-velocity mass
                               flight-time)
