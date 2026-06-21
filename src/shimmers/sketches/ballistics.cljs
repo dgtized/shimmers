@@ -12,6 +12,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -24,7 +25,7 @@
 (defonce defo (debug/state))
 
 (defn start-dist [mass]
-  (* 2.0 mass))
+  (* 3.6 mass))
 
 (defn contact-dist [mass]
   (* tm/PHI mass))
@@ -122,7 +123,9 @@
                       (or (> (:y pos') (:y ground-point))
                           ;; projectile/turret collisions
                           (some (fn [{turret :pos}]
-                                  (< (g/dist turret pos) (contact-dist mass)))
+                                  (collide/overlaps? (gc/circle pos mass)
+                                                     (let [s (cq/rel-h 0.015)]
+                                                       (g/center (rect/rect 0 0 (* tm/PHI s) s) turret))))
                                 turrets)
                           ;; projectile/projectile collisions
                           (some (fn [{shell :pos size :mass}]
