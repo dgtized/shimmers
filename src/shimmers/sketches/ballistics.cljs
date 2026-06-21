@@ -32,27 +32,33 @@
 (defn explode-dist [mass]
   (* 5.0 mass))
 
-(defrecord Turret [health pos angle angle-target angle-vel target firing-cycle])
+(defrecord Turret [health pos angle angle-target angle-vel target firing-cycle color])
 (defrecord Shell [pos vel mass flight-time])
 (defrecord Cluster [pos vel mass flight-time])
 (defrecord Missile [pos vel mass fuel])
 
-(defn generate-turret [ground-pos]
+(defn generate-turret [i ground-pos]
   (let [p (tm/+ ground-pos (cq/rel-vec 0.0 -0.01))
         angle (g/heading (tm/- (cq/rel-vec 0.5 0.0) p))]
-    (->Turret 1.0 p angle angle 0.0 nil 0.1)))
+    (->Turret 1.0 p angle angle 0.0 nil 0.1
+              [(mod (* tm/PHI i) 1.0) 0.5 0.5])))
 
 (defn make-turrets [ground n]
   (let [margin (* 0.08 (/ 1.0 n))]
     (for [i (range n)
           :let [p (dr/random (+ (/ (float i) n) margin)
                              (- (/ (float (inc i)) n) margin))]]
-      (generate-turret (g/point-at ground p)))))
+      (generate-turret i (g/point-at ground p)))))
+
+(defn generate-ground []
+  (->> (concat [0.0] (dr/gaussian-range 0.03 0.01) [1.0])
+       (mapv (fn [x] (cq/rel-vec x (- 1.0 (* 0.4 (q/noise (* 4 x) 0.5))))))
+       gl/linestrip2))
+
+(comment (make-turrets (gl/linestrip2 [0.0 0.2] [1.0 0.2]) 4))
 
 (defn initial-state []
-  (let [ground (->> (concat [0.0] (dr/gaussian-range 0.03 0.01) [1.0])
-                    (mapv (fn [x] (cq/rel-vec x (- 1.0 (* 0.4 (q/noise (* 4 x) 0.5))))))
-                    gl/linestrip2)]
+  (let [ground (generate-ground)]
     {:turrets (make-turrets ground (dr/random-int 2 7))
      :projectiles []
      :ground ground}))
@@ -254,14 +260,14 @@
                 turrets)
         (debug! state)))))
 
-(defn turret-shapes [{:keys [pos angle health]}]
+(defn turret-shapes [{:keys [pos angle health color]}]
   (let [s (cq/rel-h 0.015)
         health-w (* 1.33 s)]
     (into
      [(-> (rect/rect 0 0 (* tm/PHI s) s)
           g/center
           (g/translate pos)
-          (assoc :fill [0.35 0.4 0.66]))
+          (assoc :fill color))
       (let [barrel-width (* 0.33 s)
             length (* 1.25 s)]
         (-> (rect/rect 0 (* -0.5 barrel-width) length barrel-width)
