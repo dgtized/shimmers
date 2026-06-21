@@ -45,11 +45,12 @@
               [(mod (* tm/PHI i) 1.0) 0.5 0.5])))
 
 (defn make-turrets [ground n]
-  (let [margin (* 0.08 (/ 1.0 n))]
+  (let [margin (* 0.08 (/ 1.0 n))
+        colors (dr/shuffle (range n))]
     (for [i (range n)
           :let [p (dr/random (+ (/ (float i) n) margin)
                              (- (/ (float (inc i)) n) margin))]]
-      (generate-turret i (g/point-at ground p)))))
+      (generate-turret (nth colors i) (g/point-at ground p)))))
 
 (defn generate-ground []
   (->> (concat [0.0] (dr/gaussian-range 0.03 0.01) [1.0])
