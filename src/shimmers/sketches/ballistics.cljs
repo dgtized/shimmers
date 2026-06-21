@@ -111,8 +111,7 @@
                            (* 2.0 (/ mass burst))
                            1.0)))))
 
-;; TODO: check projectile/projectile collisions?
-(defn update-projectile [ground turrets dt]
+(defn update-projectile [ground turrets shells dt]
   (fn [state {:keys [pos vel explode mass flight-time] :as projectile}]
     (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))
           pos' (tm/+ pos (tm/* vel dt))
@@ -121,9 +120,15 @@
                       (and explode (> explode 0))
                       (update projectile :explode dec)
                       (or (> (:y pos') (:y ground-point))
+                          ;; projectile/turret collisions
                           (some (fn [{turret :pos}]
                                   (< (g/dist turret pos) (contact-dist mass)))
-                                turrets))
+                                turrets)
+                          ;; projectile/projectile collisions
+                          (some (fn [{shell :pos size :mass}]
+                                  (and (< (g/dist shell pos) (+ mass size))
+                                       (not (tm/delta= shell pos))))
+                                shells))
                       (-> projectile
                           (assoc :vel (gv/vec2)
                                  :explode (dr/random-int 4 8)))
@@ -259,7 +264,7 @@
     (if (and (empty? projectiles) (<= (count turrets) 1))
       (initial-state)
       (as-> state state
-        (reduce (update-projectile ground turrets dt)
+        (reduce (update-projectile ground turrets projectiles dt)
                 (assoc state :projectiles [])
                 projectiles)
         (reduce (update-turret exploding turrets dt)
