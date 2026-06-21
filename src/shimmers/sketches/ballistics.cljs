@@ -59,7 +59,7 @@
 
 (defn initial-state []
   (let [ground (generate-ground)]
-    {:turrets (make-turrets ground (dr/random-int 2 7))
+    {:turrets (make-turrets ground (dr/random-int 2 11))
      :projectiles []
      :ground ground}))
 
