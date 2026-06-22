@@ -257,13 +257,14 @@
   (swap! defo assoc
          :projectiles (count projectiles)
          :turrets
-         (for [t turrets]
-           (->>
-            (update t :target
-                    (fn [{:keys [pos] :as target}]
-                      (when target
-                        [pos (g/heading (tm/- pos (:pos t)))])))
-            (into {}))))
+         (for [turret turrets]
+           (as-> turret t
+             (update t :target
+                     (fn [{:keys [pos] :as target}]
+                       (when target
+                         [pos (g/heading (tm/- pos (:pos t)))])))
+             (dissoc t :color)
+             (into {} t))))
   state)
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
