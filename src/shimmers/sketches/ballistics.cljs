@@ -33,7 +33,7 @@
 (defn explode-dist [mass]
   (* 5.0 mass))
 
-(defrecord Turret [health pos angle angle-target angle-vel target firing-cycle color])
+(defrecord Turret [health pos angle target firing-cycle color])
 (defrecord Shell [pos vel mass flight-time])
 (defrecord Cluster [pos vel mass flight-time])
 (defrecord Missile [pos vel mass fuel])
@@ -41,7 +41,7 @@
 (defn generate-turret [i ground-pos]
   (let [p (tm/+ ground-pos (cq/rel-vec 0.0 -0.01))
         angle (g/heading (tm/- (cq/rel-vec 0.5 0.0) p))]
-    (->Turret 1.0 p angle angle 0.0 nil 0.1
+    (->Turret 1.0 p {:curr angle :target angle :vel 0.0} nil 0.1
               [(mod (* tm/PHI i) 1.0) 0.5 0.5])))
 
 (defn make-turrets [ground n]
@@ -82,10 +82,10 @@
   (abs (/ x (* v0 (math/cos angle)))))
 
 (defn fire-projectile [state {:keys [pos angle target]}]
-  (let [dir (v/polar 1.0 angle)
+  (let [dir (v/polar 1.0 (:curr angle))
         [x y] (tm/abs (tm/- (:pos target) pos))
         ;; v0 is ignoring drag
-        v0 (dr/gaussian (initial-velocity angle [x y]) 0.15)
+        v0 (dr/gaussian (initial-velocity (:curr angle) [x y]) 0.15)
         muzzle-velocity (tm/* dir v0)
         mass (dr/weighted {3.0 3.0
                            3.5 2.5
@@ -95,7 +95,7 @@
                            8.0 0.2
                            10.0 0.1})
         initial-pos (tm/+ pos (tm/* dir (start-dist mass)))
-        flight-time (time-of-flight angle v0 x)
+        flight-time (time-of-flight (:curr angle) v0 x)
         projectile (if (dr/chance 0.8)
                      (->Shell initial-pos muzzle-velocity mass
                               flight-time)
@@ -201,24 +201,24 @@
           0.0
           exploding))
 
-(defn rotate-turret [{:keys [angle angle-target angle-vel] :as turret} dt]
-  (let [angle-acc (control/angular-acceleration angle angle-target
-                                                (/ 0.33 dt) angle-vel)]
+(defn rotate-turret [{:keys [angle] :as turret} dt]
+  (let [{:keys [curr vel target]} angle
+        acc (control/angular-acceleration curr target (/ 0.33 dt) vel)]
     (-> turret
-        (assoc :angle-vel (+ angle-vel (* angle-acc dt)))
-        (update :angle + (* angle-vel dt)))))
+        (assoc-in [:angle :vel] (+ vel (* acc dt)))
+        (update-in [:angle :curr] + (* vel dt)))))
 
 (defn adjust-angle [turret]
   (let [angle (apply dr/random (firing-range 0.02 turret))]
-    (assoc turret :angle-target angle)))
+    (assoc-in turret [:angle :target] angle)))
 
 (defn update-turret
   [exploding turrets dt]
-  (fn [state {:keys [pos angle angle-target target health firing-cycle] :as turret}]
+  (fn [state {:keys [pos angle target health firing-cycle] :as turret}]
     (let [alive? (> health 0.0)
           dead? (< health 0.0)
           damage (exploding-damage pos exploding)
-          rotating? (and alive? (> (sm/radial-distance angle angle-target) 0.01))
+          rotating? (and alive? (> (sm/radial-distance (:curr angle) (:target angle)) 0.01))
           new-target? (and alive? (no-target? target turrets))
           can-fire? (and alive?
                          (<= firing-cycle 0.0)
@@ -292,7 +292,7 @@
       (let [barrel-width (* 0.33 s)
             length (* 1.25 s)]
         (-> (rect/rect 0 (* -0.5 barrel-width) length barrel-width)
-            (g/rotate angle)
+            (g/rotate (:curr angle))
             (g/translate pos)
             (assoc :fill 1.0)))
       (-> (rect/rect (* -0.5 health-w) (* 0.8 s) health-w (* 0.4 s))
