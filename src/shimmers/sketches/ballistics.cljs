@@ -137,15 +137,15 @@
                       (and explode (> explode 0))
                       (update projectile :explode dec)
                       (impact? projectile pos' ground-point turrets shells)
-                      (-> projectile
-                          (assoc :vel (gv/vec2)
-                                 :explode (dr/random-int 4 8)))
+                      (assoc projectile
+                             :vel (gv/vec2)
+                             :explode (dr/random-int 4 8))
                       (and (instance? Cluster projectile)
                            (< flight-time 0.0))
-                      (-> projectile
-                          (assoc :vel (gv/vec2)
-                                 :burst (dr/random-int 3 12)
-                                 :explode (dr/random-int 2 5)))
+                      (assoc projectile
+                             :vel (gv/vec2)
+                             :burst (dr/random-int 3 12)
+                             :explode (dr/random-int 2 5))
                       :else
                       (let [drag (- 1.0 (eq/sqr (* 1.1 dt)))
                             gravity (gv/vec2 0 (* dt 9.8))]
