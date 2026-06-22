@@ -113,6 +113,21 @@
                            (* 2.0 (/ mass burst))
                            1.0)))))
 
+(defn impact?
+  [{:keys [pos mass]} pos' ground-point turrets shells]
+  (or (> (:y pos') (:y ground-point))
+      ;; projectile/turret collisions
+      (some (fn [{turret :pos}]
+              (collide/overlaps? (gc/circle pos mass)
+                                 (let [s (cq/rel-h 0.015)]
+                                   (g/center (rect/rect 0 0 (* tm/PHI s) s) turret))))
+            turrets)
+      ;; projectile/projectile collisions
+      (some (fn [{shell :pos size :mass}]
+              (and (< (g/dist shell pos) (* 0.75 (+ mass size)))
+                   (not (tm/delta= shell pos))))
+            shells)))
+
 (defn update-projectile [ground turrets shells dt]
   (fn [state {:keys [pos vel explode mass flight-time] :as projectile}]
     (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))
@@ -121,18 +136,7 @@
                       nil
                       (and explode (> explode 0))
                       (update projectile :explode dec)
-                      (or (> (:y pos') (:y ground-point))
-                          ;; projectile/turret collisions
-                          (some (fn [{turret :pos}]
-                                  (collide/overlaps? (gc/circle pos mass)
-                                                     (let [s (cq/rel-h 0.015)]
-                                                       (g/center (rect/rect 0 0 (* tm/PHI s) s) turret))))
-                                turrets)
-                          ;; projectile/projectile collisions
-                          (some (fn [{shell :pos size :mass}]
-                                  (and (< (g/dist shell pos) (* 0.75 (+ mass size)))
-                                       (not (tm/delta= shell pos))))
-                                shells))
+                      (impact? projectile pos' ground-point turrets shells)
                       (-> projectile
                           (assoc :vel (gv/vec2)
                                  :explode (dr/random-int 4 8)))
