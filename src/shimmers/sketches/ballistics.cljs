@@ -339,12 +339,12 @@
 (defn page []
   [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [debug/display defo]])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [debug/display defo {:width 100 :print-fixed-width 3}]])
 
 (sketch/definition ballistics
   {:created-at "2023-02-05"
