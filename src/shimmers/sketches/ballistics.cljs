@@ -332,7 +332,7 @@
   (doseq [{:keys [pos mass explode]} projectiles]
     (q/fill 0.25)
     (if (> explode 0)
-      (do (q/fill (dr/rand-nth [[(dr/gaussian 0.075 0.025) 0.6 0.6]]))
+      (do (q/fill [(dr/gaussian 0.075 0.025) 0.6 0.6])
           (cq/circle pos (dr/random (* 0.5 mass) (* 3.0 mass))))
       (cq/circle pos mass))))
 
