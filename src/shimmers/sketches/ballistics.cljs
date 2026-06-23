@@ -286,8 +286,7 @@
         health-w (* 1.33 s)]
     (into
      [(-> (rect/rect 0 0 (* tm/PHI s) s)
-          g/center
-          (g/translate pos)
+          (g/center pos)
           (assoc :fill color))
       (let [barrel-width (* 0.33 s)]
         (-> (rect/rect 0 (* -0.5 barrel-width) (* 1.25 s) barrel-width)
