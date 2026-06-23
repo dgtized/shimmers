@@ -289,9 +289,8 @@
           g/center
           (g/translate pos)
           (assoc :fill color))
-      (let [barrel-width (* 0.33 s)
-            length (* 1.25 s)]
-        (-> (rect/rect 0 (* -0.5 barrel-width) length barrel-width)
+      (let [barrel-width (* 0.33 s)]
+        (-> (rect/rect 0 (* -0.5 barrel-width) (* 1.25 s) barrel-width)
             (g/rotate (:curr angle))
             (g/translate pos)
             (assoc :fill 1.0)))
