@@ -1,3 +1,4 @@
+;;  -*- lexical-binding: t; -*-
 ;; inspired by https://github.com/nextjournal/clerk/blob/main/clerk.el
 
 (require 'cider-client)
