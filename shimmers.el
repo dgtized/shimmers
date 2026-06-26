@@ -1,5 +1,18 @@
-;;  -*- lexical-binding: t; -*-
+;; shimmers.el --- open tests and visit sketches on keybind -*- lexical-binding: t; -*-
+;; Copyright (C) 2026 Charles L.G. Comstock
+
+;; Author: Charles L.G. Comstock <dgtized@gmail.com
+;; Version: 1.0.0
+;; URL: https://github.com/dgtized/shimmers
+
+;;; Commentary:
+
+;; Adds a keybinding to visit a sketch in the browser correspondig to the sketch
+;; open in a buffer and adds a helper to visit the shimmers test set.
+;;
 ;; inspired by https://github.com/nextjournal/clerk/blob/main/clerk.el
+
+;;; Code:
 
 (require 'cider-client)
 (require 'cider-eval)
