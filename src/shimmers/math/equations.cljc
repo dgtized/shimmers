@@ -264,9 +264,17 @@
 (defn weighted-avg [k sample avg]
   (+ (* k sample) (* (- 1.0 k) avg)))
 
-;; https://www.youtube.com/watch?v=6Qb6QtC6QMs -- smooth max
+;; https://www.youtube.com/watch?v=6Qb6QtC6QMs -- smooth min/max
 (defn smax [^double x ^double y ^double bias]
-  (/ (+ x y (math/sqrt (+ (sqr (- x y)) bias))) 2.0))
+  (/ (+ x y (math/sqrt (+ (sqr (- x y)) bias)))
+     2.0))
 
-(comment (mapv (fn [t] [t (smax 2 8 t)])
-               (range 0 0.16 0.01)))
+(defn smin [^double x ^double y ^double bias]
+  (/ (- (+ x y) (math/sqrt (+ (sqr (- x y)) bias)))
+     2.0))
+
+(comment
+  (mapv (fn [t] [t (smax 2 8 t)])
+        (range 0 0.16 0.01))
+  (mapv (fn [t] [t (smin 2 8 t)])
+        (range 0 0.16 0.01)))
