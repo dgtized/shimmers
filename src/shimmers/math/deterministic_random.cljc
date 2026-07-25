@@ -38,6 +38,11 @@
   ([n] (int (math/floor (random n))))
   ([a b] (int (math/floor (random a b)))))
 
+(defn random-vec [lows highs]
+  (mapv (fn [l h] (random l h)) lows highs))
+
+(comment (random-vec [0 0] [1 2]))
+
 (defn random-tau []
   (random eq/TAU))
 
