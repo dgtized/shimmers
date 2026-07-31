@@ -102,6 +102,10 @@ input[type=number] {
   width: 12em;
 }
 
+.wide-input select {
+  width: 12em;
+}
+
 .fraction input[type=text] {
   width: 5em;
 }
