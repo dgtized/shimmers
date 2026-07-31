@@ -21,13 +21,14 @@
 
 (defn maurer-rose [{:keys [samples rotation n d]}]
   (let [center (rv 0.5 0.5)
-        radius (* 0.49 height)
-        path (for [i (range (inc samples))
-                   :let [k (tm/radians (* d i))]]
-               (v/+polar center
-                         (* radius (math/sin (+ (tm/radians rotation) (* n k))))
-                         (+ k (tm/radians rotation))))]
-    (csvg/path (csvg/segmented-path path))))
+        radius (* 0.49 height)]
+    (->> (for [i (range (inc samples))
+               :let [k (tm/radians (* d i))]]
+           (v/+polar center
+                     (* radius (math/sin (+ (tm/radians rotation) (* n k))))
+                     (+ k (tm/radians rotation))))
+         csvg/segmented-path
+         csvg/path)))
 
 (defn chorded [{:keys [samples rotation n d]}]
   (let [center (rv 0.5 0.5)
