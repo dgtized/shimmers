@@ -72,7 +72,7 @@
   [{:keys [attractor-power snap-theta] :as settings}]
   (let [bounds (cq/screen-rect)
         attractors
-        (repeatedly (math/pow 2 attractor-power)
+        (repeatedly (int (math/pow 2 attractor-power))
                     (attractor-gen bounds (rand-nth [:triangle :square :circle])))
         roots (dr/weighted {1 4
                             2 2

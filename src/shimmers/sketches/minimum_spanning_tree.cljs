@@ -46,7 +46,7 @@
     (cq/circle (cq/rel-pos pt) 0.2))
   (q/stroke-weight 0.5)
   (q/stroke 50 50 230)
-  (doseq [[i [p q]] (map-indexed vector (take (math/floor (inc step)) edges))
+  (doseq [[i [p q]] (map-indexed vector (take (int (math/floor (inc step))) edges))
           :let [wp (cq/rel-vec p)
                 wq (cq/rel-vec q)]]
     (if (< i (math/floor step))
