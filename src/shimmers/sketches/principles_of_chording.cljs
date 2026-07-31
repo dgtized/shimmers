@@ -92,8 +92,9 @@
     [:div.evencols.wide-input
      [ctrl/container
       [ctrl/dropdown params "Method" [:method]
-       (mapv (fn [n] [(name n) (name n)])
-             [:maurer-rose :chorded :modulo-chords])]
+       (mapv (fn [n] [n (name n)])
+             [:maurer-rose :chorded :modulo-chords])
+       {:reader keyword}]
       [ctrl/numeric params "Rotation°" [:rotation] [0 360 0.1]]
       [ctrl/numeric params "Samples" [:samples] [1 5000 1]]
       [ctrl/numeric params "N" [:n] [0.01 360 0.00001]]
