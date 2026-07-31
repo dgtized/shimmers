@@ -428,7 +428,7 @@
       (q/stroke-weight (if (> fxo 4.0)
                          0.8
                          (+ 0.75 (* 0.75 (eq/unit-sin (+ (* fxw0 t) (math/sin (* fxw1 t))
-                                                         (:p wobble1)))))))
+                                                         (:c wobble1)))))))
       (q/stroke (- 1.0 f))
       (let [t (* dir t)
             path (for [s (tm/norm-range 128)
