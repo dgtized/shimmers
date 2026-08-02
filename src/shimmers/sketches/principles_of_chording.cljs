@@ -19,14 +19,15 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn maurer-rose [{:keys [samples rotation n d]}]
+(defn maurer-rose [{:keys [samples rotation n d pm m]}]
   (let [center (rv 0.5 0.5)
         radius (* 0.49 height)
         rot (tm/radians rotation)]
     (->> (for [i (range (inc samples))
                :let [k (tm/radians (* d i))]]
            (v/+polar center
-                     (* radius (math/sin (+ rot (* n k))))
+                     (* radius (math/sin (+ rot (* n k)
+                                            (* pm (math/sin (tm/radians (* m i)))))))
                      (+ k rot)))
          csvg/segmented-path
          csvg/path)))
@@ -73,7 +74,11 @@
        {:n ((if (dr/chance 0.5) math/round identity)
             (dr/random 2 16))
         :d ((if (dr/chance 0.3) math/round identity)
-            (dr/random 2 128))}
+            (dr/random 2 128))
+        :pm (if (dr/chance 0.75) 0.0 1.0)
+        :m (if (dr/chance 0.66) 0.0
+               (/ (float (dr/random-int 0 64))
+                  (float (dr/weighted {1.0 6 2.0 2 3.0 1 4.0 1}))))}
        :chorded
        {:n ((if (dr/chance 0.4) math/round identity)
             (min (dr/random 0.5 9)
@@ -101,7 +106,11 @@
       [ctrl/numeric params "Samples" [:samples] [1 5000 1]]
       [ctrl/numeric params "N" [:n] [0.01 360 0.00001]]
       (when (not= method :modulo-chords)
-        [ctrl/numeric params "D" [:d] [0.01 128 0.00001]])]]))
+        [ctrl/numeric params "D" [:d] [0.01 128 0.00001]])
+      (when (= method :maurer-rose)
+        [ctrl/numeric params "Phase M" [:pm] [0.00 16.0 0.001]])
+      (when (= method :maurer-rose)
+        [ctrl/numeric params "M" [:m] [0.01 64 0.0001]])]]))
 
 (sketch/definition principles-of-chording
   {:created-at "2026-04-14"
