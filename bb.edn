@@ -1,7 +1,7 @@
 {:paths ["src"]
  :deps {io.github.dgtized/carrier
         {:git/url "https://github.com/dgtized/carrier.git"
-         :git/sha "e7c853930a6cdf1995db902fce0d1f74cef236c5"}}
+         :git/sha "83b3ad43f8b03d1a8b60ed5b28bcab5985e7975e"}}
  :tasks
  {:requires ([babashka.fs :as fs]
              [carrier.tasks :as t])
@@ -26,7 +26,6 @@
   {:task (t/rewrite-index
           :from "resources/public"
           :to "static-site"
-          :index-file "index.html"
           :base-href "https://dgtized.github.io/shimmers/")}
   ;; For routing to page handler after not using fragments
   ;; ln -sf index.html 404.html
