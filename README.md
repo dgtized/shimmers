@@ -46,7 +46,6 @@ Tests are verified in continuous integration using Github Actions but can also
 be run locally using:
 
     $ bin/ci
-    $ bin/lint
 
 ## Release
 

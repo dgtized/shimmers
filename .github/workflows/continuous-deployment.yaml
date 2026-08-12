@@ -57,7 +57,7 @@ jobs:
         run: bb build
 
       - name: Lint
-        run: bin/lint
+        run: bb lint
 
       - name: Test CLJC
         run: bin/kaocha unit-cljc
