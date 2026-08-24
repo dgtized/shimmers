@@ -1,13 +1,12 @@
 {:paths ["src"]
  :deps {io.github.dgtized/carrier
         {:git/url "https://github.com/dgtized/carrier.git"
-         :git/sha "83b3ad43f8b03d1a8b60ed5b28bcab5985e7975e"}}
+         :git/sha "580fd83eb611b446f1c2d75683c04a33fd0947c8"}}
  :tasks
  {:requires ([babashka.fs :as fs]
              [carrier.tasks :as t])
   clean
-  {:task (do (println "Remove target directory")
-          (fs/delete-tree "target"))}
+  {:task (t/clean "target" "static-site")}
   lint
   {:doc "Lint source and test with clj-kondo"
    :task (clojure "-Mclj-kondo --parallel --lint src test")}
