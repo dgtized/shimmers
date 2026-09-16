@@ -55,13 +55,14 @@
      [:p]
      (let [{:keys [weights osc phase]} @defo]
        [:table
-        (for [[axis w o p] (mapv vector [:x :y :z] weights osc phase)]
-          (into [:tr {:key axis}
-                 [:td {:style {:text-align :left}}
-                  (f/format [(f/pad-left 2)] (name axis))]]
-                (for [v [w o p]]
-                  [:td {:style {:text-align :right :width "3.5em"}}
-                   [:code (f/format [(f/float 2)] v)]])))])]]])
+        [:tbody
+         (for [[axis w o p] (mapv vector [:x :y :z] weights osc phase)]
+           (into [:tr {:key axis}
+                  [:td {:style {:text-align :left}}
+                   (f/format [(f/pad-left 2)] (name axis))]]
+                 (for [v [w o p]]
+                   [:td {:style {:text-align :right :width "3.5em"}}
+                    [:code (f/format [(f/float 2)] v)]])))]])]]])
 
 (sketch/definition circular-repetition
     {:created-at "2024-05-31"
