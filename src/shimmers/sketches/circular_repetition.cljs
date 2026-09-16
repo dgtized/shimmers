@@ -51,6 +51,7 @@
     [:div.readable-width
      "Inpired by " [:a {:href "https://junkiyoshi.com/openframeworks20240527/"} "Junki Yoshi - overlap circles"]
      " but using random phase modulation instead of pure noise to seed the x,y,z rotation of each circle."]
+    [:p [:em "This should work on mobile chrome or firefox, but unfortunately appears to be inconsistent on desktop chrome versions."]]
     [:div
      [:p]
      (let [{:keys [weights osc phase]} @defo]
