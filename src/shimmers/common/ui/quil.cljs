@@ -28,18 +28,24 @@
 
 (defn sketch-component [sketch-args]
   (let [!dom-node (get sketch-args :dom-node (atom nil))
+        logging false
         {:keys [performance-id] :as options} (configure-fps-overlay sketch-args)]
+    (when logging (println "component"))
     (r/create-class
      {:display-name "quil-sketch"
       :component-did-mount
       (fn []
+        (when logging (println "did-mount"))
         (apply q/sketch (apply concat (assoc options :host @!dom-node))))
       :component-will-unmount
       (fn []
+        (when logging (println "unmount"))
         (when-let [p5sketch (some-> @!dom-node .-processing-obj)]
+          (println "exit sketch")
           (q/with-sketch p5sketch (q/exit))))
       :reagent-render
       (fn [_sketch-args]
+        (when logging (println "render"))
         [:div.canvas-frame {:style {:position "relative"}
                             :ref (fn [el] (reset! !dom-node el))}
          (when-not (= performance-id "framerate")
