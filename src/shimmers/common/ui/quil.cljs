@@ -41,7 +41,7 @@
       (fn []
         (when logging (println "unmount"))
         (when-let [p5sketch (some-> @!dom-node .-processing-obj)]
-          (println "exit sketch")
+          (when logging (println "exit sketch"))
           (q/with-sketch p5sketch (q/exit))))
       :reagent-render
       (fn [_sketch-args]
