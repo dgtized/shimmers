@@ -89,8 +89,12 @@
                    :stroke-width 2.0}
     (shapes)))
 
+(defn explanation []
+  [:div
+   [:p "Genuary 2023 - Day 11 - Suprematism"]])
+
 (sketch/definition bold-moves
   {:created-at "2023-01-14"
    :type :svg
    :tags #{:genuary2023}}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount (usvg/page (usvg/with-explanation sketch-args explanation) scene)))
