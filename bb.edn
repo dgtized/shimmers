@@ -1,7 +1,7 @@
 {:paths ["src"]
  :deps {io.github.dgtized/carrier
         {:git/url "https://github.com/dgtized/carrier.git"
-         :git/sha "1c8c5e3c755f0197d5d8e94dbdb6d0e681cc749d"}}
+         :git/sha "00864c0895565f84fbe1da6f95124a445e414d0c"}}
  :tasks
  {:requires ([babashka.fs :as fs]
              [carrier.tasks :as t])
