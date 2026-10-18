@@ -13,6 +13,13 @@
          (range-subdivided tm/TWO_PI 2)
          (range-subdivided tm/TWO_PI 1))
 
+(defn round-to [n m]
+  (let [q (quot n m)
+        r (rem n m)]
+    (if (= r 0)
+      (* q m)
+      (* (inc q) m))))
+
 (defn reflect-into
   "Map a value `v` into a space bounded by `size`, by using modular arithmetic for
   `v` with respect to `size`, and reflecting at the halfway point.
